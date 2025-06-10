@@ -1,19 +1,61 @@
 @startuml overview
 
-class Engine
-class Bot
+class Engine {
+    +setUpBoard()
+    +handleInput()
+    -generateOutput()
+}
 
-class Board
-class BitBoardUtil
-class Move
+class SequentialProbabilityRatioTest {
+    +evaluate()
+}
+class Bot {
+    +updateSettings()
+    +getBestMove()
+    -tryOpeningBook()
+    -tryTablebase()
+}
+class Board {
+    +makeMove()
+    +unmakeMove()
+    +loadBoardPosition()
+    -isInCheck()
+    -isInCheckMate()
+    -isGameOver()
+}
 
-class Searcher
-Class Evaluator
-class MoveGenerator
+class BitBoardUtil {
+    +getPieceType()
+}
+class Move {
+    -startPos
+    -endPos
+    +getStartPos()
+    +getEndPos()
+}
 
-class OpeningBook
-class Tablebase
+class Searcher {
+    -currBestMove
+    -timer
+    +search()
+}
+Class Evaluator {
+    +evaluate()
+}
+class MoveGenerator {
+    +generateMoves()
+}
 
+class OpeningBook {
+    -databse
+    +lookUp()
+}
+class Tablebase {
+    -database
+    +lookUp()
+}
+
+SequentialProbabilityRatioTest <-right- Engine
 Engine *-- Board
 Engine *-- Bot
 
@@ -23,11 +65,9 @@ Board <-- Move
 Bot *-- OpeningBook
 Bot *-- Tablebase
 Bot *-- Searcher
+Bot <-right- Board
 
 Searcher *-- Evaluator
 Searcher *-- MoveGenerator
-
-Bot <-right- Board
-
 
 @enduml
