@@ -1,0 +1,33 @@
+@startuml overview
+
+class Engine
+class Bot
+
+class Board
+class BitBoardUtil
+class Move
+
+class Searcher
+Class Evaluator
+class MoveGenerator
+
+class OpeningBook
+class Tablebase
+
+Engine *-- Board
+Engine *-- Bot
+
+Board <-- BitBoardUtil
+Board <-- Move
+
+Bot *-- OpeningBook
+Bot *-- Tablebase
+Bot *-- Searcher
+
+Searcher *-- Evaluator
+Searcher *-- MoveGenerator
+
+Bot <-right- Board
+
+
+@enduml
