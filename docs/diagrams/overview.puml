@@ -46,14 +46,12 @@ class MoveGenerator {
     +generateMoves()
 }
 
-class OpeningBook {
-    -databse
-    +lookUp()
-}
-class Tablebase {
+abstract class Database {
     -database
     +lookUp()
 }
+class OpeningBook
+class Tablebase
 
 SequentialProbabilityRatioTest <-right- Engine
 Engine *-- Board
@@ -62,10 +60,12 @@ Engine *-- Bot
 Board <-- BitBoardUtil
 Board <-- Move
 
-Bot *-- OpeningBook
-Bot *-- Tablebase
+Bot *-- Database
 Bot *-- Searcher
 Bot <-right- Board
+
+Database *-- OpeningBook
+Database *-- Tablebase
 
 Searcher *-- Evaluator
 Searcher *-- MoveGenerator
