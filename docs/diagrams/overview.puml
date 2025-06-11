@@ -60,12 +60,9 @@ Engine *-- Bot
 Board <-- BitBoardUtil
 Board <-- Move
 
-Bot *-- Database
+Bot o-- Database
 Bot *-- Searcher
 Bot <-right- Board
-
-'Database *-- OpeningBook
-'Database *-- Tablebase
 
 Searcher *-- Evaluator
 Searcher *-- MoveGenerator
