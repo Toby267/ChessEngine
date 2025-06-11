@@ -50,8 +50,8 @@ abstract class Database {
     -database
     +lookUp()
 }
-class OpeningBook
-class Tablebase
+class OpeningBook extends Database
+class Tablebase extends Database
 
 SequentialProbabilityRatioTest <-right- Engine
 Engine *-- Board
@@ -64,8 +64,8 @@ Bot *-- Database
 Bot *-- Searcher
 Bot <-right- Board
 
-Database *-- OpeningBook
-Database *-- Tablebase
+'Database *-- OpeningBook
+'Database *-- Tablebase
 
 Searcher *-- Evaluator
 Searcher *-- MoveGenerator
