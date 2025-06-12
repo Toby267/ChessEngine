@@ -2,9 +2,12 @@ To setup for the first time:
 cd engine
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
 
-To build and run:
+To build:
 cd engine
 cmake --build build
+
+To run:
+cd engine
 ./bin/ChessEngine
