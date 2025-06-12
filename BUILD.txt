@@ -1,3 +1,10 @@
+To setup for the first time:
+cd engine
+mkdir build
+cd build
+cmake ..
+
+To build and run:
 cd engine
 cmake --build build
 ./bin/ChessEngine
