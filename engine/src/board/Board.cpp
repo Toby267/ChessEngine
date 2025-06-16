@@ -17,7 +17,7 @@ Board::Board() {
 }
 
 Board::~Board() {
-    delete bitBoards;
+    
 }
 
 // * ---------------------------------- [ GETTERS/SETTERS ] ---------------------------------- * //
@@ -38,9 +38,8 @@ PieceType Board::getType(SquareIndex index) {
             }
         }
     }
-    else {
-        return PieceType::INVALID;
-    }   
+    
+    return PieceType::INVALID;
 }
 
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
