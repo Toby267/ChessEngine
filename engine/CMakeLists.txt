@@ -4,5 +4,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_CXX_STANDARD 20)
 
 project(ChessEngine)
-add_executable(ChessEngine "${CMAKE_SOURCE_DIR}/src/Engine.cpp")
+
+file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+add_executable(ChessEngine "${MY_SOURCES}")
 target_include_directories(ChessEngine PUBLIC "${CMAKE_SOURCE_DIR}/include")

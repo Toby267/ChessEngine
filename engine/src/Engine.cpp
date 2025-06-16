@@ -1,8 +1,12 @@
+#include "Engine.hpp"
+
 #include <iostream>
 
-int main(int argc, char *argv[])
-{
-    std::cout << "CMake test" << '\n';
+Engine::Engine() {
+    std::cout << "within engine constructor" << '\n';
+    board = new Board();
+}
 
-    return 0;
+Engine::~Engine() {
+
 }
