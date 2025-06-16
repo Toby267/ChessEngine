@@ -9,4 +9,7 @@ private:
 public:
     Engine();
     ~Engine();
+
+private:
+    void printASCIIBoard();
 };

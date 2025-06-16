@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 enum SquareIndex {
     a1, a2, a3, a4, a5, a6, a7, a8,
     b1, b2, b3, b4, b5, b6, b7, b8,
@@ -11,10 +13,7 @@ enum SquareIndex {
     h1, h2, h3, h4, h5, h6, h7, h8
 };
 
-enum PieceType {
-    WHITE_PIECES,
-    BLACK_PIECES,
-    
+enum PieceType {    
     WHITE_PAWN,
     WHITE_KNIGHT,
     WHITE_BISHOP,
@@ -27,7 +26,10 @@ enum PieceType {
     BLACK_BISHOP,
     BLACK_ROOK,
     BLACK_QUEEN,
-    BLACK_KING
+    BLACK_KING,
+
+    WHITE_PIECES,
+    BLACK_PIECES
 };
 
 /*
@@ -41,4 +43,18 @@ private:
 public:
     Board();
     ~Board();
+
+    void makeMove();
+    void unMakeMove();
+
+    void setupBoard();
+
+private:
+    void addPiece(PieceType type, SquareIndex index);
+    void removePiece(PieceType type, SquareIndex index);
+    void togglePiece(PieceType type, SquareIndex index);
+
+    void printBitBoard(PieceType board);
+
+    void setupDefaultBoard();
 };
