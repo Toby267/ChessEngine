@@ -29,7 +29,9 @@ enum PieceType {
     BLACK_KING,
 
     WHITE_PIECES,
-    BLACK_PIECES
+    BLACK_PIECES,
+
+    INVALID
 };
 
 /*
@@ -44,6 +46,9 @@ public:
     //constructors/destructor
     Board();
     ~Board();
+
+    //getters
+    PieceType getType(SquareIndex index);
 
     //public methods
     void makeMove();
@@ -60,4 +65,9 @@ private:
     void printBitBoard(PieceType board);
 
     void setupDefaultBoard();
+
+    //helper methods
+    bool isWhite(SquareIndex index);
+    bool isBlack(SquareIndex index);
+    bool hasPiece(SquareIndex index);
 };

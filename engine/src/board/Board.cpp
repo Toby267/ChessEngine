@@ -20,6 +20,29 @@ Board::~Board() {
     delete bitBoards;
 }
 
+// * ---------------------------------- [ GETTERS/SETTERS ] ---------------------------------- * //
+
+//TODO: test this
+PieceType Board::getType(SquareIndex index) {
+    if (isWhite(index)) {
+        for (int i = 0; i < 6; i++) {
+            if (bitBoards[i] & (1ULL << index)) {
+                return (PieceType)i;
+            }
+        }
+    }
+    else if (isBlack(index)) {
+        for (int i = 6; i < 12; i++) {
+            if (bitBoards[i] & (1ULL << index)) {
+                return (PieceType)i;
+            }
+        }
+    }
+    else {
+        return PieceType::INVALID;
+    }   
+}
+
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
 
 void Board::makeMove() {
@@ -54,4 +77,19 @@ void Board::printBitBoard(PieceType board) {
 
 void Board::setupDefaultBoard() {
     //TODO: this
+}
+
+// * ---------------------------------- [ HELPER METHODS ] ---------------------------------- * //
+
+//TODO: test this
+bool Board::hasPiece(SquareIndex index) {
+    return (bitBoards[WHITE_PIECES] | bitBoards[BLACK_PIECES]) & (1ULL << index);
+}
+//TODO: test this
+bool Board::isWhite(SquareIndex index) {
+    return bitBoards[WHITE_PIECES] & (1ULL << index);
+}
+//TODO: test this
+bool Board::isBlack(SquareIndex index) {
+    return bitBoards[BLACK_PIECES] & (1ULL << index);
 }
