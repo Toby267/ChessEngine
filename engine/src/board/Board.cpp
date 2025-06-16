@@ -10,7 +10,7 @@
 
 #include "board/Move.hpp"
 
-// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
+// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTORS ] ---------------------------------- * //
 
 Board::Board() {
     setupDefaultBoard();
@@ -33,7 +33,7 @@ void Board::setupBoard() {
     //TODO: this
 }
 
-// * ---------------------------------- [ PRIVATE/HELPER METHODS ] ---------------------------------- * //
+// * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
 
 void Board::addPiece(PieceType type, SquareIndex index) {
     bitBoards[type] |= (1ULL << index);

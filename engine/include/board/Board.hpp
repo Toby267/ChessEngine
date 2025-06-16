@@ -41,15 +41,18 @@ private:
     uint64_t bitBoards[14];
 
 public:
+    //constructors/destructors
     Board();
     ~Board();
 
+    //public methods
     void makeMove();
     void unMakeMove();
 
     void setupBoard();
 
 private:
+    //private methods
     void addPiece(PieceType type, SquareIndex index);
     void removePiece(PieceType type, SquareIndex index);
     void togglePiece(PieceType type, SquareIndex index);

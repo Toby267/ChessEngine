@@ -4,7 +4,7 @@
 
 #include "board/Board.hpp"
 
-// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
+// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTORS ] ---------------------------------- * //
 
 Engine::Engine() {
     board = new Board();
@@ -14,8 +14,8 @@ Engine::~Engine() {
     delete board;
 }
 
-// * ---------------------------------- [ PRIVATE/HELPER METHODS ] ---------------------------------- * //
+// * ---------------------------------- [ PRIVATE METHODS ] ----------------------------------- * //
 
 void Engine::printASCIIBoard() {
-
+    //TODO: this
 }

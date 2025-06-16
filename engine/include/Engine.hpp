@@ -7,9 +7,11 @@ private:
     Board *board;
 
 public:
+    //constructors/destructorss
     Engine();
     ~Engine();
 
 private:
+    //private methods
     void printASCIIBoard();
 };
