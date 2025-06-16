@@ -4,7 +4,7 @@
 
 #include "board/Board.hpp"
 
-// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTORS ] ---------------------------------- * //
+// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 
 Engine::Engine() {
     board = new Board();

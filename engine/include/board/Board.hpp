@@ -41,7 +41,7 @@ private:
     uint64_t bitBoards[14];
 
 public:
-    //constructors/destructors
+    //constructors/destructor
     Board();
     ~Board();
 

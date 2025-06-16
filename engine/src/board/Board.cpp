@@ -10,7 +10,7 @@
 
 #include "board/Move.hpp"
 
-// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTORS ] ---------------------------------- * //
+// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 
 Board::Board() {
     setupDefaultBoard();

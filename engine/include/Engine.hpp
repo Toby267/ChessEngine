@@ -7,7 +7,7 @@ private:
     Board *board;
 
 public:
-    //constructors/destructorss
+    //constructors/destructor
     Engine();
     ~Engine();
 
