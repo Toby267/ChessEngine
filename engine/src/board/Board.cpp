@@ -18,7 +18,7 @@ Board::~Board() {
 
 // * ---------------------------------- [ GETTERS/SETTERS ] ---------------------------------- * //
 
-PieceType Board::getType(const SquareIndex index) {
+PieceType Board::getType(SquareIndex index) {
     if (isWhite(index)) {
         for (int i = 0; i < 6; i++) {
             if (bitBoards[i] & (1ULL << index)) {
@@ -39,11 +39,32 @@ PieceType Board::getType(const SquareIndex index) {
 
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
 
-void Board::makeMove() {
+void Board::makeMove(const Move& move) {
     //TODO: this
+    switch (move.normalMove.flag) {
+        case MoveType::CASTLE:
+            break;
+        case MoveType::EN_PASSANT:
+            break;
+        case MoveType::PROMOTION:
+            break;
+        case MoveType::NORMAL:
+            break;
+    }
+
 }
-void Board::unMakeMove() {
+void Board::unMakeMove(const Move& move) {
     //TODO: this
+    switch (move.normalMove.flag) {
+        case MoveType::CASTLE:
+            break;
+        case MoveType::EN_PASSANT:
+            break;
+        case MoveType::PROMOTION:
+            break;
+        case MoveType::NORMAL:
+            break;
+    }
 }
 
 void Board::setupBoard() {
@@ -53,23 +74,23 @@ void Board::setupBoard() {
 // * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
 
 //To move a piece at index 5 up by 1 square, I reomve it from index 5, and add a piece at index 5+8 as per the compass rose on chessprogramming.org 
-void Board::addPiece(const PieceType type, const SquareIndex index) {
+void Board::addPiece(PieceType type, SquareIndex index) {
     bitBoards[type] |= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] |= (1ULL << index);
 }
-void Board::removePiece(const PieceType type, const SquareIndex index) {
+void Board::removePiece(PieceType type, SquareIndex index) {
     bitBoards[type] &= ~(1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] &= ~(1ULL << index);
 }
-void Board::togglePiece(const PieceType type, const SquareIndex index) {
+void Board::togglePiece(PieceType type, SquareIndex index) {
     bitBoards[type] ^= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] ^= (1ULL << index);
 }
 
-void Board::printBitBoard(const PieceType board) {
+void Board::printBitBoard(PieceType board) {
     std::cout << std::bitset<64>(bitBoards[board]) << '\n';
 }
-void Board::printBitBoardHex(const PieceType board) {
+void Board::printBitBoardHex(PieceType board) {
     printf("0x%016llx\n", bitBoards[board]);
 }
 
@@ -93,12 +114,12 @@ void Board::setupDefaultBoard() {
 
 // * ---------------------------------- [ HELPER METHODS ] ---------------------------------- * //
 
-bool Board::hasPiece(const SquareIndex index) {
+bool Board::hasPiece(SquareIndex index) {
     return (bitBoards[PieceType::WHITE_PIECES] | bitBoards[PieceType::BLACK_PIECES]) & (1ULL << index);
 }
-bool Board::isWhite(const SquareIndex index) {
+bool Board::isWhite(SquareIndex index) {
     return bitBoards[PieceType::WHITE_PIECES] & (1ULL << index);
 }
-bool Board::isBlack(const SquareIndex index) {
+bool Board::isBlack(SquareIndex index) {
     return bitBoards[PieceType::BLACK_PIECES] & (1ULL << index);
 }

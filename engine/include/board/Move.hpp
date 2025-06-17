@@ -1,6 +1,6 @@
 #pragma once
 
-#include <board/Board.hpp>
+#include <board/BoardEnums.hpp>
 
 enum MoveType {
     NORMAL,
@@ -44,13 +44,3 @@ union Move {
     EnPassantMove enPassantMove;
     CastleMove castleMove;
 };
-
-// struct Move {
-//     SquareIndex primaryStartPos;
-//     SquareIndex primaryEndPos;
-//     SquareIndex secondaryStartPos;
-//     SquareIndex secondaryEndPos;
-//     SquareIndex killSquare;
-//     PieceType oldPieceType;
-//     PieceType newPieceType;
-// };
