@@ -20,6 +20,7 @@ struct PromotionMove {
     MoveType flag;
     SquareIndex startPos;
     SquareIndex endPos;
+    PieceType oldPieceType;
     PieceType newPieceType;
 };
 
@@ -27,15 +28,19 @@ struct EnPassantMove {
     MoveType flag;
     SquareIndex startPos;
     SquareIndex endPos;
+    PieceType pieceType;
     SquareIndex killSquare;
+    PieceType killPieceType;
 };
 
 struct CastleMove {
     MoveType flag;
     SquareIndex primaryStartPos;
     SquareIndex primaryEndPos;
+    PieceType primaryPieceType;
     SquareIndex secondaryStartPos;
     SquareIndex secondaryEndPos;
+    PieceType secondaryPieceType;
 };
 
 union Move {

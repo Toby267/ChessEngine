@@ -40,29 +40,51 @@ PieceType Board::getType(SquareIndex index) {
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
 
 void Board::makeMove(const Move& move) {
-    //TODO: this
+    //TODO: test this
     switch (move.normalMove.flag) {
         case MoveType::CASTLE:
+            togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryStartPos);
+            togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryEndPos);
+            togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryStartPos);
+            togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryEndPos);
             break;
         case MoveType::EN_PASSANT:
+            togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
+            togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
+            togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
             break;
         case MoveType::PROMOTION:
+            togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
+            togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
             break;
         case MoveType::NORMAL:
+            togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
+            togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
             break;
     }
 
 }
 void Board::unMakeMove(const Move& move) {
-    //TODO: this
+    //surely this will need to differ from makeMove() at some point, right?
     switch (move.normalMove.flag) {
         case MoveType::CASTLE:
+            togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryStartPos);
+            togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryEndPos);
+            togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryStartPos);
+            togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryEndPos);
             break;
         case MoveType::EN_PASSANT:
+            togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
+            togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
+            togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
             break;
         case MoveType::PROMOTION:
+            togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
+            togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
             break;
         case MoveType::NORMAL:
+            togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
+            togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
             break;
     }
 }
