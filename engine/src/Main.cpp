@@ -5,8 +5,6 @@
 #include "Engine.hpp"
 
 int main(int argc, char *argv[]) {
-    std::cout << "CMake test" << '\n';
-
     Engine engine;
 
     return 0;
