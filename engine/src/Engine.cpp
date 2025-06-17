@@ -1,6 +1,7 @@
 #include "Engine.hpp"
 
 #include <iostream>
+#include <string>
 
 #include "board/Board.hpp"
 
@@ -18,7 +19,7 @@ Engine::~Engine() {
 // * ---------------------------------- [ PRIVATE METHODS ] ----------------------------------- * //
 
 void Engine::printASCIIBoard() {
-    const char pieceChars[] = {'♚', '♛', '♝', '♞', '♜', '♟', '♔', '♕', '♗', '♘', '♖', '♙'};
+    const std::string pieceChars[] = {"♚", "♛", "♝", "♞", "♜", "♟", "♔", "♕", "♗", "♘", "♖", "♙"};
     
     for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {
