@@ -1,7 +1,6 @@
 #include "Engine.hpp"
 
 #include <iostream>
-#include <string>
 
 #include "board/Board.hpp"
 
@@ -19,16 +18,16 @@ Engine::~Engine() {
 // * ---------------------------------- [ PRIVATE METHODS ] ----------------------------------- * //
 
 void Engine::printASCIIBoard() {
-    const std::string ascii[] = {"KI", "QU", "BI", "KN", "RO", "PA", "ki", "qu", "bi", "kn", "ro", "pa"};
+    const char pieceChars[] = {'♚', '♛', '♝', '♞', '♜', '♟', '♔', '♕', '♗', '♘', '♖', '♙'};
     
     for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {
             PieceType type = board->getType((SquareIndex)(8*file+rank));
 
             if (type == 14)
-                std::cout << "[]" << '\t';
+                std::cout << "o" << ' ';
             else
-                std::cout << ascii[(int)type] << '\t';
+                std::cout << pieceChars[(int)type] << ' ';
         }
         std::cout << '\n';
     }
