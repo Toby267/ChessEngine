@@ -48,7 +48,7 @@ public:
     ~Board();
 
     //getters/setters
-    PieceType getType(SquareIndex index);
+    PieceType getType(const SquareIndex index);
 
     //public methods
     void makeMove();
@@ -58,17 +58,17 @@ public:
 
 private:
     //private methods
-    void addPiece(PieceType type, SquareIndex index);
-    void removePiece(PieceType type, SquareIndex index);
-    void togglePiece(PieceType type, SquareIndex index);
+    void addPiece(const PieceType type, const SquareIndex index);
+    void removePiece(const PieceType type, const SquareIndex index);
+    void togglePiece(const PieceType type, const SquareIndex index);
 
-    void printBitBoard(PieceType board);
-    void printBitBoardHex(PieceType board);
+    void printBitBoard(const PieceType board);
+    void printBitBoardHex(const PieceType board);
 
     void setupDefaultBoard();
 
     //helper methods
-    bool isWhite(SquareIndex index);
-    bool isBlack(SquareIndex index);
-    bool hasPiece(SquareIndex index);
+    bool isWhite(const SquareIndex index);
+    bool isBlack(const SquareIndex index);
+    bool hasPiece(const SquareIndex index);
 };
