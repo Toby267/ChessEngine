@@ -47,7 +47,7 @@ public:
     Board();
     ~Board();
 
-    //getters
+    //getters/setters
     PieceType getType(SquareIndex index);
 
     //public methods
@@ -63,6 +63,7 @@ private:
     void togglePiece(PieceType type, SquareIndex index);
 
     void printBitBoard(PieceType board);
+    void printBitBoardHex(PieceType board);
 
     void setupDefaultBoard();
 

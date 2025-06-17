@@ -1,12 +1,8 @@
-/*
-    use LSR mapping
-    use the same endian as this machine - little endian (i.e.: 1, 2, 4, 8, ...)
-*/
-
 #include "board/Board.hpp"
 
 #include <iostream>
 #include <bitset>
+#include <inttypes.h>
 
 #include "board/Move.hpp"
 
@@ -22,7 +18,6 @@ Board::~Board() {
 
 // * ---------------------------------- [ GETTERS/SETTERS ] ---------------------------------- * //
 
-//TODO: test this
 PieceType Board::getType(SquareIndex index) {
     if (isWhite(index)) {
         for (int i = 0; i < 6; i++) {
@@ -57,6 +52,7 @@ void Board::setupBoard() {
 
 // * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
 
+//To move a piece at index 5 up by 1 square, I reomve it from index 5, and add a piece at index 5+8 as per the compass rose on chessprogramming.org 
 void Board::addPiece(PieceType type, SquareIndex index) {
     bitBoards[type] |= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] |= (1ULL << index);
@@ -73,22 +69,36 @@ void Board::togglePiece(PieceType type, SquareIndex index) {
 void Board::printBitBoard(PieceType board) {
     std::cout << std::bitset<64>(bitBoards[board]) << '\n';
 }
+void Board::printBitBoardHex(PieceType board) {
+    printf("0x%016llx\n", bitBoards[board]);
+}
 
-void Board::setupDefaultBoard() {
-    //TODO: this
+void Board::setupDefaultBoard() {    
+    bitBoards[PieceType::WHITE_PIECES]  = 0x0303030303030303;
+    bitBoards[PieceType::WHITE_KING]    = 0x0000000100000000;
+    bitBoards[PieceType::WHITE_QUEEN]   = 0x0000000001000000;
+    bitBoards[PieceType::WHITE_BISHOP]  = 0x0000010000010000;
+    bitBoards[PieceType::WHITE_KNIGHT]  = 0x0001000000000100;
+    bitBoards[PieceType::WHITE_ROOK]    = 0x0100000000000001;
+    bitBoards[PieceType::WHITE_PAWN]    = 0x0202020202020202;
+
+    bitBoards[PieceType::BLACK_PIECES]  = 0xc0c0c0c0c0c0c0c0;
+    bitBoards[PieceType::BLACK_KING]    = 0x0000008000000000;
+    bitBoards[PieceType::BLACK_QUEEN]   = 0x0000000080000000;
+    bitBoards[PieceType::BLACK_BISHOP]  = 0x0000800000800000;
+    bitBoards[PieceType::BLACK_KNIGHT]  = 0x0080000000008000;
+    bitBoards[PieceType::BLACK_ROOK]    = 0x8000000000000080;
+    bitBoards[PieceType::BLACK_PAWN]    = 0x4040404040404040;
 }
 
 // * ---------------------------------- [ HELPER METHODS ] ---------------------------------- * //
 
-//TODO: test this
 bool Board::hasPiece(SquareIndex index) {
     return (bitBoards[WHITE_PIECES] | bitBoards[BLACK_PIECES]) & (1ULL << index);
 }
-//TODO: test this
 bool Board::isWhite(SquareIndex index) {
     return bitBoards[WHITE_PIECES] & (1ULL << index);
 }
-//TODO: test this
 bool Board::isBlack(SquareIndex index) {
     return bitBoards[BLACK_PIECES] & (1ULL << index);
 }
