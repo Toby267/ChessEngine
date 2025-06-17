@@ -94,11 +94,11 @@ void Board::setupDefaultBoard() {
 // * ---------------------------------- [ HELPER METHODS ] ---------------------------------- * //
 
 bool Board::hasPiece(SquareIndex index) {
-    return (bitBoards[WHITE_PIECES] | bitBoards[BLACK_PIECES]) & (1ULL << index);
+    return (bitBoards[PieceType::WHITE_PIECES] | bitBoards[PieceType::BLACK_PIECES]) & (1ULL << index);
 }
 bool Board::isWhite(SquareIndex index) {
-    return bitBoards[WHITE_PIECES] & (1ULL << index);
+    return bitBoards[PieceType::WHITE_PIECES] & (1ULL << index);
 }
 bool Board::isBlack(SquareIndex index) {
-    return bitBoards[BLACK_PIECES] & (1ULL << index);
+    return bitBoards[PieceType::BLACK_PIECES] & (1ULL << index);
 }
