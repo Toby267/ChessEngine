@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <bitset>
+#include <string>
 #include <inttypes.h>
 
 #include "board/Move.hpp"
@@ -93,8 +94,34 @@ void Board::unMakeMove(const Move& move) {
     }
 }
 
-void Board::setupBoard() {
+void Board::setupBoard(const std::string& FEN) {
     //TODO: this
+    /*
+        definitely needs 1, 3, and 4
+        will probabably store 5 but this may be stored in Engine.cpp
+        2 will be stored in Engine.cpp
+        and 6 is useless
+    */
+
+    const std::string fenChars = "KQBNRPkqbnrp";
+
+    int i;
+    for (i = 0; i < FEN.length(); i++) {
+        if (FEN[i] == ' ') break; //has read all of 1
+
+        size_t index = fenChars.find(FEN[i]);
+
+        if (index == -1) {
+            i += (int)FEN[i];
+            //should it be += (int)FEN[i] -1 because it will increase in the loop?
+        }
+        else {
+            addPiece((PieceType)index, (SquareIndex)(((uint64_t)i)^0x38));
+        }
+    }
+    for (; i < FEN.length(); i++) {
+        //we're now talking about 2
+    }
 }
 
 void Board::printBitBoard(PieceType board) {

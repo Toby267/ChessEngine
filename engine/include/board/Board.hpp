@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 #include <board/BoardEnums.hpp>
 #include <board/Move.hpp>
@@ -25,7 +26,7 @@ public:
     void makeMove(const Move& move);
     void unMakeMove(const Move& move);
 
-    void setupBoard();
+    void setupBoard(const std::string& FEN);
 
     void printBitBoard(PieceType board);
     void printBitBoardHex(PieceType board);

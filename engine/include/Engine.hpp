@@ -4,7 +4,7 @@
 
 class Engine {
 private:
-    Board *board;
+    Board* board;
 
 public:
     //constructors/destructor
