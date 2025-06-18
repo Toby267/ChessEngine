@@ -108,14 +108,17 @@ void Board::printBitBoardHex(PieceType board) {
 
 //To move a piece at index 5 up by 1 square, I reomve it from index 5, and add a piece at index 5+8 as per the compass rose on chessprogramming.org 
 void Board::addPiece(PieceType type, SquareIndex index) {
+    if (type == PieceType::INVALID) return;
     bitBoards[type] |= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] |= (1ULL << index);
 }
 void Board::removePiece(PieceType type, SquareIndex index) {
+    if (type == PieceType::INVALID) return;
     bitBoards[type] &= ~(1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] &= ~(1ULL << index);
 }
 void Board::togglePiece(PieceType type, SquareIndex index) {
+    if (type == PieceType::INVALID) return;
     bitBoards[type] ^= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] ^= (1ULL << index);
 }

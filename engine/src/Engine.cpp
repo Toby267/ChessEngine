@@ -11,12 +11,15 @@ Engine::Engine() {
     board = new Board();
     printASCIIBoard();
 
-    Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a1, SquareIndex::c7, PieceType::WHITE_ROOK, PieceType::BLACK_PAWN}};
+    Move myMove1 = {.flag=MoveType::NORMAL,     .normalMove=NormalMove          {SquareIndex::a1, SquareIndex::c7, PieceType::WHITE_ROOK, PieceType::BLACK_PAWN}};
+    Move myMove2 = {.flag=MoveType::PROMOTION,  .promotionMove=PromotionMove    {SquareIndex::a1, SquareIndex::c7, PieceType::WHITE_ROOK, PieceType::WHITE_QUEEN, PieceType::INVALID}};
+    Move myMove3 = {.flag=MoveType::EN_PASSANT, .enPassantMove=EnPassantMove    {SquareIndex::a1, SquareIndex::c7, PieceType::WHITE_ROOK, SquareIndex::a7, PieceType::BLACK_PAWN}};
+    Move myMove4 = {.flag=MoveType::CASTLE,     .castleMove=CastleMove          {SquareIndex::a1, SquareIndex::c5, PieceType::WHITE_ROOK, SquareIndex::b1, SquareIndex::d5, PieceType::WHITE_KNIGHT}};
     
-    board->makeMove(myMove);
+    board->makeMove(myMove4);
     printASCIIBoard();
     
-    board->makeMove(myMove);
+    board->makeMove(myMove4);
     printASCIIBoard();
 }
 
