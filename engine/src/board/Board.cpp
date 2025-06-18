@@ -40,8 +40,7 @@ PieceType Board::getType(SquareIndex index) {
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
 
 void Board::makeMove(const Move& move) {
-    //TODO: test this
-    switch (move.normalMove.flag) {
+    switch (move.flag) {
         case MoveType::CASTLE:
             togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryStartPos);
             togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryEndPos);
@@ -49,24 +48,27 @@ void Board::makeMove(const Move& move) {
             togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryEndPos);
             break;
         case MoveType::EN_PASSANT:
+            togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);    
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
-            togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
             break;
         case MoveType::PROMOTION:
+            togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
             break;
         case MoveType::NORMAL:
+            togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
+            //set can castle flags if the king or a rook has moved
             break;
     }
-
+    //set flags for things like check, etc
 }
 void Board::unMakeMove(const Move& move) {
     //surely this will need to differ from makeMove() at some point, right?
-    switch (move.normalMove.flag) {
+    switch (move.flag) {
         case MoveType::CASTLE:
             togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryStartPos);
             togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryEndPos);
@@ -79,10 +81,12 @@ void Board::unMakeMove(const Move& move) {
             togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
             break;
         case MoveType::PROMOTION:
+            togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
             break;
         case MoveType::NORMAL:
+            togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
             break;
@@ -91,6 +95,13 @@ void Board::unMakeMove(const Move& move) {
 
 void Board::setupBoard() {
     //TODO: this
+}
+
+void Board::printBitBoard(PieceType board) {
+    std::cout << std::bitset<64>(bitBoards[board]) << '\n';
+}
+void Board::printBitBoardHex(PieceType board) {
+    printf("0x%016llx\n", bitBoards[board]);
 }
 
 // * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
@@ -107,13 +118,6 @@ void Board::removePiece(PieceType type, SquareIndex index) {
 void Board::togglePiece(PieceType type, SquareIndex index) {
     bitBoards[type] ^= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] ^= (1ULL << index);
-}
-
-void Board::printBitBoard(PieceType board) {
-    std::cout << std::bitset<64>(bitBoards[board]) << '\n';
-}
-void Board::printBitBoardHex(PieceType board) {
-    printf("0x%016llx\n", bitBoards[board]);
 }
 
 void Board::setupDefaultBoard() {    

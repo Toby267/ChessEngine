@@ -10,6 +10,14 @@
 Engine::Engine() {
     board = new Board();
     printASCIIBoard();
+
+    Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a1, SquareIndex::c7, PieceType::WHITE_ROOK, PieceType::BLACK_PAWN}};
+    
+    board->makeMove(myMove);
+    printASCIIBoard();
+    
+    board->makeMove(myMove);
+    printASCIIBoard();
 }
 
 Engine::~Engine() {
@@ -32,4 +40,6 @@ void Engine::printASCIIBoard() {
         }
         std::cout << '\n';
     }
+
+    std::cout << '\n';
 }

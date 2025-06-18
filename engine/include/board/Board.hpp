@@ -27,14 +27,14 @@ public:
 
     void setupBoard();
 
+    void printBitBoard(PieceType board);
+    void printBitBoardHex(PieceType board);
+
 private:
     //private methods
     void addPiece(PieceType type, SquareIndex index);
     void removePiece(PieceType type, SquareIndex index);
     void togglePiece(PieceType type, SquareIndex index);
-
-    void printBitBoard(PieceType board);
-    void printBitBoardHex(PieceType board);
 
     void setupDefaultBoard();
 
