@@ -16,6 +16,7 @@ private:
 
 public:
     //constructors/destructor
+    Board(const std::string& FEN);
     Board();
     ~Board();
 

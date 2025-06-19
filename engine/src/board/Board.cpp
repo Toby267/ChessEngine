@@ -9,6 +9,10 @@
 
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 
+Board::Board(const std::string& FEN) {
+    setupBoard(FEN);
+}
+
 Board::Board() {
     setupDefaultBoard();
 }
@@ -102,25 +106,26 @@ void Board::setupBoard(const std::string& FEN) {
         2 will be stored in Engine.cpp
         and 6 is useless
     */
+    std::cout << FEN << '\n';
 
     const std::string fenChars = "KQBNRPkqbnrp";
 
-    int i;
-    for (i = 0; i < FEN.length(); i++) {
-        if (FEN[i] == ' ') break; //has read all of 1
-
+    for (int i = 0, file = -1, rank = 7; i < FEN.length(); i++) {
+        if (FEN[i] == ' ') break;
+        
         size_t index = fenChars.find(FEN[i]);
+        file++;
 
-        if (index == -1) {
-            i += (int)FEN[i];
-            //should it be += (int)FEN[i] -1 because it will increase in the loop?
+        if (FEN[i] == '/') {
+            rank--;
+            file = -1;
+        }
+        else if (index == -1) {
+            file += FEN[i] - '0' - 1;
         }
         else {
-            addPiece((PieceType)index, (SquareIndex)(((uint64_t)i)^0x38));
+            addPiece((PieceType)index, (SquareIndex)(8*file+rank));
         }
-    }
-    for (; i < FEN.length(); i++) {
-        //we're now talking about 2
     }
 }
 

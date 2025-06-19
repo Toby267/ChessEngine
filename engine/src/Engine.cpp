@@ -8,7 +8,7 @@
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 
 Engine::Engine() {
-    board = new Board();
+    board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     printASCIIBoard();
 
     Move myMove1 = {.flag=MoveType::NORMAL,     .normalMove=NormalMove          {SquareIndex::a1, SquareIndex::c7, PieceType::WHITE_ROOK, PieceType::BLACK_PAWN}};
