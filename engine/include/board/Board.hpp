@@ -24,22 +24,24 @@ public:
 
     //getters/setters
     PieceType getType(SquareIndex index);
-    void setRookCastleable(SquareIndex square, bool val);
-    void setEnPassantSquare(SquareIndex square);
-    void setEnPassantSquareOff();
 
     //public methods
     void makeMove(const Move& move);
     void unMakeMove(const Move& move);
 
-    void setupDefaultBoard();
+    void setDefaultBoard();
+    void resetBoard();
 
-    void addPiece(PieceType type, SquareIndex index);
-    void removePiece(PieceType type, SquareIndex index);
-    void togglePiece(PieceType type, SquareIndex index);
+    void parseFen(const std::string& FEN);
+
+    void printDebugData();
 
 private:
     //private methods
+    void addPiece(PieceType type, SquareIndex index);
+    void removePiece(PieceType type, SquareIndex index);
+    void togglePiece(PieceType type, SquareIndex index);    
+
     void printBitBoard(PieceType board);
     void printBitBoardHex(PieceType board);
 

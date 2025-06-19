@@ -38,30 +38,6 @@ PieceType Board::getType(SquareIndex index) {
     return PieceType::INVALID;
 }
 
-void Board::setRookCastleable(SquareIndex square, bool val) {
-    switch (square) {
-        case SquareIndex::a1:
-            whiteCastleQueen = val;
-            break;
-        case SquareIndex::h1:
-            whiteCastleKing = val;
-            break;
-        case SquareIndex::a8:
-            blackCastleQueen = val;
-            break;
-        case SquareIndex::h8:
-            blackCastleKing = val;
-            break;
-    }
-}
-
-void Board::setEnPassantSquare(SquareIndex square) {
-    enPassantSquare = square;
-}
-void Board::setEnPassantSquareOff() {
-    enPassantSquare = std::nullopt;
-}
-
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
 
 void Board::makeMove(const Move& move) {
@@ -118,7 +94,7 @@ void Board::unMakeMove(const Move& move) {
     }
 }
 
-void Board::setupDefaultBoard() {
+void Board::setDefaultBoard() {
     enPassantSquare = std::nullopt;
 
     whiteCastleKing = true, whiteCastleQueen = true;
@@ -140,8 +116,88 @@ void Board::setupDefaultBoard() {
     bitBoards[PieceType::BLACK_ROOK]    = 0x8000000000000080;
     bitBoards[PieceType::BLACK_PAWN]    = 0x4040404040404040;
 }
+void Board::resetBoard() {
+    enPassantSquare = std::nullopt;
+
+    whiteCastleKing = false, whiteCastleQueen = false;
+    blackCastleKing = false, blackCastleQueen = false;
+    
+    bitBoards[PieceType::WHITE_PIECES]  = 0x0000000000000000;
+    bitBoards[PieceType::WHITE_KING]    = 0x0000000000000000;
+    bitBoards[PieceType::WHITE_QUEEN]   = 0x0000000000000000;
+    bitBoards[PieceType::WHITE_BISHOP]  = 0x0000000000000000;
+    bitBoards[PieceType::WHITE_KNIGHT]  = 0x0000000000000000;
+    bitBoards[PieceType::WHITE_ROOK]    = 0x0000000000000000;
+    bitBoards[PieceType::WHITE_PAWN]    = 0x0000000000000000;
+
+    bitBoards[PieceType::BLACK_PIECES]  = 0x0000000000000000;
+    bitBoards[PieceType::BLACK_KING]    = 0x0000000000000000;
+    bitBoards[PieceType::BLACK_QUEEN]   = 0x0000000000000000;
+    bitBoards[PieceType::BLACK_BISHOP]  = 0x0000000000000000;
+    bitBoards[PieceType::BLACK_KNIGHT]  = 0x0000000000000000;
+    bitBoards[PieceType::BLACK_ROOK]    = 0x0000000000000000;
+    bitBoards[PieceType::BLACK_PAWN]    = 0x0000000000000000;
+}
+
+void Board::parseFen(const std::string& FEN) {
+    resetBoard();
+
+    const std::string fenChars = "KQBNRPkqbnrp";
+    int i = 0;
+
+    //parses the first part of the FEN
+    for (int file = -1, rank = 7; i < FEN.length(); i++) {
+        if (FEN[i] == ' ') break;
+        
+        size_t index = fenChars.find(FEN[i]);
+        file++;
+
+        if (FEN[i] == '/') {
+            rank--;
+            file = -1;
+        }
+        else if (index == -1) {
+            file += FEN[i] - '1'; //'0'-1
+        }
+        else {
+            addPiece((PieceType)index, (SquareIndex)(8*file+rank));
+        }
+    }
+
+    //skips the second part of the FEN
+    for (i++; i < FEN.length() && FEN[i] != ' '; i++)
+        ;
+
+    //parses the third part of the FEN
+    for (i++; i < FEN.length(); i++) {
+        if (FEN[i] == ' ') break;
+
+        if      (FEN[i] == 'K') whiteCastleKing     = true;
+        else if (FEN[i] == 'Q') whiteCastleQueen    = true;
+        else if (FEN[i] == 'k') blackCastleKing     = true;
+        else if (FEN[i] == 'q') blackCastleQueen    = true;
+    }
+
+    //parses the fourth part of the FEN
+    if (FEN[++i] != '-') {
+        int squareIndex = 8 * (FEN[i] - 'a') + FEN[i+1] - '1';
+        enPassantSquare = (SquareIndex)squareIndex;
+    }
+}
+
+void Board::printDebugData() {
+    std::cout << whiteCastleKing << whiteCastleQueen << blackCastleKing << blackCastleQueen << '\n';
+    if (enPassantSquare.has_value())
+        std::cout << enPassantSquare.value() << '\n';
+    else
+        std::cout << '-' << '\n';
+}
 
 //To move a piece at index 5 up by 1 square, I reomve it from index 5, and add a piece at index 5+8 as per the compass rose on chessprogramming.org 
+
+
+// * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
+
 void Board::addPiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] |= (1ULL << index);
@@ -157,8 +213,6 @@ void Board::togglePiece(PieceType type, SquareIndex index) {
     bitBoards[type] ^= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] ^= (1ULL << index);
 }
-
-// * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
 
 void Board::printBitBoard(PieceType board) {
     std::cout << std::bitset<64>(bitBoards[board]) << '\n';
