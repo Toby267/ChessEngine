@@ -9,12 +9,8 @@
 
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 
-Board::Board(const std::string& FEN) {
-    setupBoard(FEN);
-}
-
 Board::Board() {
-    setupDefaultBoard();
+
 }
 
 Board::~Board() {
@@ -40,6 +36,30 @@ PieceType Board::getType(SquareIndex index) {
     }
     
     return PieceType::INVALID;
+}
+
+void Board::setRookCastleable(SquareIndex square, bool val) {
+    switch (square) {
+        case SquareIndex::a1:
+            whiteCastleQueen = val;
+            break;
+        case SquareIndex::h1:
+            whiteCastleKing = val;
+            break;
+        case SquareIndex::a8:
+            blackCastleQueen = val;
+            break;
+        case SquareIndex::h8:
+            blackCastleKing = val;
+            break;
+    }
+}
+
+void Board::setEnPassantSquare(SquareIndex square) {
+    enPassantSquare = square;
+}
+void Board::setEnPassantSquareOff() {
+    enPassantSquare = std::nullopt;
 }
 
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
@@ -98,45 +118,28 @@ void Board::unMakeMove(const Move& move) {
     }
 }
 
-void Board::setupBoard(const std::string& FEN) {
-    //TODO: this
-    /*
-        definitely needs 1, 3, and 4
-        will probabably store 5 but this may be stored in Engine.cpp
-        2 will be stored in Engine.cpp
-        and 6 is useless
-    */
-    std::cout << FEN << '\n';
+void Board::setupDefaultBoard() {
+    enPassantSquare = std::nullopt;
 
-    const std::string fenChars = "KQBNRPkqbnrp";
+    whiteCastleKing = true, whiteCastleQueen = true;
+    blackCastleKing = true, blackCastleQueen = true;
+    
+    bitBoards[PieceType::WHITE_PIECES]  = 0x0303030303030303;
+    bitBoards[PieceType::WHITE_KING]    = 0x0000000100000000;
+    bitBoards[PieceType::WHITE_QUEEN]   = 0x0000000001000000;
+    bitBoards[PieceType::WHITE_BISHOP]  = 0x0000010000010000;
+    bitBoards[PieceType::WHITE_KNIGHT]  = 0x0001000000000100;
+    bitBoards[PieceType::WHITE_ROOK]    = 0x0100000000000001;
+    bitBoards[PieceType::WHITE_PAWN]    = 0x0202020202020202;
 
-    for (int i = 0, file = -1, rank = 7; i < FEN.length(); i++) {
-        if (FEN[i] == ' ') break;
-        
-        size_t index = fenChars.find(FEN[i]);
-        file++;
-
-        if (FEN[i] == '/') {
-            rank--;
-            file = -1;
-        }
-        else if (index == -1) {
-            file += FEN[i] - '0' - 1;
-        }
-        else {
-            addPiece((PieceType)index, (SquareIndex)(8*file+rank));
-        }
-    }
+    bitBoards[PieceType::BLACK_PIECES]  = 0xc0c0c0c0c0c0c0c0;
+    bitBoards[PieceType::BLACK_KING]    = 0x0000008000000000;
+    bitBoards[PieceType::BLACK_QUEEN]   = 0x0000000080000000;
+    bitBoards[PieceType::BLACK_BISHOP]  = 0x0000800000800000;
+    bitBoards[PieceType::BLACK_KNIGHT]  = 0x0080000000008000;
+    bitBoards[PieceType::BLACK_ROOK]    = 0x8000000000000080;
+    bitBoards[PieceType::BLACK_PAWN]    = 0x4040404040404040;
 }
-
-void Board::printBitBoard(PieceType board) {
-    std::cout << std::bitset<64>(bitBoards[board]) << '\n';
-}
-void Board::printBitBoardHex(PieceType board) {
-    printf("0x%016llx\n", bitBoards[board]);
-}
-
-// * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
 
 //To move a piece at index 5 up by 1 square, I reomve it from index 5, and add a piece at index 5+8 as per the compass rose on chessprogramming.org 
 void Board::addPiece(PieceType type, SquareIndex index) {
@@ -155,22 +158,13 @@ void Board::togglePiece(PieceType type, SquareIndex index) {
     bitBoards[type <= 5 ? 12 : 13] ^= (1ULL << index);
 }
 
-void Board::setupDefaultBoard() {    
-    bitBoards[PieceType::WHITE_PIECES]  = 0x0303030303030303;
-    bitBoards[PieceType::WHITE_KING]    = 0x0000000100000000;
-    bitBoards[PieceType::WHITE_QUEEN]   = 0x0000000001000000;
-    bitBoards[PieceType::WHITE_BISHOP]  = 0x0000010000010000;
-    bitBoards[PieceType::WHITE_KNIGHT]  = 0x0001000000000100;
-    bitBoards[PieceType::WHITE_ROOK]    = 0x0100000000000001;
-    bitBoards[PieceType::WHITE_PAWN]    = 0x0202020202020202;
+// * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
 
-    bitBoards[PieceType::BLACK_PIECES]  = 0xc0c0c0c0c0c0c0c0;
-    bitBoards[PieceType::BLACK_KING]    = 0x0000008000000000;
-    bitBoards[PieceType::BLACK_QUEEN]   = 0x0000000080000000;
-    bitBoards[PieceType::BLACK_BISHOP]  = 0x0000800000800000;
-    bitBoards[PieceType::BLACK_KNIGHT]  = 0x0080000000008000;
-    bitBoards[PieceType::BLACK_ROOK]    = 0x8000000000000080;
-    bitBoards[PieceType::BLACK_PAWN]    = 0x4040404040404040;
+void Board::printBitBoard(PieceType board) {
+    std::cout << std::bitset<64>(bitBoards[board]) << '\n';
+}
+void Board::printBitBoardHex(PieceType board) {
+    printf("0x%016llx\n", bitBoards[board]);
 }
 
 // * ---------------------------------- [ HELPER METHODS ] ---------------------------------- * //

@@ -29,5 +29,5 @@ enum PieceType {
     WHITE_PIECES,
     BLACK_PIECES,
 
-    INVALID
+    INVALID = -1
 };
