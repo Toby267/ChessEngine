@@ -40,6 +40,7 @@ struct CastleMove {
     SquareIndex secondaryEndPos;
     PieceType secondaryPieceType;
 };
+
 struct Move {
     MoveType flag;
     union {

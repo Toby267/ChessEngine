@@ -10,7 +10,7 @@
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 
 Board::Board() {
-
+    setDefaultBoard();
 }
 
 Board::~Board() {
@@ -19,6 +19,11 @@ Board::~Board() {
 
 // * ---------------------------------- [ GETTERS/SETTERS ] ---------------------------------- * //
 
+/**
+ * Returns the type of piece stored at the given index
+ * 
+ * @param index the index of said piece
+ */
 PieceType Board::getType(SquareIndex index) {
     if (isWhite(index)) {
         for (int i = 0; i < 6; i++) {
@@ -40,6 +45,11 @@ PieceType Board::getType(SquareIndex index) {
 
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
 
+/**
+ * Logic for making a move on the bitboards, and setting relevent flags
+ * 
+ * @param move the move to be made
+ */
 void Board::makeMove(const Move& move) {
     switch (move.flag) {
         case MoveType::CASTLE:
@@ -67,6 +77,11 @@ void Board::makeMove(const Move& move) {
     }
     //set flags for things like check, etc
 }
+/**
+ * Logic for unmaking a move on the bitboards, and unsetting relevent flags
+ * 
+ * @param move the move to be unmade
+ */
 void Board::unMakeMove(const Move& move) {
     //surely this will need to differ from makeMove() at some point, right?
     switch (move.flag) {
@@ -94,6 +109,9 @@ void Board::unMakeMove(const Move& move) {
     }
 }
 
+/**
+ * Sets up the board in its starting position
+ */
 void Board::setDefaultBoard() {
     enPassantSquare = std::nullopt;
 
@@ -116,29 +134,24 @@ void Board::setDefaultBoard() {
     bitBoards[PieceType::BLACK_ROOK]    = 0x8000000000000080;
     bitBoards[PieceType::BLACK_PAWN]    = 0x4040404040404040;
 }
+/**
+ * Resets the board back to its initial/default state
+ */
 void Board::resetBoard() {
     enPassantSquare = std::nullopt;
 
     whiteCastleKing = false, whiteCastleQueen = false;
     blackCastleKing = false, blackCastleQueen = false;
-    
-    bitBoards[PieceType::WHITE_PIECES]  = 0x0000000000000000;
-    bitBoards[PieceType::WHITE_KING]    = 0x0000000000000000;
-    bitBoards[PieceType::WHITE_QUEEN]   = 0x0000000000000000;
-    bitBoards[PieceType::WHITE_BISHOP]  = 0x0000000000000000;
-    bitBoards[PieceType::WHITE_KNIGHT]  = 0x0000000000000000;
-    bitBoards[PieceType::WHITE_ROOK]    = 0x0000000000000000;
-    bitBoards[PieceType::WHITE_PAWN]    = 0x0000000000000000;
 
-    bitBoards[PieceType::BLACK_PIECES]  = 0x0000000000000000;
-    bitBoards[PieceType::BLACK_KING]    = 0x0000000000000000;
-    bitBoards[PieceType::BLACK_QUEEN]   = 0x0000000000000000;
-    bitBoards[PieceType::BLACK_BISHOP]  = 0x0000000000000000;
-    bitBoards[PieceType::BLACK_KNIGHT]  = 0x0000000000000000;
-    bitBoards[PieceType::BLACK_ROOK]    = 0x0000000000000000;
-    bitBoards[PieceType::BLACK_PAWN]    = 0x0000000000000000;
+    for (uint64_t& board : bitBoards)
+        board = 0;
 }
 
+/**
+ * Parses a given fen, storing relevent information
+ * 
+ * @param FEN the fen that is to be parsed
+*/
 void Board::parseFen(const std::string& FEN) {
     resetBoard();
 
@@ -185,6 +198,9 @@ void Board::parseFen(const std::string& FEN) {
     }
 }
 
+/**
+ * Prints debug data for use during development
+ */
 void Board::printDebugData() {
     std::cout << whiteCastleKing << whiteCastleQueen << blackCastleKing << blackCastleQueen << '\n';
     if (enPassantSquare.has_value())
@@ -193,42 +209,47 @@ void Board::printDebugData() {
         std::cout << '-' << '\n';
 }
 
-//To move a piece at index 5 up by 1 square, I reomve it from index 5, and add a piece at index 5+8 as per the compass rose on chessprogramming.org 
-
-
 // * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
 
+//adds a piece to a given square
 void Board::addPiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] |= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] |= (1ULL << index);
 }
+//removes a piece to a given square
 void Board::removePiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] &= ~(1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] &= ~(1ULL << index);
 }
+//toggles a piece in a given square
 void Board::togglePiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] ^= (1ULL << index);
     bitBoards[type <= 5 ? 12 : 13] ^= (1ULL << index);
 }
 
-void Board::printBitBoard(PieceType board) {
+//prints the bitboard in binary
+void Board::printBitBoardBin(PieceType board) {
     std::cout << std::bitset<64>(bitBoards[board]) << '\n';
 }
+//prints the bitboard in hex
 void Board::printBitBoardHex(PieceType board) {
     printf("0x%016llx\n", bitBoards[board]);
 }
 
 // * ---------------------------------- [ HELPER METHODS ] ---------------------------------- * //
 
+//returns true if the given square has a piece
 bool Board::hasPiece(SquareIndex index) {
     return (bitBoards[PieceType::WHITE_PIECES] | bitBoards[PieceType::BLACK_PIECES]) & (1ULL << index);
 }
+//returns true if the given square has a white piece
 bool Board::isWhite(SquareIndex index) {
     return bitBoards[PieceType::WHITE_PIECES] & (1ULL << index);
 }
+//returns true if the given square has a black piece
 bool Board::isBlack(SquareIndex index) {
     return bitBoards[PieceType::BLACK_PIECES] & (1ULL << index);
 }

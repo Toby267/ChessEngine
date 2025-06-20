@@ -7,9 +7,10 @@
 
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 
+/**
+ * Defualt constructor, takes no arguments and sets up default values for the engine
+ */
 Engine::Engine() {
-    board = new Board();
-
     board->setDefaultBoard();
     printASCIIBoard();
     std::cout << whiteTurn << '\n';
@@ -39,6 +40,10 @@ Engine::Engine() {
     std::cout << whiteTurn << '\n';
     board->printDebugData();
     std::cout << drawMoveCounter << '\n';
+
+    board->resetBoard();
+    printASCIIBoard();
+    board->printDebugData();
 }
 
 Engine::~Engine() {
@@ -47,6 +52,11 @@ Engine::~Engine() {
 
 // * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
 
+/**
+ * Parses a given fen, storing relevent information here, and passing it to the board to parse there
+ * 
+ * @param FEN the fen that is to be parsed
+*/
 void Engine::parseFen(const std::string& FEN) {
     std::cout << FEN << '\n';
     
@@ -81,6 +91,9 @@ void Engine::parseFen(const std::string& FEN) {
 
 // * ---------------------------------- [ PRIVATE METHODS ] ----------------------------------- * //
 
+/**
+ * Prints out the board using unicode characters for the chess pieces
+ */
 void Engine::printASCIIBoard() {
     const std::string pieceChars[] = {"o", "♚", "♛", "♝", "♞", "♜", "♟", "♔", "♕", "♗", "♘", "♖", "♙"};
     

@@ -7,15 +7,19 @@
 #include <board/BoardEnums.hpp>
 #include <board/Move.hpp>
 
-/*
-    Stores all 14 bitboards, indexed by the PieceType enum, using Little-Endian File-Rank Mapping/
-    Little-Endian Least-Significant-Rank Mapping as shown in the SquareIndex enum.
-*/
+/**
+ * Class representing the board and its relevent data, with varius functions for managing the board
+ * 
+ * Stores all 14 bitboards, indexed by the PieceType enum, using Little-Endian File-Rank Mapping/
+ * Little-Endian Least-Significant-Rank Mapping as shown in the SquareIndex enum
+ */
 class Board {
 private:
-    uint64_t bitBoards[14];
-    bool whiteCastleKing, whiteCastleQueen, blackCastleKing, blackCastleQueen;
-    std::optional<SquareIndex> enPassantSquare;
+    //attribute default values are as if Board::resetBoard() has been called
+    uint64_t bitBoards[14] = {0};
+    bool whiteCastleKing = false, whiteCastleQueen = false;
+    bool blackCastleKing = false, blackCastleQueen = false;
+    std::optional<SquareIndex> enPassantSquare = std::nullopt;
 
 public:
     //constructors/destructor
@@ -42,7 +46,7 @@ private:
     void removePiece(PieceType type, SquareIndex index);
     void togglePiece(PieceType type, SquareIndex index);    
 
-    void printBitBoard(PieceType board);
+    void printBitBoardBin(PieceType board);
     void printBitBoardHex(PieceType board);
 
     //helper methods
