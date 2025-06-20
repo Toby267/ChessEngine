@@ -18,6 +18,7 @@ public:
     Engine();
     ~Engine();
 
+    //public methods
     void parseFen(const std::string& FEN);
 
 private:
