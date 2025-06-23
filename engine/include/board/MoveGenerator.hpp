@@ -11,6 +11,7 @@
 //     static std::list<Move> generateMoves(const Board& board, bool whiteTurn);
 // };
 
-std::vector<Move> generateMoves(const Board& board, bool whiteTurn);
+//TODO: remember to make const again
+std::vector<Move> generateMoves(Board& board, bool whiteTurn);
 
 void bitScan();

@@ -52,6 +52,13 @@ const std::array<uint64_t, 14>& Board::getBitBoards() const {
     return bitBoards;
 }
 
+/**
+ * Sets a specific bitboard to the given value
+ */
+void Board::setBitBoard(uint64_t val, PieceType type) {
+    bitBoards[type] = val;
+}
+
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
 
 /**

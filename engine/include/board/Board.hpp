@@ -29,6 +29,7 @@ public:
 
     //getters/setters
     const std::array<uint64_t, 14>& getBitBoards() const;
+    void setBitBoard(uint64_t val, PieceType type); //TODO: remove this method
     PieceType getType(SquareIndex index);
 
     //public methods
