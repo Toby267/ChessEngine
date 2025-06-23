@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <optional>
+#include <array>
 
 #include <board/BoardEnums.hpp>
 #include <board/Move.hpp>
@@ -16,7 +17,7 @@
 class Board {
 private:
     //attribute default values are as if Board::resetBoard() has been called
-    uint64_t bitBoards[14] = {0};
+    std::array<uint64_t, 14> bitBoards = {0};
     bool whiteCastleKing = false, whiteCastleQueen = false;
     bool blackCastleKing = false, blackCastleQueen = false;
     std::optional<SquareIndex> enPassantSquare = std::nullopt;
@@ -27,6 +28,7 @@ public:
     ~Board();
 
     //getters/setters
+    const std::array<uint64_t, 14>& getBitBoards() const;
     PieceType getType(SquareIndex index);
 
     //public methods

@@ -45,6 +45,13 @@ PieceType Board::getType(SquareIndex index) {
     return PieceType::INVALID;
 }
 
+/**
+ * Returns a const reference to the bitboards array
+ */
+const std::array<uint64_t, 14>& Board::getBitBoards() const {
+    return bitBoards;
+}
+
 // * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
 
 /**
@@ -204,11 +211,23 @@ void Board::parseFen(const std::string& FEN) {
  * Prints debug data for use during development
  */
 void Board::printDebugData() {
-    std::cout << whiteCastleKing << whiteCastleQueen << blackCastleKing << blackCastleQueen << '\n';
-    if (enPassantSquare.has_value())
-        std::cout << enPassantSquare.value() << '\n';
-    else
-        std::cout << '-' << '\n';
+    printBitBoardHex(PieceType::WHITE_PAWN);
+    printf("0x%016llx\n", northOne(bitBoards[PieceType::WHITE_PAWN]));
+
+    printBitBoardHex(PieceType::WHITE_PAWN);
+    printf("0x%016llx\n", southOne(bitBoards[PieceType::WHITE_PAWN]));
+
+    printBitBoardHex(PieceType::WHITE_PAWN);
+    printf("0x%016llx\n", eastOne(bitBoards[PieceType::WHITE_PAWN]));
+
+    printBitBoardHex(PieceType::WHITE_PAWN);
+    printf("0x%016llx\n", westOne(bitBoards[PieceType::WHITE_PAWN]));
+    
+    // std::cout << whiteCastleKing << whiteCastleQueen << blackCastleKing << blackCastleQueen << '\n';
+    // if (enPassantSquare.has_value())
+    //     std::cout << enPassantSquare.value() << '\n';
+    // else
+    //     std::cout << '-' << '\n';
 }
 
 // * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //

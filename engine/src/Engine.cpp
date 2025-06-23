@@ -4,6 +4,7 @@
 #include <string>
 
 #include "board/Board.hpp"
+#include "board/MoveGenerator.hpp"
 
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 
@@ -11,39 +12,8 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {
-    board->setDefaultBoard();
     printASCIIBoard();
-    std::cout << whiteTurn << '\n';
-    board->printDebugData();
-    std::cout << drawMoveCounter << '\n';
-
-    parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 7 1");
-    printASCIIBoard();
-    std::cout << whiteTurn << '\n';
-    board->printDebugData();
-    std::cout << drawMoveCounter << '\n';
-    
-    parseFen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
-    printASCIIBoard();
-    std::cout << whiteTurn << '\n';
-    board->printDebugData();
-    std::cout << drawMoveCounter << '\n';
-    
-    parseFen("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 50 2");
-    printASCIIBoard();
-    std::cout << whiteTurn << '\n';
-    board->printDebugData();
-    std::cout << drawMoveCounter << '\n';
-
-    parseFen("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b Kq - 1 2");
-    printASCIIBoard();
-    std::cout << whiteTurn << '\n';
-    board->printDebugData();
-    std::cout << drawMoveCounter << '\n';
-
-    board->resetBoard();
-    printASCIIBoard();
-    board->printDebugData();
+    generateMoves(*board, whiteTurn);
 }
 
 Engine::~Engine() {
