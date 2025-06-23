@@ -12,19 +12,7 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {
-    board->parseFen("8/8/8/8/8/8/8/K7 w KQkq - 0 1");
-    generateMoves(*board, whiteTurn);
-    printASCIIBoard();
-
-    board->parseFen("8/8/8/8/8/8/8/7K w KQkq - 0 1");
-    generateMoves(*board, whiteTurn);
-    printASCIIBoard();
-
-    board->parseFen("K7/8/8/8/8/8/8/8 w KQkq - 0 1");
-    generateMoves(*board, whiteTurn);
-    printASCIIBoard();
-
-    board->parseFen("7K/8/8/8/8/8/8/8 w KQkq - 0 1");
+    board->parseFen("8/8/8/4K3/8/8/8/8 w KQkq - 0 1");
     generateMoves(*board, whiteTurn);
     printASCIIBoard();
 }
