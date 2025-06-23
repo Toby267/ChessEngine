@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 enum SquareIndex {
     a1, a2, a3, a4, a5, a6, a7, a8,
     b1, b2, b3, b4, b5, b6, b7, b8,
@@ -31,3 +33,8 @@ enum PieceType {
 
     INVALID = -1
 };
+
+uint64_t eastOne(uint64_t b);
+uint64_t westOne(uint64_t b);
+uint64_t northOne(uint64_t b);
+uint64_t southOne(uint64_t b);
