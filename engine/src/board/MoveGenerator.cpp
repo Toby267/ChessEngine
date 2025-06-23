@@ -34,19 +34,12 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn) {
     //generate knight moves
     //only checks for legal postitions by valid move directions & borders, doesn't check for empty squares or friendly squares or checks
     uint64_t knights = bitBoards[PieceType::WHITE_KING];
-    uint64_t l1 = (knights << 8);
-    uint64_t l2 = (knights << 16);
-    uint64_t r1 = (knights >> 8);
-    uint64_t r2 = (knights >> 16);
-    uint64_t h1 = l1 | r1;
-    uint64_t h2 = l2 | r2;
+    uint64_t h1 = (knights << 8 ) | (knights >> 8 );
+    uint64_t h2 = (knights << 16) | (knights >> 16);
     uint64_t knightAttacks =    (h1<<2) & (0xFCFCFCFCFCFCFCFC) |
                                 (h1>>2) & (0x3F3F3F3F3F3F3F3F) |
                                 (h2<<1) & (0xFEFEFEFEFEFEFEFE) |
                                 (h2>>1) & (0x7F7F7F7F7F7F7F7F) ;
-
-    board.setBitBoard(knightAttacks, PieceType::BLACK_KING);
-    board.setBitBoard(knightAttacks, PieceType::BLACK_PIECES);
 
     //generate pawn moves
         //push per side
