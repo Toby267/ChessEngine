@@ -1,10 +1,12 @@
 #include "board/Board.hpp"
 
+#include <cstdint>
+#include <string>
+#include <optional>
 #include <iostream>
 #include <bitset>
-#include <string>
-#include <inttypes.h>
 
+#include "board/BoardEnums.hpp"
 #include "board/Move.hpp"
 
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
