@@ -34,7 +34,12 @@ enum PieceType {
     INVALID = -1
 };
 
-uint64_t eastOne(uint64_t b);
-uint64_t westOne(uint64_t b);
 uint64_t northOne(uint64_t b);
 uint64_t southOne(uint64_t b);
+uint64_t eastOne(uint64_t b);
+uint64_t westOne(uint64_t b);
+
+uint64_t northEast(uint64_t b);
+uint64_t northWest(uint64_t b);
+uint64_t southEast(uint64_t b);
+uint64_t southWest(uint64_t b);
