@@ -39,7 +39,7 @@ uint64_t southOne(uint64_t b);
 uint64_t eastOne(uint64_t b);
 uint64_t westOne(uint64_t b);
 
-uint64_t northEast(uint64_t b);
-uint64_t northWest(uint64_t b);
-uint64_t southEast(uint64_t b);
-uint64_t southWest(uint64_t b);
+uint64_t northEastOne(uint64_t b);
+uint64_t northWestOne(uint64_t b);
+uint64_t southEastOne(uint64_t b);
+uint64_t southWestOne(uint64_t b);
