@@ -18,9 +18,6 @@ static uint64_t generateRookMoves(SquareIndex square, uint64_t occupied);
 static uint64_t generateBishopMoves(SquareIndex square, uint64_t occupied);
 static uint64_t generateQueenMoves(SquareIndex square, uint64_t occupied);
 
-// * ---------------------------------- [ STATIC ATTRIBUTES ] ----------------------------------- * //
-
-static uint64_t** slidingAttacks = {};
 
 // * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
 
