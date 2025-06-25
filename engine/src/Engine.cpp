@@ -12,8 +12,9 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {
-    board->parseFen("rnbqkbnr/pppppppp/8/8/8/rrrrrrrr/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    //board->parseFen("rnbqkbnr/pppppppp/8/8/8/rrrrrrrr/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     //board->setDefaultBoard();
+    board->resetBoard();
     generateMoves(*board, whiteTurn);
     printASCIIBoard();
 }

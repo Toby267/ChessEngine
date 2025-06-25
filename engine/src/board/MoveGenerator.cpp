@@ -13,6 +13,10 @@ static uint64_t generatePawnPushesBlack(uint64_t pawns, uint64_t empty);
 static uint64_t generatePawnAttacksWhite(uint64_t pawns, uint64_t blackPieces);
 static uint64_t generatePawnAttacksBlack(uint64_t pawns, uint64_t whitePieces);
 
+// * ---------------------------------- [ STATIC ATTRIBUTES ] ----------------------------------- * //
+
+static uint64_t** slidingAttacks = {};
+
 // * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
 
 /**
@@ -30,34 +34,36 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn) {
 
     const uint64_t whitePieces = bitBoards[PieceType::WHITE_PIECES];
     const uint64_t blackPieces = bitBoards[PieceType::BLACK_PIECES];
-    const uint64_t occupied = whiteTurn ? ~whitePieces : ~blackPieces;
+    const uint64_t unoccupied = whiteTurn ? ~whitePieces : ~blackPieces;
     const uint64_t empty    = ~(whitePieces | blackPieces);
 
-    //generate king moves
-    uint64_t kingMoves = generateKingMoves(bitBoards[PieceType::WHITE_KING], occupied);
-    //generate knight moves
-    uint64_t knightMoves = generateKnightMoves(bitBoards[PieceType::WHITE_KNIGHT], occupied);
-
-    //generate pawn moves
-    uint64_t pawnPushes = whiteTurn ?   generatePawnPushesWhite(bitBoards[PieceType::WHITE_PAWN], empty) :
-                                        generatePawnPushesBlack(bitBoards[PieceType::BLACK_PAWN], empty) ;
-
-    uint64_t pawnAttacks = whiteTurn ?  generatePawnAttacksWhite(bitBoards[PieceType::WHITE_PAWN], blackPieces) :
-                                        generatePawnAttacksBlack(bitBoards[PieceType::BLACK_PAWN], whitePieces) ;
-        
-        //pawns set-wise
-        //captures
+    uint64_t kingMoves      = generateKingMoves(bitBoards[PieceType::WHITE_KING], unoccupied);
+    uint64_t knightMoves    = generateKnightMoves(bitBoards[PieceType::WHITE_KNIGHT], unoccupied);
+    uint64_t pawnPushes     = whiteTurn ?   generatePawnPushesWhite(bitBoards[PieceType::WHITE_PAWN], empty) :
+                                            generatePawnPushesBlack(bitBoards[PieceType::BLACK_PAWN], empty) ;
+    uint64_t pawnAttacks    = whiteTurn ?   generatePawnAttacksWhite(bitBoards[PieceType::WHITE_PAWN], blackPieces) :
+                                            generatePawnAttacksBlack(bitBoards[PieceType::BLACK_PAWN], whitePieces) ;
 
     //generate rook moves
     //generate bishop moves
     //generate queen moves
 
 
-    board.setBitBoard(pawnAttacks, PieceType::BLACK_KING);
-    board.setBitBoard(pawnAttacks, PieceType::BLACK_PIECES);
+    uint64_t test = calcSouthEastMask(SquareIndex::d2);
+    board.setBitBoard(test, PieceType::BLACK_KING);
+    board.setBitBoard(test, PieceType::BLACK_PIECES);
 
     return moves;
 }
+
+
+
+
+
+
+
+
+
 
 // * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
 
@@ -80,12 +86,14 @@ static uint64_t generateKnightMoves(uint64_t knights, uint64_t unoccupied) {
     return knightMoves & unoccupied;
 }
 
+//TODO: test this
 static uint64_t generatePawnPushesWhite(uint64_t pawns, uint64_t empty) {
     //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
     uint64_t singlePushes = northOne(pawns) & empty;
     uint64_t doublePushes = northOne(singlePushes) & empty & 0x0808080808080808;
     return singlePushes | doublePushes;
 }
+//TODO: test this
 static uint64_t generatePawnPushesBlack(uint64_t pawns, uint64_t empty) {
     //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
     uint64_t singlePushes = southOne(pawns) & empty;
@@ -93,11 +101,13 @@ static uint64_t generatePawnPushesBlack(uint64_t pawns, uint64_t empty) {
     return singlePushes | doublePushes;
 }
 
+//TODO: test this
 static uint64_t generatePawnAttacksWhite(uint64_t pawns, uint64_t blackPieces) {
     //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
     uint64_t moves = northEastOne(pawns) | northWestOne(pawns);
     return moves & blackPieces;
 }
+//TODO: test this
 static uint64_t generatePawnAttacksBlack(uint64_t pawns, uint64_t whitePieces) {
     //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
     uint64_t moves = southEastOne(pawns) | southWestOne(pawns);

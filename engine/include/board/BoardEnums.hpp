@@ -43,3 +43,14 @@ uint64_t northEastOne(uint64_t b);
 uint64_t northWestOne(uint64_t b);
 uint64_t southEastOne(uint64_t b);
 uint64_t southWestOne(uint64_t b);
+
+
+uint64_t calcNorthMask(SquareIndex square);
+uint64_t calcEastMask(SquareIndex square);
+uint64_t calcSouthMask(SquareIndex square);
+uint64_t calcWestMask(SquareIndex square);
+
+uint64_t calcNorthEastMask(SquareIndex square);
+uint64_t calcNorthWestMask(SquareIndex square);
+uint64_t calcSouthEastMask(SquareIndex square);
+uint64_t calcSouthWestMask(SquareIndex square);
