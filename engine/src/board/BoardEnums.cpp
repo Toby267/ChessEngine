@@ -44,39 +44,51 @@ uint64_t calcWestMask(SquareIndex square) {
     return (uint64_t)(0x0080808080808080) >> (square ^ 63);
 }
 
-uint64_t calcNorthEastMask(SquareIndex square){ 
-    uint64_t diagonal = (uint64_t)(0x8040201008040200) << (uint64_t)square;
 
-    uint64_t mask = 0;
-    for (int i = 0; i < (square & 7) + 1; i++)
-        mask += 0x0101010101010101 << i;
+
+//bug in one or more of the following
+//yay
+
+
+uint64_t calcNorthEastMask(SquareIndex square){ 
+    uint64_t diagonal = (uint64_t)(0x8040201008040201) << (uint64_t)square;
+
+    int n = (square & 7) + 1; //x%8 === x&7
+    uint64_t mask = (uint64_t)0x0101010101010101 * ((1ULL << n) -1);
+
+    return diagonal & ~mask;
+
+    // uint64_t mask = 0;
+    // for (int i = 0; i < (square & 7) + 1; i++)
+    //     mask += 0x0101010101010101 << i;
     
-    return diagonal & -mask;
+    //the used method for the mask is equivalent to the loop as (1ULL << n) -1 is a mask equivalent to a*(2^n -1)
+    //which is what the loop is doing: a*(2^0) + a*(2^1) + a*(2^2) + ... + a*(2^(n-1))
+    //                                  = a*(2^0 + 2^1 + 2^2 + ... + 2^(n-1))
+    //                                  = a*(2^n -1)
+    //where a = 0x0101010101010101ULL
 }
 uint64_t calcNorthWestMask(SquareIndex square){
     uint64_t diagonal = (uint64_t)(0x0102040810204000) >> (square ^ 63);
 
-    uint64_t mask = 0;
-    for (int i = 0; i < (square & 7) + 1; i++)
-        mask += 0x0101010101010101 << i;
+    int n = (square & 7) + 1; //x%8 === x&7
+    uint64_t mask = (uint64_t)0x0101010101010101 * ((1ULL << n) -1);
 
     return diagonal & ~mask;
 }
 uint64_t calcSouthEastMask(SquareIndex square){ 
     uint64_t diagonal = (uint64_t)(0x0102040810204080) << square;
 
-    uint64_t mask = 0;
-    for (int i = 0; i < (square & 7) + 1; i++)
-        mask += 0x0101010101010101 << i;
+    int n = (square & 7) + 1; //x%8 === x&7
+    uint64_t mask = (uint64_t)0x0101010101010101 * ((1ULL << n) -1);
 
     return diagonal & mask;
 }
 uint64_t calcSouthWestMask(SquareIndex square){ 
-    uint64_t diagonal = (uint64_t)(0x8040201008040200) >> (square ^ 63);
+    uint64_t diagonal = (uint64_t)(0x0040201008040201) >> (square ^ 63);
 
-    uint64_t mask = 0;
-    for (int i = 0; i < (square & 7) + 1; i++)
-        mask += 0x0101010101010101 << i;
+    int n = (square & 7) + 1; //x%8 === x&7
+    uint64_t mask = (uint64_t)0x0101010101010101 * ((1ULL << n) -1);
 
     return diagonal & mask;
 }
