@@ -35,15 +35,15 @@ enum PieceType {
 };
 
 //these functions move each piece one unit in the given bitboard in a certain direction
-uint64_t northOne(uint64_t b);
-uint64_t southOne(uint64_t b);
-uint64_t eastOne(uint64_t b);
-uint64_t westOne(uint64_t b);
+uint64_t northOne(uint64_t board);
+uint64_t southOne(uint64_t board);
+uint64_t eastOne(uint64_t board);
+uint64_t westOne(uint64_t board);
 
-uint64_t northEastOne(uint64_t b);
-uint64_t northWestOne(uint64_t b);
-uint64_t southEastOne(uint64_t b);
-uint64_t southWestOne(uint64_t b);
+uint64_t northEastOne(uint64_t board);
+uint64_t northWestOne(uint64_t board);
+uint64_t southEastOne(uint64_t board);
+uint64_t southWestOne(uint64_t board);
 
 //these functions return a mask for each square in a certain direction from the given square, not including the given square
 //should probably move these to the move generater as helper functions

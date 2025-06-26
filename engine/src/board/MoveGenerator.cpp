@@ -84,10 +84,10 @@ static uint64_t generateKnightMoves(uint64_t knights, uint64_t notFriendly) {
     //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
     uint64_t h1 = (knights << 8 ) | (knights >> 8 );
     uint64_t h2 = (knights << 16) | (knights >> 16);
-    uint64_t knightMoves =  (h1<<2) & (0xFCFCFCFCFCFCFCFC) |
-                            (h1>>2) & (0x3F3F3F3F3F3F3F3F) |
-                            (h2<<1) & (0xFEFEFEFEFEFEFEFE) |
-                            (h2>>1) & (0x7F7F7F7F7F7F7F7F) ;
+    uint64_t knightMoves =  (h1<<2) & (0xFCFCFCFCFCFCFCFCULL) |
+                            (h1>>2) & (0x3F3F3F3F3F3F3F3FULL) |
+                            (h2<<1) & (0xFEFEFEFEFEFEFEFEULL) |
+                            (h2>>1) & (0x7F7F7F7F7F7F7F7FULL) ;
     return knightMoves & notFriendly;
 }
 
@@ -96,14 +96,14 @@ static uint64_t generateKnightMoves(uint64_t knights, uint64_t notFriendly) {
 static uint64_t generatePawnPushesWhite(uint64_t pawns, uint64_t unoccupied) {
     //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
     uint64_t singlePushes = northOne(pawns) & unoccupied;
-    uint64_t doublePushes = northOne(singlePushes) & unoccupied & 0x0808080808080808;
+    uint64_t doublePushes = northOne(singlePushes) & unoccupied & 0x0808080808080808ULL;
     return singlePushes | doublePushes;
 }
 
 static uint64_t generatePawnPushesBlack(uint64_t pawns, uint64_t unoccupied) {
     //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
     uint64_t singlePushes = southOne(pawns) & unoccupied;
-    uint64_t doublePushes = southOne(singlePushes) & unoccupied & 0x1010101010101010;
+    uint64_t doublePushes = southOne(singlePushes) & unoccupied & 0x1010101010101010ULL;
     return singlePushes | doublePushes;
 }
 static uint64_t generatePawnAttacksWhite(uint64_t pawns, uint64_t blackPieces) {
@@ -154,7 +154,7 @@ static uint64_t generateQueenMoves(SquareIndex square, uint64_t occupied) {
 static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction dir) {
     uint64_t ray = rayFunctions[dir](square);
     uint64_t blockers = ray & occupied;
-    int firstBlocker = __builtin_ctzll(blockers | 0x1000000000000000);//same as (1ULL << 63)
+    int firstBlocker = __builtin_ctzll(blockers | 0x8000000000000000ULL);//same as (1ULL << 63)
     ray ^= rayFunctions[dir]((SquareIndex)firstBlocker);
     return ray;
 }
