@@ -57,14 +57,14 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn, SquareIndex temp) 
     //generate moves for sliding pieces
     //need to extract rook, bishop, & queen positions before putting them into this
     //need to also finish the functinality with the unoccupied mask
-    uint64_t rookMoves      = generateRookMoves(temp, unoccupied);
-    uint64_t bishopMoves    = generateBishopMoves(temp, unoccupied);
-    uint64_t queenMoves     = generateQueenMoves(temp, unoccupied);
+    uint64_t rookMoves      = generateRookMoves(temp, (uint64_t)(0));
+    //uint64_t bishopMoves    = generateBishopMoves(temp, (uint64_t)(0));
+    //uint64_t queenMoves     = generateQueenMoves(temp, (uint64_t)(0));
 
     //generate en passant and castling
 
-    board.setBitBoard(bishopMoves, PieceType::BLACK_KING);
-    board.setBitBoard(bishopMoves, PieceType::BLACK_PIECES);
+    board.setBitBoard(rookMoves, PieceType::BLACK_KING);
+    board.setBitBoard(rookMoves, PieceType::BLACK_PIECES);
 
     //finally return
     return moves;
@@ -122,29 +122,29 @@ static uint64_t generatePawnAttacksBlack(uint64_t pawns, uint64_t whitePieces) {
 
 static uint64_t generateRookMoves(SquareIndex square, uint64_t occupied) {
     //TODO: finish this - need to use the mask in someway - probably manipulate it someway before ORing together
-    uint64_t mask = calcNorthMask(square) | calcEastMask(square) | calcSouthMask(square) | calcWestMask(square);
-    return mask;
+    //uint64_t mask = calcNorthMask(square) | calcEastMask(square) | calcSouthMask(square) | calcWestMask(square);
+    //return mask;
 
-    return  getPositiveRay(square, occupied, Direction::NORTH)  |
-            getPositiveRay(square, occupied, Direction::EAST)   |
-            getNegativeRay(square, occupied, Direction::SOUTH)  |
-            getNegativeRay(square, occupied, Direction::WEST)   ;
+    // return  getPositiveRay(square, occupied, Direction::NORTH)  |
+    //         getPositiveRay(square, occupied, Direction::EAST)   |
+    //         getNegativeRay(square, occupied, Direction::SOUTH)  |
+    //         getNegativeRay(square, occupied, Direction::WEST)   ;
 
-    // return getPositiveRay(square, occupied, Direction::NORTH);
-    // return getPositiveRay(square, occupied, Direction::EAST);
-    // return getPositiveRay(square, occupied, Direction::NORTH_EAST);
-    // return getPositiveRay(square, occupied, Direction::SOUTH_EAST);
+    //return getPositiveRay(square, occupied, Direction::NORTH);//yes
+    //return getPositiveRay(square, occupied, Direction::EAST);//no
+    //return getPositiveRay(square, occupied, Direction::NORTH_EAST);//yes
+    //return getPositiveRay(square, occupied, Direction::SOUTH_EAST);//no
 
-    // return getNegativeRay(square, occupied, Direction::SOUTH);
-    // return getNegativeRay(square, occupied, Direction::WEST);
-    // return getNegativeRay(square, occupied, Direction::NORTH_WEST);
-    // return getNegativeRay(square, occupied, Direction::SOUTH_WEST);
+    //return getNegativeRay(square, occupied, Direction::SOUTH);//yes
+    //return getNegativeRay(square, occupied, Direction::WEST);//no
+    //return getPositiveRay(square, occupied, Direction::NORTH_WEST);//yes
+    //return getPositiveRay(square, occupied, Direction::SOUTH_WEST);//no
 }
 
 static uint64_t generateBishopMoves(SquareIndex square, uint64_t occupied) {
     //TODO: finish this - need to use the mask in someway - probably manipulate it someway before ORing together
-     uint64_t mask = calcNorthEastMask(square) | calcSouthEastMask(square) | calcSouthWestMask(square) | calcNorthWestMask(square);
-     return mask;
+    //uint64_t mask = calcNorthEastMask(square) | calcSouthEastMask(square) | calcSouthWestMask(square) | calcNorthWestMask(square);
+    //return mask;
 
     return  getNegativeRay(square, occupied, Direction::SOUTH_WEST) |
             getPositiveRay(square, occupied, Direction::NORTH_EAST) |
@@ -155,8 +155,8 @@ static uint64_t generateBishopMoves(SquareIndex square, uint64_t occupied) {
 
 static uint64_t generateQueenMoves(SquareIndex square, uint64_t occupied) {
     //TODO: finish this - need to use the mask in someway - probably manipulate it someway before ORing together
-    uint64_t mask = generateRookMoves(square, occupied) | generateBishopMoves(square, occupied);
-    return mask;
+    //uint64_t mask = generateRookMoves(square, occupied) | generateBishopMoves(square, occupied);
+    //return mask;
 
     return  getPositiveRay(square, occupied, Direction::NORTH)      |
             getPositiveRay(square, occupied, Direction::EAST)       |
@@ -175,7 +175,7 @@ static uint64_t generateQueenMoves(SquareIndex square, uint64_t occupied) {
 static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction dir) {
     uint64_t ray = rayFunctions[dir](square);
     uint64_t blockers = ray & occupied;
-    int firstBlocker = 63-__builtin_clz(blockers);
+    int firstBlocker = __builtin_clz(blockers);
     ray ^= rayFunctions[dir]((SquareIndex)firstBlocker);
     return ray;
 }
