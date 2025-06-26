@@ -44,14 +44,8 @@ uint64_t calcWestMask(SquareIndex square) {
     return (uint64_t)(0x0080808080808080) >> (square ^ 63);
 }
 
-
-
-//bug in one or more of the following
-//yay
-
-
 uint64_t calcNorthEastMask(SquareIndex square){ 
-    uint64_t diagonal = (uint64_t)(0x8040201008040201) << (uint64_t)square;
+    uint64_t diagonal = (uint64_t)(0x8040201008040200) << (uint64_t)square;
 
     int n = (square & 7) + 1; //x%8 === x&7
     uint64_t mask = (uint64_t)0x0101010101010101 * ((1ULL << n) -1);
@@ -77,7 +71,7 @@ uint64_t calcNorthWestMask(SquareIndex square){
     return diagonal & ~mask;
 }
 uint64_t calcSouthEastMask(SquareIndex square){ 
-    uint64_t diagonal = (uint64_t)(0x0102040810204080) << square;
+    uint64_t diagonal = (uint64_t)(0x0002040810204080) << square;
 
     int n = (square & 7) + 1; //x%8 === x&7
     uint64_t mask = (uint64_t)0x0101010101010101 * ((1ULL << n) -1);

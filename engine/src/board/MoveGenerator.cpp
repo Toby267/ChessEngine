@@ -63,8 +63,8 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn, SquareIndex temp) 
 
     //generate en passant and castling
 
-    board.setBitBoard(rookMoves, PieceType::BLACK_KING);
-    board.setBitBoard(rookMoves, PieceType::BLACK_PIECES);
+    board.setBitBoard(bishopMoves, PieceType::BLACK_KING);
+    board.setBitBoard(bishopMoves, PieceType::BLACK_PIECES);
 
     //finally return
     return moves;
