@@ -12,41 +12,41 @@ enum MoveType {
 struct NormalMove {
     SquareIndex startPos;
     SquareIndex endPos;
-    PieceType pieceType;
-    PieceType killPieceType;
+    PieceType   pieceType;
+    PieceType   killPieceType;
 };
 
 struct PromotionMove {
     SquareIndex startPos;
     SquareIndex endPos;
-    PieceType oldPieceType;
-    PieceType newPieceType;
-    PieceType killPieceType;
+    PieceType   oldPieceType;
+    PieceType   newPieceType;
+    PieceType   killPieceType;
 };
 
 struct EnPassantMove {
     SquareIndex startPos;
     SquareIndex endPos;
-    PieceType pieceType;
+    PieceType   pieceType;
     SquareIndex killSquare;
-    PieceType killPieceType;
+    PieceType   killPieceType;
 };
 
 struct CastleMove {
     SquareIndex primaryStartPos;
     SquareIndex primaryEndPos;
-    PieceType primaryPieceType;
+    PieceType   primaryPieceType;
     SquareIndex secondaryStartPos;
     SquareIndex secondaryEndPos;
-    PieceType secondaryPieceType;
+    PieceType   secondaryPieceType;
 };
 
 struct Move {
     MoveType flag;
     union {
-        NormalMove normalMove;
+        NormalMove    normalMove;
         PromotionMove promotionMove;
         EnPassantMove enPassantMove;
-        CastleMove castleMove;
+        CastleMove    castleMove;
     };
 };

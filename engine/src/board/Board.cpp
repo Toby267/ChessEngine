@@ -67,6 +67,12 @@ void Board::setBitBoard(uint64_t val, PieceType type) {
  * @param move the move to be made
  */
 void Board::makeMove(const Move& move) {
+    for (auto& i : enPassantSquares) {
+        i <<= 1;
+    }
+    whiteCastleKing <<= 1, whiteCastleQueen <<= 1;
+    blackCastleKing <<= 1, blackCastleQueen <<= 1;
+    
     switch (move.flag) {
         case MoveType::CASTLE:
             togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryStartPos);
@@ -74,21 +80,26 @@ void Board::makeMove(const Move& move) {
             togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryStartPos);
             togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryEndPos);
             break;
+            
         case MoveType::EN_PASSANT:
             togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);    
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
             break;
+
         case MoveType::PROMOTION:
             togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
+            checkDeadRook(move.promotionMove);
             break;
+
         case MoveType::NORMAL:
             togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
-            //set can castle flags if the king or a rook has moved
+            updateSpecialMoveStatus(move.normalMove);
+            checkDeadRook(move.normalMove);
             break;
     }
     //set flags for things like check, etc
@@ -99,7 +110,12 @@ void Board::makeMove(const Move& move) {
  * @param move the move to be unmade
  */
 void Board::unMakeMove(const Move& move) {
-    //surely this will need to differ from makeMove() at some point, right?
+    for (auto& i : enPassantSquares) {
+        i >>= 1;
+    }
+    whiteCastleKing >>= 1, whiteCastleQueen >>= 1;
+    blackCastleKing >>= 1, blackCastleQueen >>= 1;
+
     switch (move.flag) {
         case MoveType::CASTLE:
             togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryStartPos);
@@ -125,14 +141,73 @@ void Board::unMakeMove(const Move& move) {
     }
 }
 
+void Board::updateSpecialMoveStatus(const NormalMove& move) {
+    switch (move.pieceType) {
+        case PieceType::WHITE_PAWN:
+        case PieceType::BLACK_PAWN: {
+            int dist = move.endPos - move.startPos;
+            if (dist == 2 || dist == -2) {
+                int index = (move.startPos / 8) + (move.startPos & 7 == 1 ? 0 : 8);
+                enPassantSquares[index] &= 0b1;
+            }
+            break;
+        }
+
+        case PieceType::WHITE_ROOK:
+        case PieceType::BLACK_ROOK: {
+            switch (move.startPos) {
+                case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
+                case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
+                case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
+                case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+            }
+        }
+
+        case PieceType::WHITE_KING: {
+            whiteCastleKing     &= 0b1;
+            whiteCastleQueen    &= 0b1;
+            break;
+        }
+        case PieceType::BLACK_KING: {
+            blackCastleKing     &= 0b1;
+            blackCastleQueen    &= 0b1;
+            break;
+        }
+    }
+}
+
+void Board::checkDeadRook(const NormalMove& move) {
+    if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
+        return;
+    
+    switch (move.startPos) {
+        case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
+        case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
+        case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
+        case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+    }
+}
+void Board::checkDeadRook(const PromotionMove& move) {
+    if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
+        return;
+    
+    switch (move.startPos) {
+        case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
+        case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
+        case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
+        case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+    }
+}
+
+
 /**
  * Sets up the board in its starting position
  */
 void Board::setDefaultBoard() {
-    enPassantSquare = std::nullopt;
+    enPassantSquares[16] = {0};
 
-    whiteCastleKing = true, whiteCastleQueen = true;
-    blackCastleKing = true, blackCastleQueen = true;
+    whiteCastleKing = 0, whiteCastleQueen = 0;
+    blackCastleKing = 0, blackCastleQueen = 0;
     
     bitBoards[PieceType::WHITE_PIECES]  = 0x0303030303030303ULL;
     bitBoards[PieceType::WHITE_KING]    = 0x0000000100000000ULL;
@@ -154,11 +229,11 @@ void Board::setDefaultBoard() {
  * Resets the board back to its initial/default state
  */
 void Board::resetBoard() {
-    enPassantSquare = std::nullopt;
+    enPassantSquares[16] = {0};
 
-    whiteCastleKing = false, whiteCastleQueen = false;
-    blackCastleKing = false, blackCastleQueen = false;
-
+    whiteCastleKing = 1, whiteCastleQueen = 1;
+    blackCastleKing = 1, blackCastleQueen = 1;
+    
     for (uint64_t& board : bitBoards)
         board = 0;
 }
@@ -201,16 +276,16 @@ void Board::parseFen(const std::string& FEN) {
     for (i++; i < FEN.length(); i++) {
         if (FEN[i] == ' ') break;
 
-        if      (FEN[i] == 'K') whiteCastleKing     = true;
-        else if (FEN[i] == 'Q') whiteCastleQueen    = true;
-        else if (FEN[i] == 'k') blackCastleKing     = true;
-        else if (FEN[i] == 'q') blackCastleQueen    = true;
+        if      (FEN[i] == 'K') whiteCastleKing     = 0;
+        else if (FEN[i] == 'Q') whiteCastleQueen    = 0;
+        else if (FEN[i] == 'k') blackCastleKing     = 0;
+        else if (FEN[i] == 'q') blackCastleQueen    = 0;
     }
 
     //parses the fourth part of the FEN
     if (FEN[++i] != '-') {
-        int squareIndex = 8 * (FEN[i] - 'a') + FEN[i+1] - '1';
-        enPassantSquare = (SquareIndex)squareIndex;
+        int index = (FEN[i] - 'a') + (FEN[i+1] =='3' ? 0 : 8);
+        enPassantSquares[(EnPassantPieces)(index)] = 1;
     }
 }
 
@@ -229,12 +304,6 @@ void Board::printDebugData() {
 
     printBitBoardHex(PieceType::WHITE_PAWN);
     printf("0x%016llx\n", westOne(bitBoards[PieceType::WHITE_PAWN]));
-    
-    // std::cout << whiteCastleKing << whiteCastleQueen << blackCastleKing << blackCastleQueen << '\n';
-    // if (enPassantSquare.has_value())
-    //     std::cout << enPassantSquare.value() << '\n';
-    // else
-    //     std::cout << '-' << '\n';
 }
 
 // * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //

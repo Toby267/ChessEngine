@@ -12,13 +12,17 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {
-    //board->parseFen("8/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    board->parseFen("8/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+    Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a2, SquareIndex::a4, PieceType::WHITE_PAWN, PieceType::INVALID}};
+    board->makeMove(myMove);
+
     //board->setDefaultBoard();
-    for (int i = 0; i < 64; i++) {
-        board->resetBoard();
-        generateMoves(*board, whiteTurn, (SquareIndex)(i));
-        printASCIIBoard();
-    }
+    // for (int i = 0; i < 64; i++) {
+    //     board->resetBoard();
+    //     generateMoves(*board, whiteTurn, (SquareIndex)(i));
+    //     printASCIIBoard();
+    // }
 }
 
 Engine::~Engine() {

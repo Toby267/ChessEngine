@@ -17,11 +17,13 @@
 class Board {
 private:
     //attribute default values are as if Board::resetBoard() has been called
-    std::array<uint64_t, 14> bitBoards = {0};
-    bool whiteCastleKing = false, whiteCastleQueen = false;
-    bool blackCastleKing = false, blackCastleQueen = false;
-    std::optional<SquareIndex> enPassantSquare = std::nullopt;
-
+    std::array<uint64_t, 14> bitBoards  = {0};
+    __uint128_t enPassantSquares[16]    = {0};              //1 in the right most bit means yes
+                                                            //every time a move is played it is shifted left
+                                                            //then shifted right when unplayed
+    __uint128_t whiteCastleKing = 1, whiteCastleQueen = 1;  //1 in any bit means no
+    __uint128_t blackCastleKing = 1, blackCastleQueen = 1;  //every time a castle or rook move is played it is shifted left
+                                                            //then shifted right when unplayed
 public:
     //constructors/destructor
     Board();
@@ -45,6 +47,10 @@ public:
 
 private:
     //private methods
+    void updateSpecialMoveStatus(const NormalMove& move);
+    void checkDeadRook(const NormalMove& move);
+    void checkDeadRook(const PromotionMove& move);
+
     void addPiece(PieceType type, SquareIndex index);
     void removePiece(PieceType type, SquareIndex index);
     void togglePiece(PieceType type, SquareIndex index);    

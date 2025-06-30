@@ -162,7 +162,7 @@ static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction 
 static uint64_t getNegativeRay(SquareIndex square, uint64_t occupied, Direction dir) {
     uint64_t ray = rayFunctions[dir](square);
     uint64_t blockers = ray & occupied;
-    int firstBlocker = 63-__builtin_clzll(blockers | 1);
+    int firstBlocker = 63 - __builtin_clzll(blockers | 1);
     ray ^= rayFunctions[dir]((SquareIndex)firstBlocker);
     return ray;
 }
