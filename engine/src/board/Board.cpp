@@ -9,7 +9,9 @@
 #include "board/BoardEnums.hpp"
 #include "board/Move.hpp"
 
-// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Board::Board() {
     setDefaultBoard();
@@ -19,7 +21,9 @@ Board::~Board() {
     
 }
 
-// * ---------------------------------- [ GETTERS/SETTERS ] ---------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ---------------------------------------- [ GETTERS/SETTERS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Returns the type of piece stored at the given index
@@ -59,7 +63,9 @@ void Board::setBitBoard(uint64_t val, PieceType type) {
     bitBoards[type] = val;
 }
 
-// * ------------------------------------- [ PUBLIC METHODS ] --------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Logic for making a move on the bitboards, and setting relevent flags
@@ -140,65 +146,6 @@ void Board::unMakeMove(const Move& move) {
             break;
     }
 }
-
-void Board::updateSpecialMoveStatus(const NormalMove& move) {
-    switch (move.pieceType) {
-        case PieceType::WHITE_PAWN:
-        case PieceType::BLACK_PAWN: {
-            int dist = move.endPos - move.startPos;
-            if (dist == 2 || dist == -2) {
-                int index = (move.startPos / 8) + (move.startPos & 7 == 1 ? 0 : 8);
-                enPassantSquares[index] &= 0b1;
-            }
-            break;
-        }
-
-        case PieceType::WHITE_ROOK:
-        case PieceType::BLACK_ROOK: {
-            switch (move.startPos) {
-                case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
-                case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
-                case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
-                case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
-            }
-        }
-
-        case PieceType::WHITE_KING: {
-            whiteCastleKing     &= 0b1;
-            whiteCastleQueen    &= 0b1;
-            break;
-        }
-        case PieceType::BLACK_KING: {
-            blackCastleKing     &= 0b1;
-            blackCastleQueen    &= 0b1;
-            break;
-        }
-    }
-}
-
-void Board::checkDeadRook(const NormalMove& move) {
-    if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
-        return;
-    
-    switch (move.startPos) {
-        case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
-        case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
-        case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
-        case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
-    }
-}
-void Board::checkDeadRook(const PromotionMove& move) {
-    if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
-        return;
-    
-    switch (move.startPos) {
-        case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
-        case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
-        case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
-        case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
-    }
-}
-
 
 /**
  * Sets up the board in its starting position
@@ -306,7 +253,77 @@ void Board::printDebugData() {
     printf("0x%016llx\n", westOne(bitBoards[PieceType::WHITE_PAWN]));
 }
 
-// * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ---------------------------------------- [ PRIVATE METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Logic for determining which pieces can castle and which can en passant in a manor that can be undone with unMakeMove()
+ * 
+ * @param move the move to be played
+ */
+void Board::updateSpecialMoveStatus(const NormalMove& move) {
+    switch (move.pieceType) {
+        case PieceType::WHITE_PAWN:
+        case PieceType::BLACK_PAWN: {
+            int dist = move.endPos - move.startPos;
+            if (dist == 2 || dist == -2) {
+                int index = (move.startPos / 8) + (move.startPos & 7 == 1 ? 0 : 8);
+                enPassantSquares[index] &= 0b1;
+            }
+            break;
+        }
+
+        case PieceType::WHITE_ROOK:
+        case PieceType::BLACK_ROOK: {
+            switch (move.startPos) {
+                case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
+                case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
+                case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
+                case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+            }
+        }
+
+        case PieceType::WHITE_KING: {
+            whiteCastleKing     &= 0b1;
+            whiteCastleQueen    &= 0b1;
+            break;
+        }
+        case PieceType::BLACK_KING: {
+            blackCastleKing     &= 0b1;
+            blackCastleQueen    &= 0b1;
+            break;
+        }
+    }
+}
+
+/**
+ * Logic for determining if a rook has died and thus which pieces can castle
+ * 
+ * @param move the move to be played
+ */
+void Board::checkDeadRook(const NormalMove& move) {
+    if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
+        return;
+    
+    switch (move.startPos) {
+        case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
+        case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
+        case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
+        case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+    }
+}
+void Board::checkDeadRook(const PromotionMove& move) {
+    if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
+        return;
+    
+    switch (move.startPos) {
+        case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
+        case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
+        case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
+        case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+    }
+}
 
 //adds a piece to a given square
 void Board::addPiece(PieceType type, SquareIndex index) {
@@ -336,7 +353,9 @@ void Board::printBitBoardHex(PieceType board) {
     printf("0x%016llx\n", bitBoards[board]);
 }
 
-// * ---------------------------------- [ HELPER METHODS ] ---------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ----------------------------------------- [ HELPER METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //returns true if the given square has a piece
 bool Board::hasPiece(SquareIndex index) {
