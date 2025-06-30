@@ -34,6 +34,11 @@ enum PieceType {
     INVALID = -1
 };
 
+enum EnPassantPieces {
+    aWhite, bWhite, cWhite, dWhite, eWhite, fWhite, gWhite, hWhite,
+    aBlack, bBlack, cBlack, dBlack, eBlack, fBlack, gBlack, hBlack
+};
+
 //these functions move each piece one unit in the given bitboard in a certain direction
 uint64_t northOne(uint64_t board);
 uint64_t southOne(uint64_t board);
