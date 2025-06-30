@@ -1,6 +1,6 @@
 #pragma once
 
-#include <board/BoardEnums.hpp>
+#include <board/BoardUtil.hpp>
 
 enum MoveType {
     NORMAL,

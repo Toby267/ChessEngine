@@ -5,7 +5,7 @@
 #include <optional>
 #include <array>
 
-#include <board/BoardEnums.hpp>
+#include <board/BoardUtil.hpp>
 #include <board/Move.hpp>
 
 /**

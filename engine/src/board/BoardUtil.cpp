@@ -1,4 +1,4 @@
-#include <board/BoardEnums.hpp>
+#include <board/BoardUtil.hpp>
 
 #include <bitset>
 #include <iostream>

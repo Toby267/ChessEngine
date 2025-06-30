@@ -5,6 +5,7 @@
 
 #include "board/Board.hpp"
 #include "board/Move.hpp"
+#include "board/BoardUtil.hpp"
 
 static uint64_t generateKingMoves(uint64_t king, uint64_t notFriendly);
 static uint64_t generateKnightMoves(uint64_t knights, uint64_t notFriendly);

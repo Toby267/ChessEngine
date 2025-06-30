@@ -4,7 +4,7 @@
 
 #include "board/Board.hpp"
 #include "board/Move.hpp"
-#include "board/BoardEnums.hpp"
+#include "board/BoardUtil.hpp"
 
 enum Direction {
     NORTH,
