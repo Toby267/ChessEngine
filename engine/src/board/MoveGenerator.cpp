@@ -7,6 +7,10 @@
 #include "board/Move.hpp"
 #include "board/BoardUtil.hpp"
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 static uint64_t generateKingMoves(uint64_t king, uint64_t notFriendly);
 static uint64_t generateKnightMoves(uint64_t knights, uint64_t notFriendly);
 
@@ -22,7 +26,9 @@ static uint64_t generateQueenMoves(SquareIndex square, uint64_t occupied);
 static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction dir);
 static uint64_t getNegativeRay(SquareIndex square, uint64_t occupied, Direction dir);
 
-// * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Generates all possible moves based on a given board and whos to move
@@ -71,7 +77,11 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn, SquareIndex temp) 
     return moves;
 }
 
-// * ---------------------------------- [ PRIVATE METHODS ] ---------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ---------------------------------------- [ PRIVATE METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// * ---------------------------------------- [ EASY MOVES ] ---------------------------------------- * //
 
 static uint64_t generateKingMoves(uint64_t king, uint64_t notFriendly) {
     //only checks for legal postitions by valid move directions, empty squares  borders, doesn't check checks
@@ -92,7 +102,7 @@ static uint64_t generateKnightMoves(uint64_t knights, uint64_t notFriendly) {
     return knightMoves & notFriendly;
 }
 
-
+// * ---------------------------------------- [ PAWN MOVES ] ---------------------------------------- * //
 
 static uint64_t generatePawnPushesWhite(uint64_t pawns, uint64_t unoccupied) {
     //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
@@ -119,7 +129,7 @@ static uint64_t generatePawnAttacksBlack(uint64_t pawns, uint64_t whitePieces) {
     return moves & whitePieces;
 }
 
-
+// * ---------------------------------------- [ SLIDING MOVES ] ---------------------------------------- * //
 
 static uint64_t generateRookMoves(SquareIndex square, uint64_t occupied) {
     //only checks for legal postitions by valid move directions, empty squares & borders, although it cant take other pieces yet as it counts them as taken spots; doesn't check checks
@@ -150,7 +160,9 @@ static uint64_t generateQueenMoves(SquareIndex square, uint64_t occupied) {
             getNegativeRay(square, occupied, Direction::NORTH_WEST) ;
 }
 
-// * ---------------------------------- [ HELPER METHODS ] ---------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ----------------------------------------- [ HELPER METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction dir) {
     uint64_t ray = rayFunctions[dir](square);
