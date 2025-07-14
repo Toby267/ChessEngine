@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <string>
-#include <optional>
 #include <iostream>
 #include <bitset>
 
@@ -151,7 +150,7 @@ void Board::unMakeMove(const Move& move) {
  * Sets up the board in its starting position
  */
 void Board::setDefaultBoard() {
-    enPassantSquares[16] = {0};
+    enPassantSquares = {0};
 
     whiteCastleKing = 0, whiteCastleQueen = 0;
     blackCastleKing = 0, blackCastleQueen = 0;
@@ -176,7 +175,7 @@ void Board::setDefaultBoard() {
  * Resets the board back to its initial/default state
  */
 void Board::resetBoard() {
-    enPassantSquares[16] = {0};
+    enPassantSquares = {0};
 
     whiteCastleKing = 1, whiteCastleQueen = 1;
     blackCastleKing = 1, blackCastleQueen = 1;
@@ -241,16 +240,16 @@ void Board::parseFen(const std::string& FEN) {
  */
 void Board::printDebugData() {
     printBitBoardHex(PieceType::WHITE_PAWN);
-    printf("0x%016llx\n", northOne(bitBoards[PieceType::WHITE_PAWN]));
+    printf("0x%016lx\n", northOne(bitBoards[PieceType::WHITE_PAWN]));
 
     printBitBoardHex(PieceType::WHITE_PAWN);
-    printf("0x%016llx\n", southOne(bitBoards[PieceType::WHITE_PAWN]));
+    printf("0x%016lx\n", southOne(bitBoards[PieceType::WHITE_PAWN]));
 
     printBitBoardHex(PieceType::WHITE_PAWN);
-    printf("0x%016llx\n", eastOne(bitBoards[PieceType::WHITE_PAWN]));
+    printf("0x%016lx\n", eastOne(bitBoards[PieceType::WHITE_PAWN]));
 
     printBitBoardHex(PieceType::WHITE_PAWN);
-    printf("0x%016llx\n", westOne(bitBoards[PieceType::WHITE_PAWN]));
+    printf("0x%016lx\n", westOne(bitBoards[PieceType::WHITE_PAWN]));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -350,7 +349,7 @@ void Board::printBitBoardBin(PieceType board) {
 }
 //prints the bitboard in hex
 void Board::printBitBoardHex(PieceType board) {
-    printf("0x%016llx\n", bitBoards[board]);
+    printf("0x%016lx\n", bitBoards[board]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

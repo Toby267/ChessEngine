@@ -1,8 +1,5 @@
 #include <board/BoardUtil.hpp>
 
-#include <bitset>
-#include <iostream>
-
 //shifts a square by one in each orthoganol direction
 uint64_t northOne(uint64_t board) {
     return (board << 1) & 0xFEFEFEFEFEFEFEFEULL;

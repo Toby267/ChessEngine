@@ -1,3 +1,4 @@
 .vscode
+engine/.cache
 engine/build/
 engine/bin/

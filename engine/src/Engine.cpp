@@ -17,12 +17,12 @@ Engine::Engine() {
     Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a2, SquareIndex::a4, PieceType::WHITE_PAWN, PieceType::INVALID}};
     board->makeMove(myMove);
 
-    //board->setDefaultBoard();
-    // for (int i = 0; i < 64; i++) {
-    //     board->resetBoard();
-    //     generateMoves(*board, whiteTurn, (SquareIndex)(i));
-    //     printASCIIBoard();
-    // }
+    board->setDefaultBoard();
+    for (int i = 0; i < 64; i++) {
+        board->resetBoard();
+        generateMoves(*board, whiteTurn, (SquareIndex)(i));
+        printASCIIBoard();
+    }
 }
 
 Engine::~Engine() {

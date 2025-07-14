@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <string>
-#include <optional>
 #include <array>
 
 #include <board/BoardUtil.hpp>
@@ -17,8 +16,8 @@
 class Board {
 private:
     //attribute default values are as if Board::resetBoard() has been called
-    std::array<uint64_t, 14> bitBoards  = {0};
-    __uint128_t enPassantSquares[16]    = {0};              //1 in the right most bit means yes
+    std::array<uint64_t, 14>    bitBoards        = {0};
+    std::array<__uint128_t, 16> enPassantSquares = {0}; //1 in the right most bit means yes
                                                             //every time a move is played it is shifted left
                                                             //then shifted right when unplayed
     __uint128_t whiteCastleKing = 1, whiteCastleQueen = 1;  //1 in any bit means no
