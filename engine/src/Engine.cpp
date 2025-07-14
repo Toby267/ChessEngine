@@ -12,17 +12,24 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {
-    board->parseFen("8/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    parseFen("8/8/8/8/8/8/pppppppp/8 b KQkq - 0 1");
+    printASCIIBoard();
+    generateMoves(*board, whiteTurn, SquareIndex::d4);
+    printASCIIBoard();
 
-    Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a2, SquareIndex::a4, PieceType::WHITE_PAWN, PieceType::INVALID}};
+    parseFen("8/8/8/8/8/8/PPPPPPPP/8 b KQkq - 0 1");
+    printASCIIBoard();
+    generateMoves(*board, whiteTurn, SquareIndex::d4);
+    printASCIIBoard();
+
+    Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a2, SquareIndex::a6, PieceType::WHITE_PAWN, PieceType::INVALID}};
     board->makeMove(myMove);
 
-    board->setDefaultBoard();
-    for (int i = 0; i < 64; i++) {
-        board->resetBoard();
-        generateMoves(*board, whiteTurn, (SquareIndex)(i));
-        printASCIIBoard();
-    }
+    // for (int i = 0; i < 64; i++) {
+    //     board->resetBoard();
+    //     generateMoves(*board, whiteTurn, (SquareIndex)(i));
+    //     printASCIIBoard();
+    // }
 }
 
 Engine::~Engine() {
@@ -37,8 +44,6 @@ Engine::~Engine() {
  * @param FEN the fen that is to be parsed
 */
 void Engine::parseFen(const std::string& FEN) {
-    std::cout << FEN << '\n';
-    
     board->parseFen(FEN);
 
     int i;
@@ -51,7 +56,7 @@ void Engine::parseFen(const std::string& FEN) {
     for (i++; i < FEN.length(); i++) {
         if (FEN[i] == ' ') break;
 
-        whiteTurn = FEN[i] == 'w' ? 1 : 0;
+        whiteTurn = FEN[i] == 'w' ? true : false;
     }
 
     //skips the third & fourth part of the FEN

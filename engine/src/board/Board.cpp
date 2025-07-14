@@ -30,6 +30,9 @@ Board::~Board() {
  * @param index the index of said piece
  */
 PieceType Board::getType(SquareIndex index) {
+    if (isWhite(index) && isBlack(index))
+        std::cout << "adsf" << '\n';
+    
     if (isWhite(index)) {
         for (int i = 0; i < 6; i++) {
             if (bitBoards[i] & (1ULL << index)) {
