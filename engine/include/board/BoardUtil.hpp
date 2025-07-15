@@ -35,8 +35,12 @@ enum PieceType {
 };
 
 enum EnPassantPieces {
-    aWhite, bWhite, cWhite, dWhite, eWhite, fWhite, gWhite, hWhite,
-    aBlack, bBlack, cBlack, dBlack, eBlack, fBlack, gBlack, hBlack
+    A_WHITE, B_WHITE, C_WHITE, D_WHITE, E_WHITE, F_WHITE, G_WHITE, H_WHITE,
+    A_BLACK, B_BLACK, C_BLACK, D_BLACK, E_BLACK, F_BLACK, G_BLACK, H_BLACK
+};
+
+enum CastlePieces{
+    W_KING, W_QUEEN, B_KING, B_QUEEN
 };
 
 //these functions move each piece one unit in the given bitboard in a certain direction

@@ -16,14 +16,15 @@
 class Board {
 private:
     //attribute default values are as if Board::resetBoard() has been called
-    std::array<uint64_t, 14> bitBoards = {0};
+    std::array<uint64_t, 14> bitBoards{};
 
-    std::array<__uint128_t, 16> enPassantSquares = {0};     //1 in the right most bit means yes
-                                                            //every time a move is played it is shifted left
-                                                            //then shifted right when unplayed
-    __uint128_t whiteCastleKing = 1, whiteCastleQueen = 1;  //1 in any bit means no
-    __uint128_t blackCastleKing = 1, blackCastleQueen = 1;  //every time a castle or rook move is played it is shifted left
-                                                            //then shifted right when unplayed
+    std::array<__uint128_t, 16> enPassantData{};        //1 in the right most bit means yes
+                                                        //every time a move is played it is shifted left
+                                                        //then shifted right when unplayed
+    std::array<__uint128_t, 4> castleData{1, 1, 1, 1};  //1 in any bit means no
+                                                        //every time a castle or rook move is played it is shifted left
+                                                        //then shifted right when unplayed
+
 public:
     //constructors/destructor
     Board();

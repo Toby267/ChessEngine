@@ -13,6 +13,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Board::Board() {
+    // for (auto& i : castleData)
+    //     std::cout << i << '\n';
+    // for (auto& i : bitBoards)
+    //     std::cout << i << '\n';
     setDefaultBoard();
 }
 
@@ -72,11 +76,12 @@ void Board::setBitBoard(uint64_t val, PieceType type) {
  * @param move the move to be made
  */
 void Board::makeMove(const Move& move) {
-    for (auto& i : enPassantSquares) {
+    for (auto& i : enPassantData) {
         i <<= 1;
     }
-    whiteCastleKing <<= 1, whiteCastleQueen <<= 1;
-    blackCastleKing <<= 1, blackCastleQueen <<= 1;
+    for (auto& i : castleData) {
+        i <<= 1;
+    }
     
     switch (move.flag) {
         case MoveType::CASTLE:
@@ -115,11 +120,12 @@ void Board::makeMove(const Move& move) {
  * @param move the move to be unmade
  */
 void Board::unMakeMove(const Move& move) {
-    for (auto& i : enPassantSquares) {
+    for (auto& i : enPassantData) {
         i >>= 1;
     }
-    whiteCastleKing >>= 1, whiteCastleQueen >>= 1;
-    blackCastleKing >>= 1, blackCastleQueen >>= 1;
+    for (auto& i : castleData) {
+        i >>= 1;
+    }
 
     switch (move.flag) {
         case MoveType::CASTLE:
@@ -150,10 +156,8 @@ void Board::unMakeMove(const Move& move) {
  * Sets up the board in its starting position
  */
 void Board::setDefaultBoard() {
-    enPassantSquares = {0};
-
-    whiteCastleKing = 0, whiteCastleQueen = 0;
-    blackCastleKing = 0, blackCastleQueen = 0;
+    enPassantData = {};
+    castleData = {};
     
     bitBoards[PieceType::WHITE_PIECES]  = 0x0303030303030303ULL;
     bitBoards[PieceType::WHITE_KING]    = 0x0000000100000000ULL;
@@ -175,13 +179,9 @@ void Board::setDefaultBoard() {
  * Resets the board back to its initial/default state
  */
 void Board::resetBoard() {
-    enPassantSquares = {0};
-
-    whiteCastleKing = 1, whiteCastleQueen = 1;
-    blackCastleKing = 1, blackCastleQueen = 1;
-    
-    for (uint64_t& board : bitBoards)
-        board = 0;
+    enPassantData = {};
+    castleData = {1, 1, 1, 1};
+    bitBoards = {};
 }
 
 /**
@@ -222,16 +222,16 @@ void Board::parseFen(const std::string& FEN) {
     for (i++; i < FEN.length(); i++) {
         if (FEN[i] == ' ') break;
 
-        if      (FEN[i] == 'K') whiteCastleKing     = 0;
-        else if (FEN[i] == 'Q') whiteCastleQueen    = 0;
-        else if (FEN[i] == 'k') blackCastleKing     = 0;
-        else if (FEN[i] == 'q') blackCastleQueen    = 0;
+        if      (FEN[i] == 'K') castleData[CastlePieces::W_KING]    = 0;
+        else if (FEN[i] == 'Q') castleData[CastlePieces::W_QUEEN]   = 0;
+        else if (FEN[i] == 'k') castleData[CastlePieces::B_KING]    = 0;
+        else if (FEN[i] == 'q') castleData[CastlePieces::B_QUEEN]   = 0;
     }
 
     //parses the fourth part of the FEN
     if (FEN[++i] != '-') {
         int index = (FEN[i] - 'a') + (FEN[i+1] =='3' ? 0 : 8);
-        enPassantSquares[(EnPassantPieces)(index)] = 1;
+        enPassantData[(EnPassantPieces)(index)] = 1;
     }
 }
 
@@ -239,17 +239,7 @@ void Board::parseFen(const std::string& FEN) {
  * Prints debug data for use during development
  */
 void Board::printDebugData() {
-    printBitBoardHex(PieceType::WHITE_PAWN);
-    printf("0x%016lx\n", northOne(bitBoards[PieceType::WHITE_PAWN]));
-
-    printBitBoardHex(PieceType::WHITE_PAWN);
-    printf("0x%016lx\n", southOne(bitBoards[PieceType::WHITE_PAWN]));
-
-    printBitBoardHex(PieceType::WHITE_PAWN);
-    printf("0x%016lx\n", eastOne(bitBoards[PieceType::WHITE_PAWN]));
-
-    printBitBoardHex(PieceType::WHITE_PAWN);
-    printf("0x%016lx\n", westOne(bitBoards[PieceType::WHITE_PAWN]));
+    //std::cout << white
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,7 +258,7 @@ void Board::updateSpecialMoveStatus(const NormalMove& move) {
             int dist = move.endPos - move.startPos;
             if (dist == 2 || dist == -2) {
                 int index = (move.startPos / 8) + (move.startPos & 7 == 1 ? 0 : 8);
-                enPassantSquares[index] &= 0b1;
+                enPassantData[index] &= 0b1;
             }
             break;
         }
@@ -276,21 +266,21 @@ void Board::updateSpecialMoveStatus(const NormalMove& move) {
         case PieceType::WHITE_ROOK:
         case PieceType::BLACK_ROOK: {
             switch (move.startPos) {
-                case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
-                case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
-                case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
-                case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+                case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] &= 0b1;  break; }
+                case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  &= 0b1;  break; }
+                case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] &= 0b1;  break; }
+                case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  &= 0b1;  break; }
             }
         }
 
         case PieceType::WHITE_KING: {
-            whiteCastleKing     &= 0b1;
-            whiteCastleQueen    &= 0b1;
+            castleData[CastlePieces::W_KING]     &= 0b1;
+            castleData[CastlePieces::W_QUEEN]    &= 0b1;
             break;
         }
         case PieceType::BLACK_KING: {
-            blackCastleKing     &= 0b1;
-            blackCastleQueen    &= 0b1;
+            castleData[CastlePieces::B_KING]     &= 0b1;
+            castleData[CastlePieces::B_QUEEN]    &= 0b1;
             break;
         }
     }
@@ -306,10 +296,10 @@ void Board::checkDeadRook(const NormalMove& move) {
         return;
     
     switch (move.startPos) {
-        case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
-        case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
-        case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
-        case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+        case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] &= 0b1;  break; }
+        case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  &= 0b1;  break; }
+        case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] &= 0b1;  break; }
+        case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  &= 0b1;  break; }
     }
 }
 void Board::checkDeadRook(const PromotionMove& move) {
@@ -317,10 +307,10 @@ void Board::checkDeadRook(const PromotionMove& move) {
         return;
     
     switch (move.startPos) {
-        case SquareIndex::a1:   { whiteCastleQueen &= 0b1;  break; }
-        case SquareIndex::h1:   { whiteCastleKing  &= 0b1;  break; }
-        case SquareIndex::a8:   { blackCastleQueen &= 0b1;  break; }
-        case SquareIndex::h8:   { blackCastleKing  &= 0b1;  break; }
+        case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] &= 0b1;  break; }
+        case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  &= 0b1;  break; }
+        case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] &= 0b1;  break; }
+        case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  &= 0b1;  break; }
     }
 }
 

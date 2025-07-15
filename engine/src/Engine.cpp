@@ -12,13 +12,10 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {
-    parseFen("P7/1P6/8/5P/KKKKKKKK/4P3/KKKKKKKK/3P4 w KQkq - 0 1");
-    printASCIIBoard();
-    generateMoves(*board, whiteTurn, (SquareIndex)(3));
-    printASCIIBoard();
-
-    // Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a2, SquareIndex::a6, PieceType::WHITE_PAWN, PieceType::INVALID}};
-    // board->makeMove(myMove);
+    // parseFen("P7/1P6/8/5P/KKKKKKKK/4P3/KKKKKKKK/3P4 w KQkq - 0 1");
+    // printASCIIBoard();
+    // generateMoves(*board, whiteTurn, (SquareIndex)(3));
+    // printASCIIBoard();
 
     // for (int i = 0; i < 64; i++) {
     //     board->resetBoard();
@@ -26,6 +23,17 @@ Engine::Engine() {
     //     generateMoves(*board, whiteTurn, (SquareIndex)(i));
     //     printASCIIBoard();
     // }
+
+    board->setDefaultBoard();
+    
+    printASCIIBoard();
+    board->printDebugData();
+
+    Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a2, SquareIndex::a6, PieceType::WHITE_PAWN, PieceType::INVALID}};
+    board->makeMove(myMove);
+
+    printASCIIBoard();
+    board->printDebugData();
 }
 
 Engine::~Engine() {
