@@ -249,6 +249,8 @@ void Board::printDebugData() {
 
 /**
  * Logic for determining which pieces can castle and which can en passant in a manor that can be undone with unMakeMove()
+ * (I can just use this first one because the pieceType, statPos, and endPos are in the same position for normal, promotion, and castle moves)
+ * (But this way is marginally faster as you don't need to go into the first switch statement for promotion moves)
  * 
  * @param move the move to be played
  */

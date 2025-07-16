@@ -35,10 +35,10 @@ struct EnPassantMove {
 struct CastleMove {
     SquareIndex primaryStartPos;
     SquareIndex primaryEndPos;
-    PieceType   primaryPieceType;
+    PieceType   primaryPieceType;   //white king or black king
     SquareIndex secondaryStartPos;
     SquareIndex secondaryEndPos;
-    PieceType   secondaryPieceType;
+    PieceType   secondaryPieceType; //white rook or black rook
 };
 
 struct Move {
