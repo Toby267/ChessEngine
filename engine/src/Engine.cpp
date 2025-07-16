@@ -4,6 +4,8 @@
 #include <string>
 
 #include "board/Board.hpp"
+#include "board/BoardUtil.hpp"
+#include "board/Move.hpp"
 #include "board/MoveGenerator.hpp"
 
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
@@ -12,28 +14,27 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {
-    // parseFen("P7/1P6/8/5P/KKKKKKKK/4P3/KKKKKKKK/3P4 w KQkq - 0 1");
-    // printASCIIBoard();
-    // generateMoves(*board, whiteTurn, (SquareIndex)(3));
-    // printASCIIBoard();
-
-    // for (int i = 0; i < 64; i++) {
-    //     board->resetBoard();
-    //     parseFen("k7/8/5k/8/PPPPPPPP/4k3/PPPPPPPP/8 b KQkq - 0 1");
-    //     generateMoves(*board, whiteTurn, (SquareIndex)(i));
-    //     printASCIIBoard();
-    // }
-
     board->setDefaultBoard();
-    
     printASCIIBoard();
     board->printDebugData();
 
-    Move myMove = {MoveType::NORMAL, NormalMove{SquareIndex::a2, SquareIndex::a6, PieceType::WHITE_PAWN, PieceType::INVALID}};
-    board->makeMove(myMove);
+    //TODO: fill this with moves to test the functionality of make and unmake
+    Move moves[] = {
+        //{.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::e1, SquareIndex::e3, PieceType::WHITE_KING, PieceType::INVALID}},
+        {.flag=PROMOTION, .promotionMove={a2, a8, WHITE_PAWN, WHITE_QUEEN, BLACK_ROOK}},
+        {.flag=NORMAL, .normalMove={a8, d4, WHITE_QUEEN, INVALID}}
+    };
 
-    printASCIIBoard();
-    board->printDebugData();
+    for (auto& i : moves) {
+        board->makeMove(i);
+        printASCIIBoard();
+        board->printDebugData();
+    }
+    for (int i = sizeof(moves)/sizeof(moves[0]) -1; i >= 0; i--) {
+        board->unMakeMove(moves[i]);
+        printASCIIBoard();
+        board->printDebugData();
+    }
 }
 
 Engine::~Engine() {

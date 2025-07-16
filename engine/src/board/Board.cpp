@@ -13,10 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Board::Board() {
-    // for (auto& i : castleData)
-    //     std::cout << i << '\n';
-    // for (auto& i : bitBoards)
-    //     std::cout << i << '\n';
     setDefaultBoard();
 }
 
@@ -76,10 +72,10 @@ void Board::setBitBoard(uint64_t val, PieceType type) {
  * @param move the move to be made
  */
 void Board::makeMove(const Move& move) {
-    for (auto& i : enPassantData) {
+    for (auto& i : castleData) {
         i <<= 1;
     }
-    for (auto& i : castleData) {
+    for (auto& i : enPassantData) {
         i <<= 1;
     }
     
@@ -89,6 +85,7 @@ void Board::makeMove(const Move& move) {
             togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryEndPos);
             togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryStartPos);
             togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryEndPos);
+            updateSpecialMoveStatus(move.castleMove);
             break;
             
         case MoveType::EN_PASSANT:
@@ -101,7 +98,7 @@ void Board::makeMove(const Move& move) {
             togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
-            checkDeadRook(move.promotionMove);
+            updateSpecialMoveStatus(move.promotionMove);
             break;
 
         case MoveType::NORMAL:
@@ -109,7 +106,6 @@ void Board::makeMove(const Move& move) {
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
             updateSpecialMoveStatus(move.normalMove);
-            checkDeadRook(move.normalMove);
             break;
     }
     //set flags for things like check, etc
@@ -120,10 +116,10 @@ void Board::makeMove(const Move& move) {
  * @param move the move to be unmade
  */
 void Board::unMakeMove(const Move& move) {
-    for (auto& i : enPassantData) {
+    for (auto& i : castleData) {
         i >>= 1;
     }
-    for (auto& i : castleData) {
+    for (auto& i : enPassantData) {
         i >>= 1;
     }
 
@@ -179,8 +175,8 @@ void Board::setDefaultBoard() {
  * Resets the board back to its initial/default state
  */
 void Board::resetBoard() {
-    enPassantData = {};
     castleData = {1, 1, 1, 1};
+    enPassantData = {};
     bitBoards = {};
 }
 
@@ -239,7 +235,12 @@ void Board::parseFen(const std::string& FEN) {
  * Prints debug data for use during development
  */
 void Board::printDebugData() {
-    //std::cout << white
+    for (auto& i : castleData)
+        std::cout << std::bitset<128>(i) << '\n';
+    std::cout << '\n';
+    for (auto& i : enPassantData)
+        std::cout << std::bitset<128>(i) << '\n';
+    std::cout << "\n//////////////////////////////////////////////////////////////////////////////////////////////\n";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,13 +253,14 @@ void Board::printDebugData() {
  * @param move the move to be played
  */
 void Board::updateSpecialMoveStatus(const NormalMove& move) {
+    //logic for determining which pieces can en passant and which can castle
     switch (move.pieceType) {
         case PieceType::WHITE_PAWN:
         case PieceType::BLACK_PAWN: {
             int dist = move.endPos - move.startPos;
             if (dist == 2 || dist == -2) {
-                int index = (move.startPos / 8) + (move.startPos & 7 == 1 ? 0 : 8);
-                enPassantData[index] &= 0b1;
+                int index = (move.startPos / 8) + ((move.startPos & 7) == 1 ? 0 : 8);
+                enPassantData[index] |= 0b1;
             }
             break;
         }
@@ -266,51 +268,61 @@ void Board::updateSpecialMoveStatus(const NormalMove& move) {
         case PieceType::WHITE_ROOK:
         case PieceType::BLACK_ROOK: {
             switch (move.startPos) {
-                case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] &= 0b1;  break; }
-                case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  &= 0b1;  break; }
-                case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] &= 0b1;  break; }
-                case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  &= 0b1;  break; }
+                case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] |= 0b1;  break; }
+                case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  |= 0b1;  break; }
+                case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] |= 0b1;  break; }
+                case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  |= 0b1;  break; }
             }
+            break;
         }
 
         case PieceType::WHITE_KING: {
-            castleData[CastlePieces::W_KING]     &= 0b1;
-            castleData[CastlePieces::W_QUEEN]    &= 0b1;
+            castleData[CastlePieces::W_KING]     |= 0b1;
+            castleData[CastlePieces::W_QUEEN]    |= 0b1;
             break;
         }
         case PieceType::BLACK_KING: {
-            castleData[CastlePieces::B_KING]     &= 0b1;
-            castleData[CastlePieces::B_QUEEN]    &= 0b1;
+            castleData[CastlePieces::B_KING]     |= 0b1;
+            castleData[CastlePieces::B_QUEEN]    |= 0b1;
             break;
         }
     }
-}
 
-/**
- * Logic for determining if a rook has died and thus which pieces can castle
- * 
- * @param move the move to be played
- */
-void Board::checkDeadRook(const NormalMove& move) {
+    //logic for determining if a rook has died and thus which pieces can castle
     if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
         return;
     
-    switch (move.startPos) {
-        case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] &= 0b1;  break; }
-        case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  &= 0b1;  break; }
-        case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] &= 0b1;  break; }
-        case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  &= 0b1;  break; }
+    switch (move.endPos) {
+        case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] |= 0b1;  break; }
+        case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  |= 0b1;  break; }
+        case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] |= 0b1;  break; }
+        case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  |= 0b1;  break; }
     }
 }
-void Board::checkDeadRook(const PromotionMove& move) {
+void Board::updateSpecialMoveStatus(const PromotionMove& move) {
+    //logic for determining if a rook has died and thus which pieces can castle
     if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
         return;
     
-    switch (move.startPos) {
-        case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] &= 0b1;  break; }
-        case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  &= 0b1;  break; }
-        case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] &= 0b1;  break; }
-        case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  &= 0b1;  break; }
+    switch (move.endPos) {
+        case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] |= 0b1;  break; }
+        case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  |= 0b1;  break; }
+        case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] |= 0b1;  break; }
+        case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  |= 0b1;  break; }
+    }
+}
+void Board::updateSpecialMoveStatus(const CastleMove& move) {
+    switch (move.primaryPieceType) {
+        case PieceType::WHITE_KING: {
+            castleData[CastlePieces::W_KING]     |= 0b1;
+            castleData[CastlePieces::W_QUEEN]    |= 0b1;
+            break;
+        }
+        case PieceType::BLACK_KING: {
+            castleData[CastlePieces::B_KING]     |= 0b1;
+            castleData[CastlePieces::B_QUEEN]    |= 0b1;
+            break;
+        }
     }
 }
 
@@ -318,19 +330,19 @@ void Board::checkDeadRook(const PromotionMove& move) {
 void Board::addPiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] |= (1ULL << index);
-    bitBoards[type <= 5 ? 12 : 13] |= (1ULL << index);
+    bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] |= (1ULL << index);
 }
 //removes a piece to a given square
 void Board::removePiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] &= ~(1ULL << index);
-    bitBoards[type <= 5 ? 12 : 13] &= ~(1ULL << index);
+    bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] &= ~(1ULL << index);
 }
 //toggles a piece in a given square
 void Board::togglePiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] ^= (1ULL << index);
-    bitBoards[type <= 5 ? 12 : 13] ^= (1ULL << index);
+    bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] ^= (1ULL << index);
 }
 
 //prints the bitboard in binary

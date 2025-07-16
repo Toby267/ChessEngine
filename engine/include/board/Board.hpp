@@ -49,8 +49,9 @@ public:
 private:
     //private methods
     void updateSpecialMoveStatus(const NormalMove& move);
-    void checkDeadRook(const NormalMove& move);
-    void checkDeadRook(const PromotionMove& move);
+    void updateSpecialMoveStatus(const PromotionMove& move);
+    void updateSpecialMoveStatus(const CastleMove& move);
+
 
     void addPiece(PieceType type, SquareIndex index);
     void removePiece(PieceType type, SquareIndex index);
