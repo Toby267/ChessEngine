@@ -48,9 +48,7 @@ public:
 
 private:
     //private methods
-    void updateSpecialMoveStatus(const NormalMove& move);
-    void updateSpecialMoveStatus(const PromotionMove& move);
-    void updateSpecialMoveStatus(const CastleMove& move);
+    void updateSpecialMoveStatus(const Move& move);
 
     void addPiece(PieceType type, SquareIndex index);
     void removePiece(PieceType type, SquareIndex index);

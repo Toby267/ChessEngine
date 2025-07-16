@@ -85,7 +85,7 @@ void Board::makeMove(const Move& move) {
             togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryEndPos);
             togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryStartPos);
             togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryEndPos);
-            updateSpecialMoveStatus(move.castleMove);
+            updateSpecialMoveStatus(move);
             break;
             
         case MoveType::EN_PASSANT:
@@ -98,14 +98,14 @@ void Board::makeMove(const Move& move) {
             togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
-            updateSpecialMoveStatus(move.promotionMove);
+            updateSpecialMoveStatus(move);
             break;
 
         case MoveType::NORMAL:
             togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
-            updateSpecialMoveStatus(move.normalMove);
+            updateSpecialMoveStatus(move);
             break;
     }
     //set flags for things like check, etc
@@ -249,19 +249,17 @@ void Board::printDebugData() {
 
 /**
  * Logic for determining which pieces can castle and which can en passant in a manor that can be undone with unMakeMove()
- * (I can just use this first one because the pieceType, statPos, and endPos are in the same position for normal, promotion, and castle moves)
- * (But this way is marginally faster as you don't need to go into the first switch statement for promotion moves)
  * 
  * @param move the move to be played
  */
-void Board::updateSpecialMoveStatus(const NormalMove& move) {
+void Board::updateSpecialMoveStatus(const Move& move) {
     //logic for determining which pieces can en passant and which can castle
-    switch (move.pieceType) {
+    switch (move.normalMove.pieceType) {
         case PieceType::WHITE_PAWN:
         case PieceType::BLACK_PAWN: {
-            int dist = move.endPos - move.startPos;
+            int dist = move.normalMove.endPos - move.normalMove.startPos;
             if (dist == 2 || dist == -2) {
-                int index = (move.startPos / 8) + ((move.startPos & 7) == 1 ? 0 : 8);
+                int index = (move.normalMove.startPos / 8) + ((move.normalMove.startPos & 7) == 1 ? 0 : 8);
                 enPassantData[index] |= 0b1;
             }
             break;
@@ -269,7 +267,7 @@ void Board::updateSpecialMoveStatus(const NormalMove& move) {
 
         case PieceType::WHITE_ROOK:
         case PieceType::BLACK_ROOK: {
-            switch (move.startPos) {
+            switch (move.normalMove.startPos) {
                 case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] |= 0b1;  break; }
                 case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  |= 0b1;  break; }
                 case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] |= 0b1;  break; }
@@ -290,41 +288,12 @@ void Board::updateSpecialMoveStatus(const NormalMove& move) {
         }
     }
 
-    //logic for determining if a rook has died and thus which pieces can castle
-    if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
-        return;
-    
-    switch (move.endPos) {
+    //logic for determining if a rook has died and thus which pieces can castle    
+    switch (move.normalMove.endPos) {
         case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] |= 0b1;  break; }
         case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  |= 0b1;  break; }
         case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] |= 0b1;  break; }
         case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  |= 0b1;  break; }
-    }
-}
-void Board::updateSpecialMoveStatus(const PromotionMove& move) {
-    //logic for determining if a rook has died and thus which pieces can castle
-    if (move.killPieceType != PieceType::WHITE_ROOK && move.killPieceType != PieceType::BLACK_ROOK)
-        return;
-    
-    switch (move.endPos) {
-        case SquareIndex::a1:   { castleData[CastlePieces::W_QUEEN] |= 0b1;  break; }
-        case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  |= 0b1;  break; }
-        case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] |= 0b1;  break; }
-        case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  |= 0b1;  break; }
-    }
-}
-void Board::updateSpecialMoveStatus(const CastleMove& move) {
-    switch (move.primaryPieceType) {
-        case PieceType::WHITE_KING: {
-            castleData[CastlePieces::W_KING]     |= 0b1;
-            castleData[CastlePieces::W_QUEEN]    |= 0b1;
-            break;
-        }
-        case PieceType::BLACK_KING: {
-            castleData[CastlePieces::B_KING]     |= 0b1;
-            castleData[CastlePieces::B_QUEEN]    |= 0b1;
-            break;
-        }
     }
 }
 
