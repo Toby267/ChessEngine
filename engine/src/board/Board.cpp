@@ -272,6 +272,7 @@ void Board::updateSpecialMoveStatus(const Move& move) {
                 case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  |= 0b1;  break; }
                 case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] |= 0b1;  break; }
                 case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  |= 0b1;  break; }
+                default:                { break; }
             }
             break;
         }
@@ -286,6 +287,10 @@ void Board::updateSpecialMoveStatus(const Move& move) {
             castleData[CastlePieces::B_QUEEN]    |= 0b1;
             break;
         }
+
+        default: {
+            break;
+        }
     }
 
     //logic for determining if a rook has died and thus which pieces can castle    
@@ -294,6 +299,7 @@ void Board::updateSpecialMoveStatus(const Move& move) {
         case SquareIndex::h1:   { castleData[CastlePieces::W_KING]  |= 0b1;  break; }
         case SquareIndex::a8:   { castleData[CastlePieces::B_QUEEN] |= 0b1;  break; }
         case SquareIndex::h8:   { castleData[CastlePieces::B_KING]  |= 0b1;  break; }
+        default:                { break; }
     }
 }
 
