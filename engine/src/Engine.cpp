@@ -16,27 +16,30 @@
 Engine::Engine() {
     board->setDefaultBoard();
     printASCIIBoard();
-    board->printDebugData();
 
     //TODO: fill this with moves to test the functionality of make and unmake
     Move moves[] = {
-        //{.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::e1, SquareIndex::e3, PieceType::WHITE_KING, PieceType::INVALID}},
-        //{.flag=PROMOTION, .promotionMove={a2, a8, WHITE_PAWN, WHITE_QUEEN, BLACK_ROOK}},
-        //{.flag=NORMAL, .normalMove={a8, d4, WHITE_QUEEN, INVALID}}
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::b1, SquareIndex::a3, PieceType::WHITE_KNIGHT, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d2, SquareIndex::d4, PieceType::WHITE_PAWN, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::c1, SquareIndex::e3, PieceType::WHITE_BISHOP, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d1, SquareIndex::d2, PieceType::WHITE_QUEEN, PieceType::INVALID}},
+        
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g1, SquareIndex::h3, PieceType::WHITE_KNIGHT, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g2, SquareIndex::g3, PieceType::WHITE_PAWN, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::f1, SquareIndex::g2, PieceType::WHITE_BISHOP, PieceType::INVALID}},
 
-        // {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::a2, SquareIndex::a4, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        // {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::b2, SquareIndex::b4, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        // {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::c2, SquareIndex::c4, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        // {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d2, SquareIndex::d4, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        // {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::e2, SquareIndex::e4, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        // {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::f2, SquareIndex::f4, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        // {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g2, SquareIndex::g4, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        // {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::h2, SquareIndex::h4, PieceType::WHITE_PAWN, PieceType::INVALID}},
+        
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::b8, SquareIndex::a6, PieceType::BLACK_KNIGHT, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d7, SquareIndex::d5, PieceType::BLACK_PAWN, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::c8, SquareIndex::e6, PieceType::BLACK_BISHOP, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d8, SquareIndex::d7, PieceType::BLACK_QUEEN, PieceType::INVALID}},
 
-        //{.flag=NORMAL, .normalMove={e1, a3, WHITE_KING, INVALID}}
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g8, SquareIndex::h6, PieceType::BLACK_KNIGHT, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g7, SquareIndex::g6, PieceType::BLACK_PAWN, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::f8, SquareIndex::g7, PieceType::BLACK_BISHOP, PieceType::INVALID}},
 
-        {.flag=CASTLE, .castleMove={e1, e3, WHITE_KING, a1, a3, WHITE_ROOK}}
-
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::a1, SquareIndex::b1, PieceType::WHITE_ROOK, PieceType::INVALID}},
+        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::b1, SquareIndex::a1, PieceType::WHITE_ROOK, PieceType::INVALID}},
     };
 
     for (auto& i : moves) {
@@ -44,11 +47,9 @@ Engine::Engine() {
         printASCIIBoard();
         board->printDebugData();
     }
-    for (int i = sizeof(moves)/sizeof(moves[0]) -1; i >= 0; i--) {
-        board->unMakeMove(moves[i]);
-        printASCIIBoard();
-        board->printDebugData();
-    }
+
+    generateMoves(*board, whiteTurn, SquareIndex::d2);
+    printASCIIBoard();
 }
 
 Engine::~Engine() {

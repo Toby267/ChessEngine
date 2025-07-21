@@ -23,6 +23,9 @@ static uint64_t generateRookMoves(SquareIndex square, uint64_t occupied, uint64_
 static uint64_t generateBishopMoves(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
 static uint64_t generateQueenMoves(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
 
+static uint64_t generateCastlingMoves(uint64_t occupied, std::array<__uint128_t, 4> castleData);
+static uint64_t generateEnPassantMoves(uint64_t occupied, std::array<__uint128_t, 16> enPassantData);
+
 static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction dir);
 static uint64_t getNegativeRay(SquareIndex square, uint64_t occupied, Direction dir);
 
@@ -42,14 +45,16 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn, SquareIndex temp) 
     moves.reserve(32);
 
     //constant values including the bitboards and masks
-    const std::array<uint64_t, 14>& bitBoards           = board.getBitBoards();
-    const uint64_t                  whitePieces         = bitBoards[PieceType::WHITE_PIECES];
-    const uint64_t                  blackPieces         = bitBoards[PieceType::BLACK_PIECES];
-    const uint64_t                  friendlyPieces      = whiteTurn ? whitePieces : blackPieces;
-    const uint64_t                  oppositionPieces    = whiteTurn ? blackPieces : whitePieces;
-    const uint64_t                  occupied            = whitePieces | blackPieces;
-    const uint64_t                  unoccupied          = ~occupied;
-    const short                     indexOffset         = whiteTurn ? 0 : 6;
+    const std::array<uint64_t, 14>&     bitBoards           = board.getBitBoards();
+    const std::array<__uint128_t, 16>&  enPassantData       = board.getEnPassantData();
+    const std::array<__uint128_t, 4>&   castleData          = board.getCastleData();
+    const uint64_t                      whitePieces         = bitBoards[PieceType::WHITE_PIECES];
+    const uint64_t                      blackPieces         = bitBoards[PieceType::BLACK_PIECES];
+    const uint64_t                      friendlyPieces      = whiteTurn ? whitePieces : blackPieces;
+    const uint64_t                      oppositionPieces    = whiteTurn ? blackPieces : whitePieces;
+    const uint64_t                      occupied            = whitePieces | blackPieces;
+    const uint64_t                      unoccupied          = ~occupied;
+    const short                         indexOffset         = whiteTurn ? 0 : 6;
 
     //generate moves for the easy pieces
     uint64_t kingMoves      = generateKingMoves(bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);
@@ -68,10 +73,14 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn, SquareIndex temp) 
     uint64_t queenMoves     = generateQueenMoves(temp, occupied, friendlyPieces);
 
     //generate en passant and castling
+    uint64_t castleMoves    = generateCastlingMoves(occupied, castleData);
+    //uint64_t enPassantMoves = generateEnPassantMoves(occupied, enPassantData);
+
+    //serialise into moves vector
 
     board.resetBoard();
-    board.setBitBoard(pawnAttacks, PieceType::BLACK_KING);
-    board.setBitBoard(pawnAttacks, PieceType::BLACK_PIECES);
+    board.setBitBoard(castleMoves, PieceType::BLACK_KING);
+    board.setBitBoard(castleMoves, PieceType::BLACK_PIECES);
 
     //finally return
     return moves;
@@ -92,7 +101,7 @@ static uint64_t generateKingMoves(uint64_t king, uint64_t friendlyPieces) {
 }
 
 static uint64_t generateKnightMoves(uint64_t knights, uint64_t friendlyPieces) {
-    //only checks for legal postitions by valid move directions, empty squares & borders, doesn't check checks
+    //doesn't check checks
     uint64_t h1 = (knights << 8 ) | (knights >> 8 );
     uint64_t h2 = (knights << 16) | (knights >> 16);
     uint64_t knightMoves =  (h1<<2) & (0xFCFCFCFCFCFCFCFCULL) |
@@ -163,6 +172,33 @@ static uint64_t generateQueenMoves(SquareIndex square, uint64_t occupied, uint64
                         getNegativeRay(square, occupied, Direction::NORTH_WEST) ;
 
     return moves & ~friendlyPieces;
+}
+
+
+// * -------------------------------------- [ SPECIAL MOVES ] --------------------------------------- * //
+
+static uint64_t generateCastlingMoves(uint64_t occupied, std::array<__uint128_t, 4> castleData) {
+    //doesn't check checks or if a piece is attacking between the end positions & doesn't check checks
+    uint64_t retVal = 0;
+
+    if (castleData[CastlePieces::W_KING]  == 0 && (occupied & (uint64_t)(0x0001010000000000)) == 0) {
+        retVal |= 0x0100000000000000;
+    }
+    if (castleData[CastlePieces::W_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000001010100)) == 0) {
+        retVal |= 0x0000000000000001;
+    }
+    if (castleData[CastlePieces::B_KING]  == 0 && (occupied & (uint64_t)(0x0080800000000000)) == 0) {
+        retVal |= 0x8000000000000000;
+    }
+    if (castleData[CastlePieces::B_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000080808000)) == 0) {
+        retVal |= 0x0000000000000080;
+    }
+
+    return retVal;
+}
+
+static uint64_t generateEnPassantMoves(uint64_t occupied, std::array<__uint128_t, 16> enPassantData) {
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

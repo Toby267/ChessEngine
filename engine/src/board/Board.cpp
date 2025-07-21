@@ -49,10 +49,16 @@ PieceType Board::getType(SquareIndex index) {
 }
 
 /**
- * Returns a const reference to the bitboards array
+ * Getters returning const references
  */
 const std::array<uint64_t, 14>& Board::getBitBoards() const {
     return bitBoards;
+}
+const std::array<__uint128_t,  4>& Board::getCastleData() const {
+    return castleData;
+}
+const std::array<__uint128_t, 16>& Board::getEnPassantData() const {
+    return enPassantData;
 }
 
 /**
@@ -175,7 +181,7 @@ void Board::setDefaultBoard() {
  * Resets the board back to its initial/default state
  */
 void Board::resetBoard() {
-    castleData = {1, 1, 1, 1};
+    castleData = {};
     enPassantData = {};
     bitBoards = {};
 }

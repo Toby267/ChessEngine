@@ -18,12 +18,12 @@ private:
     //attribute default values are as if Board::resetBoard() has been called
     std::array<uint64_t, 14> bitBoards{};
 
-    std::array<__uint128_t, 16> enPassantData{};        //1 in the right most bit means yes
-                                                        //every time a move is played it is shifted left
-                                                        //then shifted right when unplayed
-    std::array<__uint128_t, 4> castleData{1, 1, 1, 1};  //1 in any bit means no
-                                                        //every time a castle or rook move is played it is shifted left
-                                                        //then shifted right when unplayed
+    std::array<__uint128_t, 16> enPassantData{};    //1 in the right most bit means yes
+                                                    //every time a move is played it is shifted left
+                                                    //then shifted right when unplayed
+    std::array<__uint128_t, 4> castleData{};        //1 in any bit means no
+                                                    //every time a castle or rook move is played it is shifted left
+                                                    //then shifted right when unplayed
 
 public:
     //constructors/destructor
@@ -33,8 +33,10 @@ public:
     //getters/setters
     const std::array<uint64_t, 14>& getBitBoards() const;
     void setBitBoard(uint64_t val, PieceType type); //TODO: remove this method
+    const std::array<__uint128_t, 4>& getCastleData() const;
+    const std::array<__uint128_t, 16>& getEnPassantData() const;
     PieceType getType(SquareIndex index);
-
+    
     //public methods
     void makeMove(const Move& move);
     void unMakeMove(const Move& move);
