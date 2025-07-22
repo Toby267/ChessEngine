@@ -19,9 +19,9 @@ Engine::Engine() {
 
     //TODO: fill this with moves to test the functionality of make and unmake
     Move moves[] = {
-        {.flag=NORMAL, .normalMove=NormalMove{b7, b5, BLACK_PAWN, INVALID}},
-        {.flag=NORMAL, .normalMove=NormalMove{b5, b4, BLACK_PAWN, INVALID}},
-        {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN, INVALID}},
+        {.flag=NORMAL, .normalMove=NormalMove{a7, a5, BLACK_PAWN, INVALID}},
+        {.flag=NORMAL, .normalMove=NormalMove{a5, a4, BLACK_PAWN, INVALID}},
+        {.flag=NORMAL, .normalMove=NormalMove{b2, b4, WHITE_PAWN, INVALID}},
 
 
         // {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN, INVALID}},
