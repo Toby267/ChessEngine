@@ -19,33 +19,33 @@ Engine::Engine() {
 
     //TODO: fill this with moves to test the functionality of make and unmake
     Move moves[] = {
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::b1, SquareIndex::a3, PieceType::WHITE_KNIGHT, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d2, SquareIndex::d4, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::c1, SquareIndex::e3, PieceType::WHITE_BISHOP, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d1, SquareIndex::d2, PieceType::WHITE_QUEEN, PieceType::INVALID}},
-        
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g1, SquareIndex::h3, PieceType::WHITE_KNIGHT, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g2, SquareIndex::g3, PieceType::WHITE_PAWN, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::f1, SquareIndex::g2, PieceType::WHITE_BISHOP, PieceType::INVALID}},
+        {.flag=NORMAL, .normalMove=NormalMove{b7, b5, BLACK_PAWN, INVALID}},
+        {.flag=NORMAL, .normalMove=NormalMove{b5, b4, BLACK_PAWN, INVALID}},
+        {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN, INVALID}},
 
-        
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::b8, SquareIndex::a6, PieceType::BLACK_KNIGHT, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d7, SquareIndex::d5, PieceType::BLACK_PAWN, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::c8, SquareIndex::e6, PieceType::BLACK_BISHOP, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::d8, SquareIndex::d7, PieceType::BLACK_QUEEN, PieceType::INVALID}},
 
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g8, SquareIndex::h6, PieceType::BLACK_KNIGHT, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::g7, SquareIndex::g6, PieceType::BLACK_PAWN, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::f8, SquareIndex::g7, PieceType::BLACK_BISHOP, PieceType::INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{b2, b4, WHITE_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{c2, c4, WHITE_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{d2, d4, WHITE_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{e2, e4, WHITE_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{f2, f4, WHITE_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{g2, g4, WHITE_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{h2, h4, WHITE_PAWN, INVALID}},
 
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::a1, SquareIndex::b1, PieceType::WHITE_ROOK, PieceType::INVALID}},
-        {.flag=MoveType::NORMAL, .normalMove=NormalMove{SquareIndex::b1, SquareIndex::a1, PieceType::WHITE_ROOK, PieceType::INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{a7, a5, BLACK_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{b7, b5, BLACK_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{c7, c5, BLACK_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{d7, d5, BLACK_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{e7, e5, BLACK_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{f7, f5, BLACK_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{g7, g5, BLACK_PAWN, INVALID}},
+        // {.flag=NORMAL, .normalMove=NormalMove{h7, h5, BLACK_PAWN, INVALID}},
     };
 
     for (auto& i : moves) {
         board->makeMove(i);
         printASCIIBoard();
-        board->printDebugData();
     }
 
     generateMoves(*board, whiteTurn, SquareIndex::d2);

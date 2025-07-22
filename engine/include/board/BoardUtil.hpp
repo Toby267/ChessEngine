@@ -55,7 +55,6 @@ uint64_t southEastOne(uint64_t board);
 uint64_t southWestOne(uint64_t board);
 
 //these functions return a mask for each square in a certain direction from the given square, not including the given square
-//should probably move these to the move generater as helper functions
 uint64_t calcNorthMask(SquareIndex square);
 uint64_t calcEastMask(SquareIndex square);
 uint64_t calcSouthMask(SquareIndex square);
