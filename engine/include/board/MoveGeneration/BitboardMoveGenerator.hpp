@@ -43,7 +43,5 @@ uint64_t generateQueenBitboard(uint64_t queens, uint64_t occupied, uint64_t frie
 uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
 
 //special moves
-uint64_t generateCastlingBitboardWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
-uint64_t generateCastlingBitboardBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
 uint64_t generateEnPassantBitboardWhite(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData);
 uint64_t generateEnPassantBitboardBlack(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData);

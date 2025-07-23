@@ -140,41 +140,6 @@ uint64_t generateQueenBitboard(uint64_t queens, uint64_t occupied, uint64_t frie
 
 // * -------------------------------------- [ SPECIAL MOVES ] --------------------------------------- * //
 
-uint64_t generateCastlingBitboardWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
-    //doesn't check checks
-    uint64_t moves = 0ULL;
-
-    if (castleData[CastlePieces::W_KING]  == 0 && (occupied & (uint64_t)(0x0001010000000000)) == 0) {
-        if (!isTargeted(board, false, SquareIndex::f1) && !isTargeted(board, false, SquareIndex::g1)) {
-            moves |= 0x0100000000000000;
-        }
-    }
-    if (castleData[CastlePieces::W_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000001010100)) == 0) {
-        if (!isTargeted(board, false, SquareIndex::b1) && !isTargeted(board, false, SquareIndex::c1) && !isTargeted(board, false, SquareIndex::d1)) {
-            moves |= 0x0000000000000001;
-        }
-    }
-
-    return moves;
-}
-uint64_t generateCastlingBitboardBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
-    //doesn't check checks
-    uint64_t moves = 0ULL;
-
-    if (castleData[CastlePieces::B_KING]  == 0 && (occupied & (uint64_t)(0x0080800000000000)) == 0) {
-        if (!isTargeted(board, false, SquareIndex::f8) && !isTargeted(board, false, SquareIndex::g8)) {
-            moves |= 0x8000000000000000;
-        }
-    }
-    if (castleData[CastlePieces::B_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000080808000)) == 0) {
-        if (!isTargeted(board, false, SquareIndex::b8) && !isTargeted(board, false, SquareIndex::c8) && !isTargeted(board, false, SquareIndex::d8)) {
-            moves |= 0x0000000000000080;
-        }
-    }
-
-    return moves;
-}
-
 uint64_t generateEnPassantBitboardWhite(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData){ 
     //doesn't check checks
     for (int i = 0; i < enPassantData.size(); i++) {
