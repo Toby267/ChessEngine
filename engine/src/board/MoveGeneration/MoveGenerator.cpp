@@ -1,8 +1,10 @@
 #include "board/MoveGeneration/MoveGenerator.hpp"
 
+#include <iostream>
 #include <vector>
 #include <cstdint>
 
+#include "board/MoveGeneration/BitboardMoveSerialiser.hpp"
 #include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
@@ -52,6 +54,13 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn) {//todo: remove th
                                             generateEnPassantBitboardBlack(bitBoards[PieceType::BLACK_PAWN], enPassantData);
 
     //serialise into moves vector
+    moves = generateKingMoves(whiteTurn ? Colour::WHITE : Colour::BLACK, bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);
+    for (auto& i : moves) {
+        std::cout << i.flag << '\n';
+        std::cout << i.normalMove.startPos << '\n';
+        std::cout << i.normalMove.endPos << '\n';
+        std::cout << i.normalMove.pieceType << '\n';
+    }
 
     board.resetBoard();
     board.setBitBoard(castleMoves, PieceType::BLACK_KING);

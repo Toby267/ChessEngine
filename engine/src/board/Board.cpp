@@ -29,7 +29,7 @@ Board::~Board() {
  * 
  * @param index the index of said piece
  */
-PieceType Board::getType(SquareIndex index) {    
+PieceType Board::getType(SquareIndex index) {
     if (isWhite(index)) {
         for (int i = 0; i < 6; i++) {
             if (bitBoards[i] & (1ULL << index)) {
@@ -95,20 +95,20 @@ void Board::makeMove(const Move& move) {
             break;
             
         case MoveType::EN_PASSANT:
-            togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);    
+            togglePiece(getType(move.enPassantMove.killSquare), move.enPassantMove.killSquare);    
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
             break;
 
         case MoveType::PROMOTION:
-            togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
+            togglePiece(getType(move.promotionMove.endPos), move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
             updateSpecialMoveStatus(move);
             break;
 
         case MoveType::NORMAL:
-            togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
+            togglePiece(getType(move.promotionMove.endPos), move.normalMove.endPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
             updateSpecialMoveStatus(move);
@@ -139,15 +139,15 @@ void Board::unMakeMove(const Move& move) {
         case MoveType::EN_PASSANT:
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
-            togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
+            togglePiece(getType(move.enPassantMove.killSquare), move.enPassantMove.killSquare);
             break;
         case MoveType::PROMOTION:
-            togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
+            togglePiece(getType(move.promotionMove.endPos), move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
             break;
         case MoveType::NORMAL:
-            togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
+            togglePiece(getType(move.promotionMove.endPos), move.normalMove.endPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
             break;

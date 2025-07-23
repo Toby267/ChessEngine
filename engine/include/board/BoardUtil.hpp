@@ -34,6 +34,11 @@ enum PieceType {
     INVALID = -1
 };
 
+enum Colour {
+    WHITE,
+    BLACK
+};
+
 enum EnPassantPieces {
     A_WHITE, B_WHITE, C_WHITE, D_WHITE, E_WHITE, F_WHITE, G_WHITE, H_WHITE,
     A_BLACK, B_BLACK, C_BLACK, D_BLACK, E_BLACK, F_BLACK, G_BLACK, H_BLACK

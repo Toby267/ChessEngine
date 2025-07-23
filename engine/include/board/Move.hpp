@@ -20,7 +20,6 @@ struct NormalMove {
     SquareIndex startPos;
     SquareIndex endPos;
     PieceType   pieceType;
-    PieceType   killPieceType;
 };
 
 struct PromotionMove {
@@ -28,7 +27,6 @@ struct PromotionMove {
     SquareIndex endPos;
     PieceType   oldPieceType;
     PieceType   newPieceType;
-    PieceType   killPieceType;
 };
 
 struct EnPassantMove {
@@ -36,7 +34,6 @@ struct EnPassantMove {
     SquareIndex endPos;
     PieceType   pieceType;
     SquareIndex killSquare;
-    PieceType   killPieceType;
 };
 
 struct CastleMove {
