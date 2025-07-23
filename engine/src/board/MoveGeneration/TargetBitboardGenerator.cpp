@@ -11,6 +11,10 @@
 
 static uint64_t (*const rayFunctions[])(SquareIndex) = {calcNorthMask, calcEastMask, calcSouthMask, calcWestMask, calcNorthEastMask, calcNorthWestMask, calcSouthEastMask, calcSouthWestMask};
 
+static uint64_t generateRookBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
+static uint64_t generateBishopBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
+static uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
+
 static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction dir);
 static uint64_t getNegativeRay(SquareIndex square, uint64_t occupied, Direction dir);
 
@@ -66,38 +70,39 @@ uint64_t generatePawnAttackBitboardBlack(uint64_t pawns, uint64_t whitePieces) {
 
 // * ---------------------------------------- [ SLIDING MOVES ] ---------------------------------------- * //
 
-uint64_t generateRookBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
-    //doesn't check checks
-    uint64_t moves =    getPositiveRay(square, occupied, Direction::NORTH)  |
-                        getPositiveRay(square, occupied, Direction::EAST)   |
-                        getNegativeRay(square, occupied, Direction::SOUTH)  |
-                        getNegativeRay(square, occupied, Direction::WEST)   ;
+uint64_t generateRookBitboard(uint64_t rooks, uint64_t occupied, uint64_t friendlyPieces) {
+    uint64_t moves = 0;
 
-    return moves & ~friendlyPieces;
+    while (rooks) {
+        uint64_t index = __builtin_ctzll(rooks);
+        moves |= generateRookBitboardSingular((SquareIndex)(index), occupied, friendlyPieces);
+        rooks &= rooks-1;
+    }
+
+    return moves;
 }
-uint64_t generateBishopBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
-    //doesn't check checks
-    uint64_t moves =    getNegativeRay(square, occupied, Direction::SOUTH_WEST) |
-                        getPositiveRay(square, occupied, Direction::NORTH_EAST) |
-                        getPositiveRay(square, occupied, Direction::SOUTH_EAST) |
-                        getNegativeRay(square, occupied, Direction::NORTH_WEST) ;
+uint64_t generateBishopBitboard(uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces) {
+    uint64_t moves = 0;
 
-    return moves & ~friendlyPieces;
+    while (bishops) {
+        uint64_t index = __builtin_ctzll(bishops);
+        moves |= generateBishopBitboardSingular((SquareIndex)(index), occupied, friendlyPieces);
+        bishops &= bishops-1;
+    }
+
+    return moves;
 }
-uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
-    //doesn't check checks
-    uint64_t moves =    getPositiveRay(square, occupied, Direction::NORTH)      |
-                        getPositiveRay(square, occupied, Direction::EAST)       |
-                        getNegativeRay(square, occupied, Direction::SOUTH)      |
-                        getNegativeRay(square, occupied, Direction::WEST)       |
-                        getNegativeRay(square, occupied, Direction::SOUTH_WEST) |
-                        getPositiveRay(square, occupied, Direction::NORTH_EAST) |
-                        getPositiveRay(square, occupied, Direction::SOUTH_EAST) |
-                        getNegativeRay(square, occupied, Direction::NORTH_WEST) ;
+uint64_t generateQueenBitboard(uint64_t queens, uint64_t occupied, uint64_t friendlyPieces) {
+    uint64_t moves = 0;
 
-    return moves & ~friendlyPieces;
+    while (queens) {
+        uint64_t index = __builtin_ctzll(queens);
+        moves |= generateQueenBitboardSingular((SquareIndex)(index), occupied, friendlyPieces);
+        queens &= queens-1;
+    }
+
+    return moves;
 }
-
 
 // * -------------------------------------- [ SPECIAL MOVES ] --------------------------------------- * //
 
@@ -160,6 +165,38 @@ uint64_t generateEnPassantBitboardBlack(uint64_t friendlyPieces, std::array<__ui
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static uint64_t generateRookBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
+    //doesn't check checks
+    uint64_t moves =    getPositiveRay(square, occupied, Direction::NORTH)  |
+                        getPositiveRay(square, occupied, Direction::EAST)   |
+                        getNegativeRay(square, occupied, Direction::SOUTH)  |
+                        getNegativeRay(square, occupied, Direction::WEST)   ;
+
+    return moves & ~friendlyPieces;
+}
+static uint64_t generateBishopBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
+    //doesn't check checks
+    uint64_t moves =    getNegativeRay(square, occupied, Direction::SOUTH_WEST) |
+                        getPositiveRay(square, occupied, Direction::NORTH_EAST) |
+                        getPositiveRay(square, occupied, Direction::SOUTH_EAST) |
+                        getNegativeRay(square, occupied, Direction::NORTH_WEST) ;
+
+    return moves & ~friendlyPieces;
+}
+static uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
+    //doesn't check checks
+    uint64_t moves =    getPositiveRay(square, occupied, Direction::NORTH)      |
+                        getPositiveRay(square, occupied, Direction::EAST)       |
+                        getNegativeRay(square, occupied, Direction::SOUTH)      |
+                        getNegativeRay(square, occupied, Direction::WEST)       |
+                        getNegativeRay(square, occupied, Direction::SOUTH_WEST) |
+                        getPositiveRay(square, occupied, Direction::NORTH_EAST) |
+                        getPositiveRay(square, occupied, Direction::SOUTH_EAST) |
+                        getNegativeRay(square, occupied, Direction::NORTH_WEST) ;
+
+    return moves & ~friendlyPieces;
+}
 
 static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction dir) {
     uint64_t ray = rayFunctions[dir](square);

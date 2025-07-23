@@ -3,8 +3,6 @@
 #include <array>
 #include <cstdint>
 
-#include "board/BoardUtil.hpp"
-
 enum Direction {
     NORTH,
     EAST,
@@ -25,9 +23,9 @@ uint64_t generatePawnPushBitboardBlack(uint64_t pawns, uint64_t unoccupied);
 uint64_t generatePawnAttackBitboardWhite(uint64_t pawns, uint64_t blackPieces);
 uint64_t generatePawnAttackBitboardBlack(uint64_t pawns, uint64_t whitePieces);
 
-uint64_t generateRookBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
-uint64_t generateBishopBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
-uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
+uint64_t generateRookBitboard(uint64_t rooks, uint64_t occupied, uint64_t friendlyPieces);
+uint64_t generateBishopBitboard(uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces);
+uint64_t generateQueenBitboard(uint64_t queens, uint64_t occupied, uint64_t friendlyPieces);
 
 uint64_t generateCastlingBitboardWhite(uint64_t occupied, std::array<__uint128_t, 4> castleData);
 uint64_t generateCastlingBitboardBlack(uint64_t occupied, std::array<__uint128_t, 4> castleData);

@@ -1,5 +1,6 @@
 #include "board/MoveGeneration/MoveGenerator.hpp"
 
+#include <iostream>
 #include <vector>
 #include <cstdint>
 
@@ -13,7 +14,7 @@
  * @param board the board
  * @param whiteTurn whether or not it is whites turn to move
  */
-std::vector<Move> generateMoves(Board& board, bool whiteTurn, SquareIndex temp) {//todo: remove the temp variable
+std::vector<Move> generateMoves(Board& board, bool whiteTurn) {//todo: remove the temp variable
     //return vector containing all moves converted into type Move.
     std::vector<Move> moves;
     moves.reserve(32);
@@ -42,9 +43,9 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn, SquareIndex temp) 
                                             generatePawnAttackBitboardBlack(bitBoards[PieceType::BLACK_PAWN], whitePieces);
 
     //generate moves for sliding pieces
-    uint64_t rookMoves      = generateRookBitboardSingular(temp, occupied, friendlyPieces);
-    uint64_t bishopMoves    = generateBishopBitboardSingular(temp, occupied, friendlyPieces);
-    uint64_t queenMoves     = generateQueenBitboardSingular(temp, occupied, friendlyPieces);
+    uint64_t rookMoves      = generateRookBitboard(bitBoards[PieceType::WHITE_ROOK + indexOffset], occupied, friendlyPieces);
+    uint64_t bishopMoves    = generateBishopBitboard(bitBoards[PieceType::WHITE_BISHOP + indexOffset], occupied, friendlyPieces);
+    uint64_t queenMoves     = generateQueenBitboard(bitBoards[PieceType::WHITE_QUEEN + indexOffset], occupied, friendlyPieces);
 
     //generate en passant and castling
     uint64_t castleMoves    = whiteTurn ?   generateCastlingBitboardWhite(occupied, castleData):
@@ -55,8 +56,8 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn, SquareIndex temp) 
     //serialise into moves vector
 
     board.resetBoard();
-    board.setBitBoard(enPassantMoves, PieceType::BLACK_KING);
-    board.setBitBoard(enPassantMoves, PieceType::BLACK_PIECES);
+    board.setBitBoard(queenMoves, PieceType::BLACK_KING);
+    board.setBitBoard(queenMoves, PieceType::BLACK_PIECES);
 
     //finally return
     return moves;

@@ -14,14 +14,15 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {
-    board->setDefaultBoard();
+    //board->setDefaultBoard();
+    parseFen("8/1r6/4Q3/8/8/8/1Q6/8 w KQkq - 0 1");
     printASCIIBoard();
 
     //TODO: fill this with moves to test the functionality of make and unmake
-    Move moves[] = {
-        {.flag=NORMAL, .normalMove=NormalMove{a7, a5, BLACK_PAWN, INVALID}},
-        {.flag=NORMAL, .normalMove=NormalMove{a5, a4, BLACK_PAWN, INVALID}},
-        {.flag=NORMAL, .normalMove=NormalMove{b2, b4, WHITE_PAWN, INVALID}},
+    // Move moves[] = {
+    //     {.flag=NORMAL, .normalMove=NormalMove{a7, a5, BLACK_PAWN, INVALID}},
+    //     {.flag=NORMAL, .normalMove=NormalMove{a5, a4, BLACK_PAWN, INVALID}},
+    //     {.flag=NORMAL, .normalMove=NormalMove{b2, b4, WHITE_PAWN, INVALID}},
 
 
         // {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN, INVALID}},
@@ -41,14 +42,14 @@ Engine::Engine() {
         // {.flag=NORMAL, .normalMove=NormalMove{f7, f5, BLACK_PAWN, INVALID}},
         // {.flag=NORMAL, .normalMove=NormalMove{g7, g5, BLACK_PAWN, INVALID}},
         // {.flag=NORMAL, .normalMove=NormalMove{h7, h5, BLACK_PAWN, INVALID}},
-    };
+    //};
 
-    for (auto& i : moves) {
-        board->makeMove(i);
-        printASCIIBoard();
-    }
+    // for (auto& i : moves) {
+    //     board->makeMove(i);
+    //     printASCIIBoard();
+    // }
 
-    generateMoves(*board, whiteTurn, SquareIndex::d2);
+    generateMoves(*board, whiteTurn);
     printASCIIBoard();
 }
 
