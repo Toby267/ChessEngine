@@ -46,16 +46,16 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn) {//todo: remove th
     uint64_t queenMoves     = generateQueenBitboard(bitBoards[PieceType::WHITE_QUEEN + indexOffset], occupied, friendlyPieces);
 
     //generate en passant and castling
-    uint64_t castleMoves    = whiteTurn ?   generateCastlingBitboardWhite(occupied, castleData):
-                                            generateCastlingBitboardBlack(occupied, castleData);
+    uint64_t castleMoves    = whiteTurn ?   generateCastlingBitboardWhite(board, occupied, castleData):
+                                            generateCastlingBitboardBlack(board, occupied, castleData);
     uint64_t enPassantMoves = whiteTurn ?   generateEnPassantBitboardWhite(bitBoards[PieceType::WHITE_PAWN], enPassantData):
                                             generateEnPassantBitboardBlack(bitBoards[PieceType::BLACK_PAWN], enPassantData);
 
     //serialise into moves vector
 
     board.resetBoard();
-    board.setBitBoard(queenMoves, PieceType::BLACK_KING);
-    board.setBitBoard(queenMoves, PieceType::BLACK_PIECES);
+    board.setBitBoard(castleMoves, PieceType::BLACK_KING);
+    board.setBitBoard(castleMoves, PieceType::BLACK_PIECES);
 
     //finally return
     return moves;

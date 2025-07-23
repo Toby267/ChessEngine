@@ -11,10 +11,6 @@
 
 static uint64_t (*const rayFunctions[])(SquareIndex) = {calcNorthMask, calcEastMask, calcSouthMask, calcWestMask, calcNorthEastMask, calcNorthWestMask, calcSouthEastMask, calcSouthWestMask};
 
-static uint64_t generateRookBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
-static uint64_t generateBishopBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
-static uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces);
-
 static uint64_t getPositiveRay(SquareIndex square, uint64_t occupied, Direction dir);
 static uint64_t getNegativeRay(SquareIndex square, uint64_t occupied, Direction dir);
 
@@ -22,7 +18,7 @@ static uint64_t getNegativeRay(SquareIndex square, uint64_t occupied, Direction 
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool isTargeted(Board& board, bool whiteTurn, SquareIndex i) {
+bool isTargeted(const Board& board, bool whiteTurn, SquareIndex i) {
     //targeted piece
     uint64_t targetedPiece = 1ULL << i;
     
@@ -75,6 +71,9 @@ uint64_t generateKnightBitboard(uint64_t knights, uint64_t friendlyPieces) {
                             (h2<<1) & (0xFEFEFEFEFEFEFEFEULL) |
                             (h2>>1) & (0x7F7F7F7F7F7F7F7FULL) ;
     return knightMoves & ~friendlyPieces;
+}
+uint64_t generateKnightBitboardSingular(SquareIndex square, uint64_t friendlyPieces) {
+    return generateKnightBitboard(1ULL << square, friendlyPieces);
 }
 
 // * ---------------------------------------- [ PAWN MOVES ] ---------------------------------------- * //
@@ -141,28 +140,36 @@ uint64_t generateQueenBitboard(uint64_t queens, uint64_t occupied, uint64_t frie
 
 // * -------------------------------------- [ SPECIAL MOVES ] --------------------------------------- * //
 
-uint64_t generateCastlingBitboardWhite(uint64_t occupied, std::array<__uint128_t, 4> castleData) {
-    //doesn't check checks or if a piece is attacking between the end positions & doesn't check checks
+uint64_t generateCastlingBitboardWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
+    //doesn't check checks
     uint64_t moves = 0ULL;
 
     if (castleData[CastlePieces::W_KING]  == 0 && (occupied & (uint64_t)(0x0001010000000000)) == 0) {
-        moves |= 0x0100000000000000;
+        if (!isTargeted(board, false, SquareIndex::f1) && !isTargeted(board, false, SquareIndex::g1)) {
+            moves |= 0x0100000000000000;
+        }
     }
     if (castleData[CastlePieces::W_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000001010100)) == 0) {
-        moves |= 0x0000000000000001;
+        if (!isTargeted(board, false, SquareIndex::b1) && !isTargeted(board, false, SquareIndex::c1) && !isTargeted(board, false, SquareIndex::d1)) {
+            moves |= 0x0000000000000001;
+        }
     }
 
     return moves;
 }
-uint64_t generateCastlingBitboardBlack(uint64_t occupied, std::array<__uint128_t, 4> castleData) {
-    //doesn't check checks or if a piece is attacking between the end positions & doesn't check checks
+uint64_t generateCastlingBitboardBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
+    //doesn't check checks
     uint64_t moves = 0ULL;
 
     if (castleData[CastlePieces::B_KING]  == 0 && (occupied & (uint64_t)(0x0080800000000000)) == 0) {
-        moves |= 0x8000000000000000;
+        if (!isTargeted(board, false, SquareIndex::f8) && !isTargeted(board, false, SquareIndex::g8)) {
+            moves |= 0x8000000000000000;
+        }
     }
     if (castleData[CastlePieces::B_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000080808000)) == 0) {
-        moves |= 0x0000000000000080;
+        if (!isTargeted(board, false, SquareIndex::b8) && !isTargeted(board, false, SquareIndex::c8) && !isTargeted(board, false, SquareIndex::d8)) {
+            moves |= 0x0000000000000080;
+        }
     }
 
     return moves;
@@ -201,7 +208,7 @@ uint64_t generateEnPassantBitboardBlack(uint64_t friendlyPieces, std::array<__ui
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static uint64_t generateRookBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
+uint64_t generateRookBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
     //doesn't check checks
     uint64_t moves =    getPositiveRay(square, occupied, Direction::NORTH)  |
                         getPositiveRay(square, occupied, Direction::EAST)   |
@@ -210,7 +217,7 @@ static uint64_t generateRookBitboardSingular(SquareIndex square, uint64_t occupi
 
     return moves & ~friendlyPieces;
 }
-static uint64_t generateBishopBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
+uint64_t generateBishopBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
     //doesn't check checks
     uint64_t moves =    getNegativeRay(square, occupied, Direction::SOUTH_WEST) |
                         getPositiveRay(square, occupied, Direction::NORTH_EAST) |
@@ -219,7 +226,7 @@ static uint64_t generateBishopBitboardSingular(SquareIndex square, uint64_t occu
 
     return moves & ~friendlyPieces;
 }
-static uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
+uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, uint64_t friendlyPieces) {
     //doesn't check checks
     uint64_t moves =    getPositiveRay(square, occupied, Direction::NORTH)      |
                         getPositiveRay(square, occupied, Direction::EAST)       |
