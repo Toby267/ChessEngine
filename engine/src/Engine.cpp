@@ -7,7 +7,7 @@
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
 #include "board/MoveGeneration/MoveGenerator.hpp"
-#include "board/MoveGeneration/TargetBitboardGenerator.hpp"
+#include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 
 // * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
 

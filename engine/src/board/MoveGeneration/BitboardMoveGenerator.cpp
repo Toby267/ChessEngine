@@ -1,4 +1,4 @@
-#include "board/MoveGeneration/TargetBitboardGenerator.hpp"
+#include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 
 #include <array>
 #include <cstdint>

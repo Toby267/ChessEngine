@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstdint>
 
-#include "board/MoveGeneration/TargetBitboardGenerator.hpp"
+#include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 
