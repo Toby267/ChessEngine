@@ -1,6 +1,5 @@
 #include "board/MoveGeneration/MoveGenerator.hpp"
 
-#include <iostream>
 #include <vector>
 #include <cstdint>
 
@@ -26,7 +25,7 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn) {//todo: remove th
     const uint64_t                      whitePieces         = bitBoards[PieceType::WHITE_PIECES];
     const uint64_t                      blackPieces         = bitBoards[PieceType::BLACK_PIECES];
     const uint64_t                      friendlyPieces      = whiteTurn ? whitePieces : blackPieces;
-    const uint64_t                      oppositionPieces    = whiteTurn ? blackPieces : whitePieces;
+    const uint64_t                      oppositionPieces    = whiteTurn ? blackPieces : whitePieces; //not used yet
     const uint64_t                      occupied            = whitePieces | blackPieces;
     const uint64_t                      unoccupied          = ~occupied;
     const short                         indexOffset         = whiteTurn ? 0 : 6;
@@ -36,7 +35,6 @@ std::vector<Move> generateMoves(Board& board, bool whiteTurn) {//todo: remove th
     uint64_t knightMoves    = generateKnightBitboard(bitBoards[PieceType::WHITE_KNIGHT + indexOffset], friendlyPieces);
 
     //generate moves for pawns
-    //still need to test pawn moves
     uint64_t pawnPushes     = whiteTurn ?   generatePawnPushBitboardWhite(bitBoards[PieceType::WHITE_PAWN], unoccupied):
                                             generatePawnPushBitboardBlack(bitBoards[PieceType::BLACK_PAWN], unoccupied);
     uint64_t pawnAttacks    = whiteTurn ?   generatePawnAttackBitboardWhite(bitBoards[PieceType::WHITE_PAWN], blackPieces):

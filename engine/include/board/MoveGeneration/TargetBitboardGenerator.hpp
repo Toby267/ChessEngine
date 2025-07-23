@@ -3,6 +3,9 @@
 #include <array>
 #include <cstdint>
 
+#include "board/Board.hpp"
+#include "board/BoardUtil.hpp"
+
 enum Direction {
     NORTH,
     EAST,
@@ -14,7 +17,8 @@ enum Direction {
     SOUTH_WEST
 };
 
-//public methods
+bool isTargeted(Board& board, bool whiteTurn, SquareIndex i);
+
 uint64_t generateKingBitboard(uint64_t king, uint64_t friendlyPieces);
 uint64_t generateKnightBitboard(uint64_t knights, uint64_t friendlyPieces);
 
