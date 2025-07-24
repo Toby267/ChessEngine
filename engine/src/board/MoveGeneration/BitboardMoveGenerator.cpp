@@ -43,7 +43,6 @@ bool isTargeted(const Board& board, WhiteTurn whiteTurn, SquareIndex i) {
     uint64_t enPassantMoves = generateEnPassantBitboard(whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], enPassantData);
     if (targetedPiece & pawnAttacks || targetedPiece & enPassantMoves) return  true;
 
-
     //generate moves for sliding pieces
     uint64_t rookMoves      = generateRookBitboard(bitBoards[PieceType::WHITE_ROOK + indexOffset], occupied, friendlyPieces);
     uint64_t bishopMoves    = generateBishopBitboard(bitBoards[PieceType::WHITE_BISHOP + indexOffset], occupied, friendlyPieces);
@@ -175,32 +174,17 @@ uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, ui
 // * ----------------------------------------- [ SPECIAL MOVES ] ----------------------------------------- * //
 
 uint64_t generateEnPassantBitboard(WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData){ 
-    if (whiteTurn) {
-        for (int i = 0; i < enPassantData.size(); i++) {
-            if (!(enPassantData[i] & 1)) continue;
+    for (int i = 0; i < enPassantData.size(); i++) {
+        if (!(enPassantData[i] & 1)) continue;
 
-            int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
+        int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
 
-            if (((westOne(1ULL << index) & friendlyPieces) != 0) || ((eastOne(1ULL << index) & friendlyPieces) != 0)) {
-                return northOne(1ULL << index);
-            }
+        if (((westOne(1ULL << index) & friendlyPieces) != 0) || ((eastOne(1ULL << index) & friendlyPieces) != 0)) {
+            return whiteTurn ? northOne(1ULL << index) : southOne(1ULL << index);
         }
-
-        return 0ULL;
     }
-    else {
-        for (int i = 0; i < enPassantData.size(); i++) {
-            if (!(enPassantData[i] & 1)) continue;
 
-            int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
-
-            if ((westOne(1ULL << index) & friendlyPieces) != 0 || (eastOne(1ULL << index) & friendlyPieces) != 0) {
-                return southOne(1ULL << index);
-            }
-        }
-
-        return 0ULL;
-    }
+    return 0ULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
