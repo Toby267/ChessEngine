@@ -87,13 +87,73 @@ std::vector<Move> generatePawnMovesWhite(WhiteTurn whiteTurn, uint64_t pawns, ui
 }
 
 std::vector<Move> generateRookMoves(WhiteTurn whiteTurn, uint64_t rooks, uint64_t occupied, uint64_t friendlyPieces) {
-    std::vector<Move> moves; return moves;
+    std::vector<Move> moves;
+    moves.reserve(8);
+
+    const PieceType pieceType = whiteTurn ? WHITE_ROOK : BLACK_ROOK;
+
+    while (rooks) {
+        SquareIndex startSquare = (SquareIndex)__builtin_ctzll(rooks);
+
+        uint64_t movesBitboard = generateRookBitboardSingular(startSquare, occupied, friendlyPieces);
+        while (movesBitboard) {
+            SquareIndex targetSquare = (SquareIndex)__builtin_ctzll(movesBitboard);
+
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startSquare, targetSquare, pieceType}});
+
+            movesBitboard &= movesBitboard-1;
+        }
+
+        rooks &= rooks-1;
+    }
+
+    return moves;
 }
 std::vector<Move> generateBishopMoves(WhiteTurn whiteTurn, uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces) {
-    std::vector<Move> moves; return moves;
+    std::vector<Move> moves;
+    moves.reserve(8);
+
+    const PieceType pieceType = whiteTurn ? WHITE_BISHOP : BLACK_BISHOP;
+
+    while (bishops) {
+        SquareIndex startSquare = (SquareIndex)__builtin_ctzll(bishops);
+
+        uint64_t movesBitboard = generateBishopBitboardSingular(startSquare, occupied, friendlyPieces);
+        while (movesBitboard) {
+            SquareIndex targetSquare = (SquareIndex)__builtin_ctzll(movesBitboard);
+
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startSquare, targetSquare, pieceType}});
+
+            movesBitboard &= movesBitboard-1;
+        }
+
+        bishops &= bishops-1;
+    }
+
+    return moves;
 }
 std::vector<Move> generateQueenMoves(WhiteTurn whiteTurn, uint64_t queens, uint64_t occupied, uint64_t friendlyPieces) {
-    std::vector<Move> moves; return moves;
+    std::vector<Move> moves;
+    moves.reserve(8);
+
+    const PieceType pieceType = whiteTurn ? WHITE_QUEEN : BLACK_QUEEN;
+
+    while (queens) {
+        SquareIndex startSquare = (SquareIndex)__builtin_ctzll(queens);
+
+        uint64_t movesBitboard = generateQueenBitboardSingular(startSquare, occupied, friendlyPieces);
+        while (movesBitboard) {
+            SquareIndex targetSquare = (SquareIndex)__builtin_ctzll(movesBitboard);
+
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startSquare, targetSquare, pieceType}});
+
+            movesBitboard &= movesBitboard-1;
+        }
+
+        queens &= queens-1;
+    }
+
+    return moves;
 }
 
 std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData) {

@@ -87,7 +87,7 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {//todo: remo
     //     std::cout << i.enPassantMove.killPieceType  << '\n';
     // }
 
-    moves = generateKnightMoves(whiteTurn, bitBoards[PieceType::WHITE_KNIGHT + indexOffset], friendlyPieces);
+    moves = generateQueenMoves(whiteTurn, bitBoards[PieceType::WHITE_QUEEN + indexOffset], occupied, friendlyPieces);
     for (auto& i : moves) {
         std::cout << i.flag                 << '\n';
         std::cout << i.normalMove.startPos  << '\n';

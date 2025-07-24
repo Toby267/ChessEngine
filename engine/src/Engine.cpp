@@ -21,16 +21,17 @@ Engine::Engine() {
 
     //TODO: fill this with moves to test the functionality of make and unmake
     Move moves[] = {
-        //castle check
+        {.flag=NORMAL, .normalMove=NormalMove{d1, d4, WHITE_QUEEN}},
+
+
         // {.flag=NORMAL, .normalMove=NormalMove{b1, b3, WHITE_KNIGHT}},
         // {.flag=NORMAL, .normalMove=NormalMove{c1, c3, WHITE_BISHOP}},
         // {.flag=NORMAL, .normalMove=NormalMove{d1, d3, WHITE_QUEEN}},
         // {.flag=NORMAL, .normalMove=NormalMove{d2, d4, WHITE_PAWN}},
 
-
-        {.flag=NORMAL, .normalMove=NormalMove{b7, b5, BLACK_PAWN}},
-        {.flag=NORMAL, .normalMove=NormalMove{b5, b4, BLACK_PAWN}},
-        {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{b7, b5, BLACK_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{b5, b4, BLACK_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN}},
 
         // {.flag=NORMAL, .normalMove=NormalMove{b2, b4, WHITE_PAWN}},
         // {.flag=NORMAL, .normalMove=NormalMove{b4, b5, WHITE_PAWN}},
@@ -55,10 +56,10 @@ Engine::Engine() {
         // {.flag=NORMAL, .normalMove=NormalMove{h7, h5, BLACK_PAWN}},
     };
 
-    // for (auto& i : moves) {
-    //     board->makeMove(i);
-    //     printASCIIBoard();
-    // }
+    for (auto& i : moves) {
+        board->makeMove(i);
+        printASCIIBoard();
+    }
 
     generateMoves(*board, whiteTurn);
     printASCIIBoard();
