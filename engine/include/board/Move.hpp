@@ -34,6 +34,7 @@ struct EnPassantMove {
     SquareIndex endPos;
     PieceType   pieceType;
     SquareIndex killSquare;
+    PieceType   killPieceType;
 };
 
 struct CastleMove {

@@ -1,5 +1,6 @@
 #include "board/MoveGeneration/BitboardMoveSerialiser.hpp"
 
+#include <cstdint>
 #include <vector>
 
 #include "board/BoardUtil.hpp"
@@ -7,24 +8,44 @@
 #include "board/Board.hpp"
 #include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 
+
+
+/*
+TODO: should split move generation files like so:
+
+MoveGenerator.hpp
+
+MoveGenerator.cpp
+SimpleMoveGeneration.cpp
+SlidingMoveGeneration.cpp
+PawnMoveGeneration.cpp
+SpecialMoveGeneration.cpp
+
+where each have the code for bitboard move generation and bitboard move serialisation.
+and each expose those two methods in the header file while helper methods are static
+and the isTargeted() and the main moveGeneration functiions are in MoveGenerator.cpp
+*/
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 static std::vector<Move> generateCastlingBitboardWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
 static std::vector<Move> generateCastlingBitboardBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
+
+static std::vector<Move> generateEnPassantMovesWhite(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData);
+static std::vector<Move> generateEnPassantMovesBlack(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<Move> generateKingMoves(Colour colourToPlay, uint64_t king, uint64_t friendlyPieces) {
+std::vector<Move> generateKingMoves(WhiteTurn whiteTurn, uint64_t king, uint64_t friendlyPieces) {
     std::vector<Move> moves;
     moves.reserve(8);
 
     const SquareIndex   startSquare = (SquareIndex)__builtin_ctzll(king);
-    const PieceType     pieceType = colourToPlay == Colour::WHITE ? WHITE_KING : BLACK_KING;
+    const PieceType     pieceType = whiteTurn ? WHITE_KING : BLACK_KING;
 
     uint64_t movesBitboard = generateKingBitboard(king, friendlyPieces);
     while (movesBitboard) {
@@ -37,36 +58,38 @@ std::vector<Move> generateKingMoves(Colour colourToPlay, uint64_t king, uint64_t
 
     return moves;
 }
-std::vector<Move> generateKnightMoves(Colour colourToPlay, uint64_t knights, uint64_t friendlyPieces) {
+std::vector<Move> generateKnightMoves(WhiteTurn whiteTurn, uint64_t knights, uint64_t friendlyPieces) {
     std::vector<Move> moves;
     moves.reserve(8);
 
     return moves;
 }
 
-std::vector<Move> generatePawnMovesWhite(Colour colourToPlay, uint64_t pawns, uint64_t unoccupied) {
+std::vector<Move> generatePawnMovesWhite(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied) {
     std::vector<Move> moves; return moves;
 }
 
-std::vector<Move> generateRookMoves(Colour colourToPlay, uint64_t rooks, uint64_t occupied, uint64_t friendlyPieces) {
+std::vector<Move> generateRookMoves(WhiteTurn whiteTurn, uint64_t rooks, uint64_t occupied, uint64_t friendlyPieces) {
     std::vector<Move> moves; return moves;
 }
-std::vector<Move> generateBishopMoves(Colour colourToPlay, uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces) {
+std::vector<Move> generateBishopMoves(WhiteTurn whiteTurn, uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces) {
     std::vector<Move> moves; return moves;
 }
-std::vector<Move> generateQueenMoves(Colour colourToPlay, uint64_t queens, uint64_t occupied, uint64_t friendlyPieces) {
+std::vector<Move> generateQueenMoves(WhiteTurn whiteTurn, uint64_t queens, uint64_t occupied, uint64_t friendlyPieces) {
     std::vector<Move> moves; return moves;
 }
 
-std::vector<Move> generateCastlingMoves(Colour colourToPlay, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
-    if (colourToPlay == Colour::WHITE)
+std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
+    if (whiteTurn)
         return generateCastlingBitboardWhite(board, occupied, castleData);
     else
         return generateCastlingBitboardBlack(board, occupied, castleData);
 }
-std::vector<Move> generateEnPassantMoves(Colour colourToPlay, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData) {
-    uint64_t movesBitboard = generateEnPassantBitboardWhite(friendlyPieces, enPassantData);
-    std::vector<Move> moves; return moves;
+std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData) {
+    if (whiteTurn)
+        return generateEnPassantMovesWhite(friendlyPieces, enPassantData);
+    else
+        return generateEnPassantMovesBlack(friendlyPieces, enPassantData);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,12 +101,12 @@ static std::vector<Move> generateCastlingBitboardWhite(const Board &board, uint6
     moves.reserve(2);
 
     if (castleData[CastlePieces::W_KING]  == 0 && (occupied & (uint64_t)(0x0001010000000000)) == 0) {
-        if (!isTargeted(board, false, SquareIndex::f1) && !isTargeted(board, false, SquareIndex::g1)) {
+        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::f1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::g1)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, g1, WHITE_KING, h1, f1, WHITE_ROOK}});
         }
     }
     if (castleData[CastlePieces::W_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000001010100)) == 0) {
-        if (!isTargeted(board, false, SquareIndex::b1) && !isTargeted(board, false, SquareIndex::c1) && !isTargeted(board, false, SquareIndex::d1)) {
+        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::b1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::c1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d1)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, c1, WHITE_KING, a1, d1, WHITE_ROOK}});
         }
     }
@@ -108,3 +131,44 @@ static std::vector<Move> generateCastlingBitboardBlack(const Board &board, uint6
     return moves;
 }
 
+static std::vector<Move> generateEnPassantMovesWhite(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData){ 
+    // TODO: finish this
+    std::vector<Move> moves;
+    moves.reserve(1);
+
+    for (int i = 0; i < enPassantData.size(); i++) {
+        if (!(enPassantData[i] & 1)) continue;
+
+        int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
+        SquareIndex squareIndex = (SquareIndex)index;
+        uint64_t pawnBitboard = 1ULL << index;
+
+        if ((westOne(pawnBitboard) & friendlyPieces) != 0) {
+            // return northOne(pawnBitboard);
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{squareIndex, c8, WHITE_PAWN, a8, BLACK_PAWN}});
+        }
+        else if ((eastOne(pawnBitboard) & friendlyPieces) != 0) {
+            // return northOne(pawnBitboard);
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{squareIndex, c8, WHITE_PAWN, a8, BLACK_PAWN}});
+        }
+    }
+
+    return moves;
+}
+static std::vector<Move> generateEnPassantMovesBlack(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData){ 
+    std::vector<Move> moves;
+    moves.reserve(1);
+
+    for (int i = 0; i < enPassantData.size(); i++) {
+        if (!(enPassantData[i] & 1)) continue;
+
+        int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
+
+        if ((westOne(1ULL << index) & friendlyPieces) != 0 || (eastOne(1ULL << index) & friendlyPieces) != 0) {
+            // return southOne(1ULL << index);
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{e8, c8, BLACK_PAWN, a8, WHITE_PAWN}});
+        }
+    }
+
+    return moves;
+}

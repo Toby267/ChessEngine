@@ -1,6 +1,7 @@
 #pragma once
 
 #include "board/Board.hpp"
+#include "board/BoardUtil.hpp"
 
 /**
  * Class representing the engine as a whole
@@ -10,7 +11,7 @@
 class Engine {
 private:
     Board* board = new Board();
-    bool whiteTurn = true;
+    WhiteTurn whiteTurn = true;
     int drawMoveCounter = 0;
 
 public:

@@ -95,9 +95,9 @@ void Board::makeMove(const Move& move) {
             break;
             
         case MoveType::EN_PASSANT:
-            togglePiece(getType(move.enPassantMove.killSquare), move.enPassantMove.killSquare);    
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
+            togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
             break;
 
         case MoveType::PROMOTION:
@@ -139,7 +139,7 @@ void Board::unMakeMove(const Move& move) {
         case MoveType::EN_PASSANT:
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
             togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
-            togglePiece(getType(move.enPassantMove.killSquare), move.enPassantMove.killSquare);
+            togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
             break;
         case MoveType::PROMOTION:
             togglePiece(getType(move.promotionMove.endPos), move.promotionMove.endPos);
