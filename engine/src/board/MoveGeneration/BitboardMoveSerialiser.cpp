@@ -39,6 +39,7 @@ static std::vector<Move> generateCastlingBitboardBlack(const Board &board, uint6
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//generates a vector of all king moves
 std::vector<Move> generateKingMoves(WhiteTurn whiteTurn, uint64_t king, uint64_t friendlyPieces) {
     std::vector<Move> moves;
     moves.reserve(8);
@@ -58,6 +59,8 @@ std::vector<Move> generateKingMoves(WhiteTurn whiteTurn, uint64_t king, uint64_t
 
     return moves;
 }
+
+//generates a vector of all knight moves
 std::vector<Move> generateKnightMoves(WhiteTurn whiteTurn, uint64_t knights, uint64_t friendlyPieces) {
     std::vector<Move> moves;
     moves.reserve(8);
@@ -82,10 +85,7 @@ std::vector<Move> generateKnightMoves(WhiteTurn whiteTurn, uint64_t knights, uin
     return moves;
 }
 
-std::vector<Move> generatePawnMovesWhite(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied) {
-    std::vector<Move> moves; return moves;
-}
-
+//generates a vector of all rook moves
 std::vector<Move> generateRookMoves(WhiteTurn whiteTurn, uint64_t rooks, uint64_t occupied, uint64_t friendlyPieces) {
     std::vector<Move> moves;
     moves.reserve(8);
@@ -109,6 +109,8 @@ std::vector<Move> generateRookMoves(WhiteTurn whiteTurn, uint64_t rooks, uint64_
 
     return moves;
 }
+
+//generates a vector of all bishop moves
 std::vector<Move> generateBishopMoves(WhiteTurn whiteTurn, uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces) {
     std::vector<Move> moves;
     moves.reserve(8);
@@ -132,6 +134,8 @@ std::vector<Move> generateBishopMoves(WhiteTurn whiteTurn, uint64_t bishops, uin
 
     return moves;
 }
+
+//generates a vector of all queen moves
 std::vector<Move> generateQueenMoves(WhiteTurn whiteTurn, uint64_t queens, uint64_t occupied, uint64_t friendlyPieces) {
     std::vector<Move> moves;
     moves.reserve(8);
@@ -156,6 +160,17 @@ std::vector<Move> generateQueenMoves(WhiteTurn whiteTurn, uint64_t queens, uint6
     return moves;
 }
 
+//generates a vector of all pawn moves
+std::vector<Move> generatePawnMoves(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied) {
+    std::vector<Move> moves;
+    moves.reserve(8);
+
+    
+    
+    return moves;
+}
+
+//generates a vector of all en passant moves
 std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData) {
     std::vector<Move> moves;
     moves.reserve(1);
@@ -178,6 +193,8 @@ std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyP
 
     return moves;
 }
+
+//generates a vector of all castling moves
 std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (whiteTurn)
         return generateCastlingBitboardWhite(board, occupied, castleData);
@@ -189,6 +206,7 @@ std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board,
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//generates a vector of all castling moves for the white pieces
 static std::vector<Move> generateCastlingBitboardWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     std::vector<Move> moves;
     moves.reserve(2);
@@ -206,6 +224,7 @@ static std::vector<Move> generateCastlingBitboardWhite(const Board &board, uint6
 
     return moves;
 }
+//generates a vector of all castling moves for the black pieces
 static std::vector<Move> generateCastlingBitboardBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     std::vector<Move> moves;
     moves.reserve(2);
