@@ -55,12 +55,12 @@ Engine::Engine() {
         // {.flag=NORMAL, .normalMove=NormalMove{h7, h5, BLACK_PAWN}},
     };
 
-    for (auto& i : moves) {
-        board->makeMove(i);
-        printASCIIBoard();
-    }
+    // for (auto& i : moves) {
+    //     board->makeMove(i);
+    //     printASCIIBoard();
+    // }
 
-    generateMoves(*board, !whiteTurn);
+    generateMoves(*board, whiteTurn);
     printASCIIBoard();
 
     // bool a = isTargeted(*board, WhiteTurn{false}, SquareIndex::c3);

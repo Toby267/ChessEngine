@@ -20,6 +20,8 @@ if in check, generate all moves that end on a checking piece, or on its line of 
 */
 
 
+//yet to do promotion moves
+
 
 /**
  * Generates all possible moves based on a given board and whos to move
@@ -75,14 +77,22 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {//todo: remo
     //     std::cout << i.castleMove.secondaryPieceType    << '\n';
     // }
 
-    moves = generateEnPassantMoves(whiteTurn, friendlyPieces, enPassantData);
+    // moves = generateEnPassantMoves(whiteTurn, friendlyPieces, enPassantData);
+    // for (auto& i : moves) {
+    //     std::cout << i.flag                         << '\n';
+    //     std::cout << i.enPassantMove.startPos       << '\n';
+    //     std::cout << i.enPassantMove.endPos         << '\n';
+    //     std::cout << i.enPassantMove.pieceType      << '\n';
+    //     std::cout << i.enPassantMove.killSquare     << '\n';
+    //     std::cout << i.enPassantMove.killPieceType  << '\n';
+    // }
+
+    moves = generateKnightMoves(whiteTurn, bitBoards[PieceType::WHITE_KNIGHT + indexOffset], friendlyPieces);
     for (auto& i : moves) {
-        std::cout << i.flag                         << '\n';
-        std::cout << i.enPassantMove.startPos       << '\n';
-        std::cout << i.enPassantMove.endPos         << '\n';
-        std::cout << i.enPassantMove.pieceType      << '\n';
-        std::cout << i.enPassantMove.killSquare     << '\n';
-        std::cout << i.enPassantMove.killPieceType  << '\n';
+        std::cout << i.flag                 << '\n';
+        std::cout << i.normalMove.startPos  << '\n';
+        std::cout << i.normalMove.endPos    << '\n';
+        std::cout << i.normalMove.pieceType << '\n' << '\n';
     }
 
     // board.resetBoard();

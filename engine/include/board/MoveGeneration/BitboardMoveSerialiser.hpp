@@ -7,7 +7,7 @@
 #include "board/BoardUtil.hpp"
 
 std::vector<Move> generateKingMoves(WhiteTurn whiteTurn, uint64_t king, uint64_t friendlyPieces);                                           //Done
-std::vector<Move> generateKnightMoves(WhiteTurn whiteTurn, uint64_t knights, uint64_t friendlyPieces);                                      //Not Done
+std::vector<Move> generateKnightMoves(WhiteTurn whiteTurn, uint64_t knights, uint64_t friendlyPieces);                                      //Done
 
 std::vector<Move> generatePawnMoves(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied);                                              //Not Done
 

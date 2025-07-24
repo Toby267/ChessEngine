@@ -62,6 +62,23 @@ std::vector<Move> generateKnightMoves(WhiteTurn whiteTurn, uint64_t knights, uin
     std::vector<Move> moves;
     moves.reserve(8);
 
+    const PieceType pieceType = whiteTurn ? WHITE_KNIGHT : BLACK_KNIGHT;
+
+    while (knights) {
+        SquareIndex startSquare = (SquareIndex)__builtin_ctzll(knights);
+
+        uint64_t movesBitboard = generateKnightBitboardSingular(startSquare, friendlyPieces);
+        while (movesBitboard) {
+            SquareIndex targetSquare = (SquareIndex)__builtin_ctzll(movesBitboard);
+
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startSquare, targetSquare, pieceType}});
+
+            movesBitboard &= movesBitboard-1;
+        }
+
+        knights &= knights-1;
+    }
+
     return moves;
 }
 
