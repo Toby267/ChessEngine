@@ -15,5 +15,5 @@ std::vector<Move> generateRookMoves(WhiteTurn whiteTurn, uint64_t rooks, uint64_
 std::vector<Move> generateBishopMoves(WhiteTurn whiteTurn, uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces);                   //Not Done
 std::vector<Move> generateQueenMoves(WhiteTurn whiteTurn, uint64_t queens, uint64_t occupied, uint64_t friendlyPieces);                     //Not Done
 
+std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData);          //Done
 std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData); //Done
-std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData);          //Not Done

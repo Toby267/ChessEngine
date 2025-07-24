@@ -30,7 +30,11 @@ Engine::Engine() {
 
         {.flag=NORMAL, .normalMove=NormalMove{b7, b5, BLACK_PAWN}},
         {.flag=NORMAL, .normalMove=NormalMove{b5, b4, BLACK_PAWN}},
-        {.flag=NORMAL, .normalMove=NormalMove{c2, c4, WHITE_PAWN}},
+        {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN}},
+
+        // {.flag=NORMAL, .normalMove=NormalMove{b2, b4, WHITE_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{b4, b5, WHITE_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{a7, a5, BLACK_PAWN}},
 
         // {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN}},
         // {.flag=NORMAL, .normalMove=NormalMove{b2, b4, WHITE_PAWN}},
@@ -56,11 +60,11 @@ Engine::Engine() {
         printASCIIBoard();
     }
 
-    // generateMoves(*board, whiteTurn);
-    // printASCIIBoard();
+    generateMoves(*board, !whiteTurn);
+    printASCIIBoard();
 
-    bool a = isTargeted(*board, WhiteTurn{false}, SquareIndex::c3);
-    std::cout << "a is: " << a << '\n';
+    // bool a = isTargeted(*board, WhiteTurn{false}, SquareIndex::c3);
+    // std::cout << "a is: " << a << '\n';
 }
 
 Engine::~Engine() {

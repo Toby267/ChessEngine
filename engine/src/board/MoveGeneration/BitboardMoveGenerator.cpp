@@ -18,7 +18,6 @@ static uint64_t getNegativeRay(SquareIndex square, uint64_t occupied, Direction 
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//DOESN'T CHECK CHECKS
 bool isTargeted(const Board& board, WhiteTurn whiteTurn, SquareIndex i) {
     //targeted piece
     uint64_t targetedPiece = 1ULL << i;

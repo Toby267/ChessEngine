@@ -1,5 +1,7 @@
 #include "board/MoveGeneration/BitboardMoveSerialiser.hpp"
 
+#include <iostream>
+
 #include <cstdint>
 #include <vector>
 
@@ -33,9 +35,6 @@ and the isTargeted() and the main moveGeneration functiions are in MoveGenerator
 static std::vector<Move> generateCastlingBitboardWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
 static std::vector<Move> generateCastlingBitboardBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
 
-static std::vector<Move> generateEnPassantMovesWhite(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData);
-static std::vector<Move> generateEnPassantMovesBlack(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData);
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,6 +50,7 @@ std::vector<Move> generateKingMoves(WhiteTurn whiteTurn, uint64_t king, uint64_t
     while (movesBitboard) {
         SquareIndex targetSquare = (SquareIndex)__builtin_ctzll(movesBitboard);
 
+        //TODO: this method creates a temporary object for move and copies it, need to find a way to use emplace_back
         moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startSquare, targetSquare, pieceType}});
 
         movesBitboard &= movesBitboard-1;
@@ -79,17 +79,33 @@ std::vector<Move> generateQueenMoves(WhiteTurn whiteTurn, uint64_t queens, uint6
     std::vector<Move> moves; return moves;
 }
 
+std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData) {
+    std::vector<Move> moves;
+    moves.reserve(1);
+
+    short offset = whiteTurn ? 1 : -1;
+
+    for (int i = 0; i < enPassantData.size(); i++) {
+        if (!(enPassantData[i] & 1)) continue;
+
+        int killIndex = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
+        uint64_t pawnBitboard = 1ULL << killIndex;
+
+        if ((westOne(pawnBitboard) & friendlyPieces) != 0) {
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{(SquareIndex)(killIndex-8), (SquareIndex)(killIndex+offset), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
+        }
+        else if ((eastOne(pawnBitboard) & friendlyPieces) != 0) {
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{(SquareIndex)(killIndex+8), (SquareIndex)(killIndex+offset), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
+        }
+    }
+
+    return moves;
+}
 std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (whiteTurn)
         return generateCastlingBitboardWhite(board, occupied, castleData);
     else
         return generateCastlingBitboardBlack(board, occupied, castleData);
-}
-std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData) {
-    if (whiteTurn)
-        return generateEnPassantMovesWhite(friendlyPieces, enPassantData);
-    else
-        return generateEnPassantMovesBlack(friendlyPieces, enPassantData);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,55 +134,13 @@ static std::vector<Move> generateCastlingBitboardBlack(const Board &board, uint6
     moves.reserve(2);
 
     if (castleData[CastlePieces::B_KING]  == 0 && (occupied & (uint64_t)(0x0080800000000000)) == 0) {
-        if (!isTargeted(board, false, SquareIndex::f8) && !isTargeted(board, false, SquareIndex::g8)) {
+        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::f8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::g8)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, g8, WHITE_KING, h8, f8, WHITE_ROOK}});
         }
     }
     if (castleData[CastlePieces::B_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000080808000)) == 0) {
-        if (!isTargeted(board, false, SquareIndex::b8) && !isTargeted(board, false, SquareIndex::c8) && !isTargeted(board, false, SquareIndex::d8)) {
+        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::b8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::c8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d8)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, WHITE_KING, a8, d8, WHITE_ROOK}});
-        }
-    }
-
-    return moves;
-}
-
-static std::vector<Move> generateEnPassantMovesWhite(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData){ 
-    // TODO: finish this
-    std::vector<Move> moves;
-    moves.reserve(1);
-
-    for (int i = 0; i < enPassantData.size(); i++) {
-        if (!(enPassantData[i] & 1)) continue;
-
-        int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
-        SquareIndex squareIndex = (SquareIndex)index;
-        uint64_t pawnBitboard = 1ULL << index;
-
-        if ((westOne(pawnBitboard) & friendlyPieces) != 0) {
-            // return northOne(pawnBitboard);
-            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{squareIndex, c8, WHITE_PAWN, a8, BLACK_PAWN}});
-        }
-        else if ((eastOne(pawnBitboard) & friendlyPieces) != 0) {
-            // return northOne(pawnBitboard);
-            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{squareIndex, c8, WHITE_PAWN, a8, BLACK_PAWN}});
-        }
-    }
-
-    return moves;
-}
-static std::vector<Move> generateEnPassantMovesBlack(uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData){ 
-    std::vector<Move> moves;
-    moves.reserve(1);
-
-    for (int i = 0; i < enPassantData.size(); i++) {
-        if (!(enPassantData[i] & 1)) continue;
-
-        int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
-
-        if ((westOne(1ULL << index) & friendlyPieces) != 0 || (eastOne(1ULL << index) & friendlyPieces) != 0) {
-            // return southOne(1ULL << index);
-            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{e8, c8, BLACK_PAWN, a8, WHITE_PAWN}});
         }
     }
 

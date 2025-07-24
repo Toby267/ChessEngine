@@ -9,6 +9,18 @@
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 
+
+
+
+/*
+have two generateMoves functions - one for if in check and one for if not in check.
+if not in check, generate all moves normally then filter out ones where the starting position == pinned piece positions.
+if in check, generate all moves that end on a checking piece, or on its line of fire, and generate all king moves. - then play and unplay each move checking if the king is still in check.
+                |__ could also use the filter pinned pice stuff as well. the reason you have to then play and unplay each move is becuase there could be two checking pices.
+*/
+
+
+
 /**
  * Generates all possible moves based on a given board and whos to move
  * 
@@ -52,15 +64,25 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {//todo: remo
                                             // generateEnPassantBitboardBlack(bitBoards[PieceType::BLACK_PAWN], enPassantData);
 
     //serialise into moves vector
-    moves = generateCastlingMoves(whiteTurn, board, occupied, castleData);
+    // moves = generateCastlingMoves(whiteTurn, board, occupied, castleData);
+    // for (auto& i : moves) {
+    //     std::cout << i.flag                             << '\n';
+    //     std::cout << i.castleMove.primaryStartPos       << '\n';
+    //     std::cout << i.castleMove.primaryEndPos         << '\n';
+    //     std::cout << i.castleMove.primaryPieceType      << '\n';
+    //     std::cout << i.castleMove.secondaryStartPos     << '\n';
+    //     std::cout << i.castleMove.secondaryEndPos       << '\n';
+    //     std::cout << i.castleMove.secondaryPieceType    << '\n';
+    // }
+
+    moves = generateEnPassantMoves(whiteTurn, friendlyPieces, enPassantData);
     for (auto& i : moves) {
-        std::cout << i.flag                             << '\n';
-        std::cout << i.castleMove.primaryStartPos       << '\n';
-        std::cout << i.castleMove.primaryEndPos         << '\n';
-        std::cout << i.castleMove.primaryPieceType      << '\n';
-        std::cout << i.castleMove.secondaryStartPos     << '\n';
-        std::cout << i.castleMove.secondaryEndPos       << '\n';
-        std::cout << i.castleMove.secondaryPieceType    << '\n';
+        std::cout << i.flag                         << '\n';
+        std::cout << i.enPassantMove.startPos       << '\n';
+        std::cout << i.enPassantMove.endPos         << '\n';
+        std::cout << i.enPassantMove.pieceType      << '\n';
+        std::cout << i.enPassantMove.killSquare     << '\n';
+        std::cout << i.enPassantMove.killPieceType  << '\n';
     }
 
     // board.resetBoard();
