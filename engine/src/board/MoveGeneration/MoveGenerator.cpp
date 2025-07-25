@@ -78,31 +78,31 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {//todo: remo
     // }
 
     //white turn
-    std::cout << "white turn" << '\n';
-    moves = generateEnPassantMoves(whiteTurn, friendlyPieces, enPassantData);
-    for (auto& i : moves) {
-        std::cout << i.flag                         << '\n';
-        std::cout << i.enPassantMove.startPos       << '\n';
-        std::cout << i.enPassantMove.endPos         << '\n';
-        std::cout << i.enPassantMove.pieceType      << '\n';
-        std::cout << i.enPassantMove.killSquare     << '\n';
-        std::cout << i.enPassantMove.killPieceType  << '\n';
-    }
+    // std::cout << "white turn" << '\n';
+    // moves = generateEnPassantMoves(whiteTurn, friendlyPieces, enPassantData);
+    // for (auto& i : moves) {
+        // std::cout << i.flag                         << '\n';
+        // std::cout << i.enPassantMove.startPos       << '\n';
+        // std::cout << i.enPassantMove.endPos         << '\n';
+        // std::cout << i.enPassantMove.pieceType      << '\n';
+        // std::cout << i.enPassantMove.killSquare     << '\n';
+        // std::cout << i.enPassantMove.killPieceType  << '\n';
+    // }
 
     //black turn
-    std::cout << "black turn" << '\n';
-    moves = generateEnPassantMoves(!whiteTurn, oppositionPieces, enPassantData);
-    for (auto& i : moves) {
-        std::cout << i.flag                         << '\n';
-        std::cout << i.enPassantMove.startPos       << '\n';
-        std::cout << i.enPassantMove.endPos         << '\n';
-        std::cout << i.enPassantMove.pieceType      << '\n';
-        std::cout << i.enPassantMove.killSquare     << '\n';
-        std::cout << i.enPassantMove.killPieceType  << '\n';
-    }
+    // std::cout << "black turn" << '\n';
+    // moves = generateEnPassantMoves(!whiteTurn, oppositionPieces, enPassantData);
+    // for (auto& i : moves) {
+        // std::cout << i.flag                         << '\n';
+        // std::cout << i.enPassantMove.startPos       << '\n';
+        // std::cout << i.enPassantMove.endPos         << '\n';
+        // std::cout << i.enPassantMove.pieceType      << '\n';
+        // std::cout << i.enPassantMove.killSquare     << '\n';
+        // std::cout << i.enPassantMove.killPieceType  << '\n';
+    // }
 
-    std::cout << "can white en passant: " << generateEnPassantBitboard(whiteTurn, friendlyPieces, enPassantData)    << '\n';
-    std::cout << "can black en passant: " << generateEnPassantBitboard(!whiteTurn, oppositionPieces, enPassantData) << '\n';
+    // std::cout << "can white en passant: " << generateEnPassantBitboard(whiteTurn, friendlyPieces, enPassantData)    << '\n';
+    // std::cout << "can black en passant: " << generateEnPassantBitboard(!whiteTurn, oppositionPieces, enPassantData) << '\n';
 
     // moves = generateQueenMoves(whiteTurn, bitBoards[PieceType::WHITE_QUEEN + indexOffset], occupied, friendlyPieces);
     // for (auto& i : moves) {
@@ -111,6 +111,14 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {//todo: remo
         // std::cout << i.normalMove.endPos    << '\n';
         // std::cout << i.normalMove.pieceType << '\n' << '\n';
     // }
+
+    moves = generatePawnMoves(whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], unoccupied, oppositionPieces);
+    for (auto& i : moves) {
+        std::cout << i.flag                 << '\n';
+        std::cout << i.normalMove.startPos  << '\n';
+        std::cout << i.normalMove.endPos    << '\n';
+        std::cout << i.normalMove.pieceType << '\n' << '\n';
+    }
 
     // board.resetBoard();
     // board.setBitBoard(castleMoves, PieceType::BLACK_KING);
