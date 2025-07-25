@@ -1,6 +1,35 @@
 #include <board/BoardUtil.hpp>
 
 //shifts a square by one in each orthoganol direction
+//doesn't check for if the piece goes off the board - even if it did
+//there would be no way to remove the piece from the board completely
+SquareIndex northOne(int piece) {
+    return (SquareIndex)(piece+1);
+}
+SquareIndex southOne(int piece) {
+    return (SquareIndex)(piece-1);
+}
+SquareIndex eastOne(int piece) {
+    return (SquareIndex)(piece+8);
+}
+SquareIndex westOne(int piece) {
+    return (SquareIndex)(piece-8);
+}
+
+SquareIndex northEastOne(int piece) {
+    return (SquareIndex)(piece+9);
+}
+SquareIndex northWestOne(int piece) {
+    return (SquareIndex)(piece-7);
+}
+SquareIndex southEastOne(int piece) {
+    return (SquareIndex)(piece+7);
+}
+SquareIndex southWestOne(int piece) {
+    return (SquareIndex)(piece-9);
+}
+
+//shifts the board square by one in each orthoganol direction
 uint64_t northOne(uint64_t board) {
     return (board << 1) & 0xFEFEFEFEFEFEFEFEULL;
 }

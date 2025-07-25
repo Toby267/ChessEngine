@@ -159,11 +159,31 @@ std::vector<Move> generateQueenMoves(WhiteTurn whiteTurn, uint64_t queens, uint6
 }
 
 //generates a vector of all pawn moves
-std::vector<Move> generatePawnMoves(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied) {
+std::vector<Move> generatePawnMoves(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied, uint64_t oppositionPieces) {
     std::vector<Move> moves;
     moves.reserve(8);
 
-    //TODO: this
+    const PieceType pieceType = whiteTurn ? WHITE_PAWN : BLACK_PAWN;
+
+    uint64_t pushMoves = generatePawnPushBitboard(whiteTurn, pawns, unoccupied);
+    while (pushMoves) {
+        SquareIndex targetSquare = (SquareIndex)__builtin_ctzll(pushMoves);
+
+        //add single push move
+        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{}});
+
+        pushMoves &= pushMoves-1;
+
+        if (targetSquare+1 & pushMoves) {//not fine
+            //add double push move
+
+            pushMoves &= pushMoves-1;
+        }
+    }
+
+    uint64_t attackMoves = generatePawnAttackBitboard(whiteTurn, pawns, oppositionPieces);
+
+
     
     return moves;
 }
@@ -173,7 +193,8 @@ std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyP
     std::vector<Move> moves;
     moves.reserve(1);
 
-    short offset = whiteTurn ? 1 : -1;
+    //very cursed line
+    SquareIndex (*getEndPos)(int) = whiteTurn ? (SquareIndex(*)(int))northOne : (SquareIndex(*)(int))southOne;
 
     for (int i = 0; i < enPassantData.size(); i++) {
         if (!(enPassantData[i] & 1)) continue;
@@ -184,10 +205,10 @@ std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyP
         if (pawnBitboard & friendlyPieces) continue;
 
         if (westOne(pawnBitboard) & friendlyPieces) {
-            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{(SquareIndex)(killIndex-8), (SquareIndex)(killIndex+offset), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{westOne(killIndex), getEndPos(killIndex), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
         }
         else if (eastOne(pawnBitboard) & friendlyPieces) {
-            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{(SquareIndex)(killIndex+8), (SquareIndex)(killIndex+offset), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{eastOne(killIndex), getEndPos(killIndex), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
         }
     }
 

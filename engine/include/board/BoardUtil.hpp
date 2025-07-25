@@ -45,6 +45,17 @@ enum CastlePieces{
     W_KING, W_QUEEN, B_KING, B_QUEEN
 };
 
+//these functions move one piece one unit in the given bitboard in a certain direction
+SquareIndex northOne(int piece);
+SquareIndex southOne(int piece);
+SquareIndex eastOne(int piece);
+SquareIndex westOne(int piece);
+
+SquareIndex northEastOne(int piece);
+SquareIndex northWestOne(int piece);
+SquareIndex southEastOne(int piece);
+SquareIndex southWestOne(int piece);
+
 //these functions move each piece one unit in the given bitboard in a certain direction
 uint64_t northOne(uint64_t board);
 uint64_t southOne(uint64_t board);
