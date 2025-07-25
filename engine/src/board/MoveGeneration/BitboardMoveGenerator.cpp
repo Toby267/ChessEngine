@@ -193,9 +193,12 @@ uint64_t generateEnPassantBitboard(WhiteTurn whiteTurn, uint64_t friendlyPieces,
         if (!(enPassantData[i] & 1)) continue;
 
         int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
+        uint64_t pawnBitboard = 1ULL << index;
 
-        if (((westOne(1ULL << index) & friendlyPieces) != 0) || ((eastOne(1ULL << index) & friendlyPieces) != 0)) {
-            return whiteTurn ? northOne(1ULL << index) : southOne(1ULL << index);
+        if (pawnBitboard & friendlyPieces) continue;
+
+        if ((westOne(pawnBitboard) & friendlyPieces) || (eastOne(pawnBitboard) & friendlyPieces)) {
+            return whiteTurn ? northOne(pawnBitboard) : southOne(pawnBitboard);
         }
     }
 

@@ -1,7 +1,5 @@
 #include "board/MoveGeneration/BitboardMoveSerialiser.hpp"
 
-#include <iostream>
-
 #include <cstdint>
 #include <vector>
 
@@ -32,8 +30,8 @@ and the isTargeted() and the main moveGeneration functiions are in MoveGenerator
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static std::vector<Move> generateCastlingBitboardWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
-static std::vector<Move> generateCastlingBitboardBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
+static std::vector<Move> generateCastlingMovesWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
+static std::vector<Move> generateCastlingMovesBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
@@ -165,7 +163,7 @@ std::vector<Move> generatePawnMoves(WhiteTurn whiteTurn, uint64_t pawns, uint64_
     std::vector<Move> moves;
     moves.reserve(8);
 
-    
+    //TODO: this
     
     return moves;
 }
@@ -183,10 +181,12 @@ std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyP
         int killIndex = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
         uint64_t pawnBitboard = 1ULL << killIndex;
 
-        if ((westOne(pawnBitboard) & friendlyPieces) != 0) {
+        if (pawnBitboard & friendlyPieces) continue;
+
+        if (westOne(pawnBitboard) & friendlyPieces) {
             moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{(SquareIndex)(killIndex-8), (SquareIndex)(killIndex+offset), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
         }
-        else if ((eastOne(pawnBitboard) & friendlyPieces) != 0) {
+        else if (eastOne(pawnBitboard) & friendlyPieces) {
             moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{(SquareIndex)(killIndex+8), (SquareIndex)(killIndex+offset), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
         }
     }
@@ -197,9 +197,9 @@ std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyP
 //generates a vector of all castling moves
 std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (whiteTurn)
-        return generateCastlingBitboardWhite(board, occupied, castleData);
+        return generateCastlingMovesWhite(board, occupied, castleData);
     else
-        return generateCastlingBitboardBlack(board, occupied, castleData);
+        return generateCastlingMovesBlack(board, occupied, castleData);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +207,7 @@ std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board,
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //generates a vector of all castling moves for the white pieces
-static std::vector<Move> generateCastlingBitboardWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
+static std::vector<Move> generateCastlingMovesWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     std::vector<Move> moves;
     moves.reserve(2);
 
@@ -225,16 +225,16 @@ static std::vector<Move> generateCastlingBitboardWhite(const Board &board, uint6
     return moves;
 }
 //generates a vector of all castling moves for the black pieces
-static std::vector<Move> generateCastlingBitboardBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
+static std::vector<Move> generateCastlingMovesBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     std::vector<Move> moves;
     moves.reserve(2);
 
-    if (castleData[CastlePieces::B_KING]  == 0 && (occupied & (uint64_t)(0x0080800000000000)) == 0) {
+    if (!castleData[CastlePieces::B_KING] && !(occupied & (uint64_t)(0x0080800000000000))) {
         if (!isTargeted(board, WhiteTurn{false}, SquareIndex::f8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::g8)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, g8, WHITE_KING, h8, f8, WHITE_ROOK}});
         }
     }
-    if (castleData[CastlePieces::B_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000080808000)) == 0) {
+    if (!castleData[CastlePieces::B_QUEEN] && !(occupied & (uint64_t)(0x0000000080808000))) {
         if (!isTargeted(board, WhiteTurn{false}, SquareIndex::b8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::c8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d8)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, WHITE_KING, a8, d8, WHITE_ROOK}});
         }

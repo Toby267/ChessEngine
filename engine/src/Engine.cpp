@@ -21,7 +21,17 @@ Engine::Engine() {
 
     //TODO: fill this with moves to test the functionality of make and unmake
     Move moves[] = {
-        {.flag=NORMAL, .normalMove=NormalMove{d1, d4, WHITE_QUEEN}},
+        {.flag=NORMAL, .normalMove=NormalMove{b1, b3, WHITE_KNIGHT}},
+        {.flag=NORMAL, .normalMove=NormalMove{c1, c3, WHITE_BISHOP}},
+        {.flag=NORMAL, .normalMove=NormalMove{d1, d3, WHITE_QUEEN}},
+        {.flag=NORMAL, .normalMove=NormalMove{f1, f3, WHITE_BISHOP}},
+        {.flag=NORMAL, .normalMove=NormalMove{g1, g3, WHITE_KNIGHT}},
+
+        {.flag=NORMAL, .normalMove=NormalMove{b8, b6, BLACK_KNIGHT}},
+        {.flag=NORMAL, .normalMove=NormalMove{c8, c6, BLACK_BISHOP}},
+        {.flag=NORMAL, .normalMove=NormalMove{d8, d6, BLACK_QUEEN}},
+        {.flag=NORMAL, .normalMove=NormalMove{f8, f6, BLACK_BISHOP}},
+        {.flag=NORMAL, .normalMove=NormalMove{g8, g6, BLACK_KNIGHT}},
 
 
         // {.flag=NORMAL, .normalMove=NormalMove{b1, b3, WHITE_KNIGHT}},
@@ -29,9 +39,12 @@ Engine::Engine() {
         // {.flag=NORMAL, .normalMove=NormalMove{d1, d3, WHITE_QUEEN}},
         // {.flag=NORMAL, .normalMove=NormalMove{d2, d4, WHITE_PAWN}},
 
-        // {.flag=NORMAL, .normalMove=NormalMove{b7, b5, BLACK_PAWN}},
-        // {.flag=NORMAL, .normalMove=NormalMove{b5, b4, BLACK_PAWN}},
-        // {.flag=NORMAL, .normalMove=NormalMove{a2, a4, WHITE_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{c7, c6, BLACK_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{c6, c5, BLACK_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{c5, c4, BLACK_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{e2, e3, WHITE_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{e3, e4, WHITE_PAWN}},
+        // {.flag=NORMAL, .normalMove=NormalMove{d2, d4, WHITE_PAWN}},
 
         // {.flag=NORMAL, .normalMove=NormalMove{b2, b4, WHITE_PAWN}},
         // {.flag=NORMAL, .normalMove=NormalMove{b4, b5, WHITE_PAWN}},
