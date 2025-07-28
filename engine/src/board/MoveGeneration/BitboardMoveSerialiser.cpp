@@ -251,25 +251,43 @@ static std::vector<Move> generatePawnMovesWhite(WhiteTurn whiteTurn, uint64_t pa
     std::vector<Move> moves;
     moves.reserve(8);
 
+    //pawn push moves
     uint64_t pushMoves = generatePawnPushBitboard(whiteTurn, pawns, unoccupied);
 
     while (pushMoves) {
-        SquareIndex targetSquare = (SquareIndex)__builtin_ctzll(pushMoves);
+        SquareIndex targetSquareIndex = (SquareIndex)__builtin_ctzll(pushMoves);
+        uint64_t targetSquare = 1ULL << targetSquareIndex;
 
         //add single push move
-        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southOne(targetSquare), targetSquare, WHITE_PAWN}});
+        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southOne(targetSquareIndex), targetSquareIndex, WHITE_PAWN}});
 
         pushMoves &= pushMoves-1;
 
-        if ((1ULL << northOne(targetSquare)) & pushMoves) {
+        if (northOne(targetSquare) & pushMoves) {
             //add double push move
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southOne(targetSquare), northOne(targetSquare), WHITE_PAWN}});
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southOne(targetSquareIndex), northOne(targetSquareIndex), WHITE_PAWN}});
 
             pushMoves &= pushMoves-1;
         }
     }
 
+    //pawn attack moves
     uint64_t attackMoves = generatePawnAttackBitboard(whiteTurn, pawns, oppositionPieces);
+
+    while (attackMoves) {
+        SquareIndex targetSquareIndex = (SquareIndex)__builtin_ctzll(attackMoves);
+        uint64_t targetSquare = 1ULL << targetSquareIndex;
+
+        if (southEastOne(targetSquare) & pawns) {
+            std::cout << "hello" << '\n';
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southEastOne(targetSquareIndex), targetSquareIndex, WHITE_PAWN}});
+        }
+        if (southWestOne(targetSquare) & pawns) {
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southWestOne(targetSquareIndex), targetSquareIndex, WHITE_PAWN}});
+        }
+
+        attackMoves &= attackMoves-1;
+    }
     
     return moves;
 }
@@ -278,28 +296,45 @@ static std::vector<Move> generatePawnMovesBlack(WhiteTurn whiteTurn, uint64_t pa
     std::vector<Move> moves;
     moves.reserve(8);
 
+    //pawn push moves
     uint64_t pushMoves = generatePawnPushBitboard(whiteTurn, pawns, unoccupied);
 
     while (pushMoves) {
-        SquareIndex targetSquare = (SquareIndex)__builtin_ctzll(pushMoves);
+        SquareIndex targetSquareIndex = (SquareIndex)__builtin_ctzll(pushMoves);
+        uint64_t targetSquare = 1ULL << targetSquareIndex;
 
-        if ((1ULL << northOne(targetSquare)) & pushMoves) {
+        if (northOne(targetSquare) & pushMoves) {
             //add double and single push move
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(northOne(targetSquare)), targetSquare, WHITE_PAWN}});
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(northOne(targetSquare)), northOne(targetSquare), WHITE_PAWN}});
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(northOne(targetSquareIndex)), targetSquareIndex, BLACK_PAWN}});
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(northOne(targetSquareIndex)), northOne(targetSquareIndex), BLACK_PAWN}});
 
             pushMoves &= pushMoves-1;
             pushMoves &= pushMoves-1;
         }
         else {
             //add single push move
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(targetSquare), targetSquare, WHITE_PAWN}});
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(targetSquareIndex), targetSquareIndex, BLACK_PAWN}});
 
             pushMoves &= pushMoves-1;
         }
     }
 
+    //pawn attack moves
     uint64_t attackMoves = generatePawnAttackBitboard(whiteTurn, pawns, oppositionPieces);
     
+    while (attackMoves) {
+        SquareIndex targetSquareIndex = (SquareIndex)__builtin_ctzll(attackMoves);
+        uint64_t targetSquare = 1ULL << targetSquareIndex;
+        
+        if (northEastOne(targetSquare) & pawns) {
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northEastOne(targetSquareIndex), targetSquareIndex, BLACK_PAWN}});
+        }
+        if (northWestOne(targetSquare) & pawns) {
+            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northWestOne(targetSquareIndex), targetSquareIndex, BLACK_PAWN}});
+        }
+
+        attackMoves &= attackMoves-1;
+    }
+
     return moves;
 }

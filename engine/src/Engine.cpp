@@ -16,7 +16,7 @@
  */
 Engine::Engine() {
     // board->setDefaultBoard();
-    parseFen("8/8/pppppppp/8/8/PPPPPPPP/8/8 w KQkq - 0 1");
+    parseFen("8/8/8/pppppppp/PPPPPPPP/8/8/8 w KQkq - 0 1");
     // std::cout << "top left bit: "       << __builtin_ctzll(board->getBitBoards()[PieceType::BLACK_ROOK])    << '\n';
     // std::cout << "top right bit: "      << __builtin_ctzll(board->getBitBoards()[PieceType::BLACK_PAWN])    << '\n';
     // std::cout << "bottom left bit: "    << __builtin_ctzll(board->getBitBoards()[PieceType::BLACK_KING])    << '\n';
