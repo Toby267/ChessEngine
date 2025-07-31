@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 
+#include "board/Move.hpp"
 #include "board/MoveGeneration/BitboardMoveSerialiser.hpp"
 #include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 #include "board/Board.hpp"
@@ -68,13 +69,13 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {//todo: remo
     //serialise into moves vector
     // moves = generateCastlingMoves(whiteTurn, board, occupied, castleData);
     // for (auto& i : moves) {
-        // std::cout << i.flag                             << '\n';
-        // std::cout << i.castleMove.primaryStartPos       << '\n';
-        // std::cout << i.castleMove.primaryEndPos         << '\n';
-        // std::cout << i.castleMove.primaryPieceType      << '\n';
-        // std::cout << i.castleMove.secondaryStartPos     << '\n';
-        // std::cout << i.castleMove.secondaryEndPos       << '\n';
-        // std::cout << i.castleMove.secondaryPieceType    << '\n';
+    //     std::cout << i.flag                             << '\n';
+    //     std::cout << i.castleMove.primaryStartPos       << '\n';
+    //     std::cout << i.castleMove.primaryEndPos         << '\n';
+    //     std::cout << i.castleMove.primaryPieceType      << '\n';
+    //     std::cout << i.castleMove.secondaryStartPos     << '\n';
+    //     std::cout << i.castleMove.secondaryEndPos       << '\n';
+    //     std::cout << i.castleMove.secondaryPieceType    << '\n' << '\n';
     // }
 
     //white turn
@@ -114,10 +115,20 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {//todo: remo
 
     moves = generatePawnMoves(whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], unoccupied, oppositionPieces);
     for (auto& i : moves) {
-        std::cout << i.flag                 << '\n';
-        std::cout << i.normalMove.startPos  << '\n';
-        std::cout << i.normalMove.endPos    << '\n';
-        std::cout << i.normalMove.pieceType << '\n' << '\n';
+        if (i.flag == MoveType::NORMAL) {
+            std::cout << i.flag                         << '\n';
+            std::cout << i.normalMove.startPos          << '\n';
+            std::cout << i.normalMove.endPos            << '\n';
+            std::cout << i.normalMove.pieceType         << '\n' << '\n';
+        }
+        else {
+            std::cout << i.flag                         << '\n';
+            std::cout << i.promotionMove.startPos       << '\n';
+            std::cout << i.promotionMove.endPos         << '\n';
+            std::cout << i.promotionMove.oldPieceType   << '\n';
+            std::cout << i.promotionMove.newPieceType   << '\n' << '\n';
+        }
+        
     }
 
     // board.resetBoard();

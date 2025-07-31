@@ -9,33 +9,21 @@
 #include "board/Board.hpp"
 #include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 
-
-
-/*
-TODO: should split move generation files like so:
-
-MoveGenerator.hpp
-
-MoveGenerator.cpp
-SimpleMoveGeneration.cpp
-SlidingMoveGeneration.cpp
-PawnMoveGeneration.cpp
-SpecialMoveGeneration.cpp
-
-where each have the code for bitboard move generation and bitboard move serialisation.
-and each expose those two methods in the header file while helper methods are static
-and the isTargeted() and the main moveGeneration functiions are in MoveGenerator.cpp
-*/
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static std::vector<Move> generateCastlingMovesWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
-static std::vector<Move> generateCastlingMovesBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
+static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
+static void addCastlingMovesBlack(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData);
 
-static std::vector<Move> generatePawnMovesWhite(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied, uint64_t oppositionPieces);
-static std::vector<Move> generatePawnMovesBlack(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied, uint64_t oppositionPieces);
+static void addPawnPushMovesWhite(std::vector<Move>& moves, uint64_t pawns, uint64_t unoccupied);
+static void addPawnPushMovesBlack(std::vector<Move>& moves, uint64_t pawns, uint64_t unoccupied);
+
+static void addPawnAttackMovesWhite(std::vector<Move>& moves, uint64_t pawns, uint64_t oppositionPieces);
+static void addPawnAttackMovesBlack(std::vector<Move>& moves, uint64_t pawns, uint64_t oppositionPieces);
+
+static void addSinglePawnMoveWhite(std::vector<Move>& moves, SquareIndex startPos, SquareIndex endPos);
+static void addSinglePawnMoveBlack(std::vector<Move>& moves, SquareIndex startPos, SquareIndex endPos);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
@@ -164,10 +152,32 @@ std::vector<Move> generateQueenMoves(WhiteTurn whiteTurn, uint64_t queens, uint6
 
 //generates a vector of all pawn moves
 std::vector<Move> generatePawnMoves(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied, uint64_t oppositionPieces) {
+    std::vector<Move> moves;
+    moves.reserve(8);
+
+    if (whiteTurn) {
+        addPawnPushMovesWhite(moves, pawns, unoccupied);
+        addPawnAttackMovesWhite(moves, pawns, oppositionPieces);
+    }
+    else {
+        addPawnPushMovesBlack(moves, pawns, unoccupied);
+        addPawnAttackMovesBlack(moves, pawns, oppositionPieces);
+    }
+
+    return moves;
+}
+
+//generates a vector of all castling moves
+std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
+    std::vector<Move> moves;
+    moves.reserve(2);
+    
     if (whiteTurn)
-        return generatePawnMovesWhite(whiteTurn, pawns, unoccupied, oppositionPieces);
+        addCastlingMovesWhite(moves, board, occupied, castleData);
     else
-        return generatePawnMovesBlack(whiteTurn, pawns, unoccupied, oppositionPieces);
+        addCastlingMovesBlack(moves, board, occupied, castleData);
+
+    return moves;
 }
 
 //generates a vector of all en passant moves
@@ -197,23 +207,12 @@ std::vector<Move> generateEnPassantMoves(WhiteTurn whiteTurn, uint64_t friendlyP
     return moves;
 }
 
-//generates a vector of all castling moves
-std::vector<Move> generateCastlingMoves(WhiteTurn whiteTurn, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
-    if (whiteTurn)
-        return generateCastlingMovesWhite(board, occupied, castleData);
-    else
-        return generateCastlingMovesBlack(board, occupied, castleData);
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //generates a vector of all castling moves for the white pieces
-static std::vector<Move> generateCastlingMovesWhite(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
-    std::vector<Move> moves;
-    moves.reserve(2);
-
+static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (castleData[CastlePieces::W_KING]  == 0 && (occupied & (uint64_t)(0x0001010000000000)) == 0) {
         if (!isTargeted(board, WhiteTurn{false}, SquareIndex::f1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::g1)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, g1, WHITE_KING, h1, f1, WHITE_ROOK}});
@@ -224,14 +223,9 @@ static std::vector<Move> generateCastlingMovesWhite(const Board &board, uint64_t
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, c1, WHITE_KING, a1, d1, WHITE_ROOK}});
         }
     }
-
-    return moves;
 }
 //generates a vector of all castling moves for the black pieces
-static std::vector<Move> generateCastlingMovesBlack(const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
-    std::vector<Move> moves;
-    moves.reserve(2);
-
+static void addCastlingMovesBlack(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (!castleData[CastlePieces::B_KING] && !(occupied & (uint64_t)(0x0080800000000000))) {
         if (!isTargeted(board, WhiteTurn{false}, SquareIndex::f8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::g8)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, g8, WHITE_KING, h8, f8, WHITE_ROOK}});
@@ -242,62 +236,61 @@ static std::vector<Move> generateCastlingMovesBlack(const Board &board, uint64_t
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, WHITE_KING, a8, d8, WHITE_ROOK}});
         }
     }
-
-    return moves;
 }
 
-//generates a vector of all pawn moves for the white pieces
-static std::vector<Move> generatePawnMovesWhite(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied, uint64_t oppositionPieces) {
-    std::vector<Move> moves;
-    moves.reserve(8);
-
-    //pawn push moves
-    uint64_t pushMoves = generatePawnPushBitboard(whiteTurn, pawns, unoccupied);
+static void addPawnPushMovesWhite(std::vector<Move>& moves, uint64_t pawns, uint64_t unoccupied) {
+    uint64_t pushMoves = generatePawnPushBitboard(WhiteTurn{true}, pawns, unoccupied);
 
     while (pushMoves) {
         SquareIndex targetSquareIndex = (SquareIndex)__builtin_ctzll(pushMoves);
         uint64_t targetSquare = 1ULL << targetSquareIndex;
 
         //add single push move
-        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southOne(targetSquareIndex), targetSquareIndex, WHITE_PAWN}});
+        addSinglePawnMoveWhite(moves, southOne(targetSquareIndex), targetSquareIndex);
 
         pushMoves &= pushMoves-1;
 
         if (northOne(targetSquare) & pushMoves) {
             //add double push move
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southOne(targetSquareIndex), northOne(targetSquareIndex), WHITE_PAWN}});
+            addSinglePawnMoveWhite(moves, southOne(targetSquareIndex), northOne(targetSquareIndex));
 
             pushMoves &= pushMoves-1;
         }
     }
-
-    //pawn attack moves
-    uint64_t attackMoves = generatePawnAttackBitboard(whiteTurn, pawns, oppositionPieces);
+}
+static void addPawnAttackMovesWhite(std::vector<Move>& moves, uint64_t pawns, uint64_t oppositionPieces) {
+    uint64_t attackMoves = generatePawnAttackBitboard(WhiteTurn{true}, pawns, oppositionPieces);
 
     while (attackMoves) {
         SquareIndex targetSquareIndex = (SquareIndex)__builtin_ctzll(attackMoves);
         uint64_t targetSquare = 1ULL << targetSquareIndex;
 
         if (southEastOne(targetSquare) & pawns) {
-            std::cout << "hello" << '\n';
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southEastOne(targetSquareIndex), targetSquareIndex, WHITE_PAWN}});
+            addSinglePawnMoveWhite(moves, southEastOne(targetSquareIndex), targetSquareIndex);
         }
         if (southWestOne(targetSquare) & pawns) {
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{southWestOne(targetSquareIndex), targetSquareIndex, WHITE_PAWN}});
+            addSinglePawnMoveWhite(moves, southWestOne(targetSquareIndex), targetSquareIndex);
         }
 
         attackMoves &= attackMoves-1;
     }
-    
-    return moves;
 }
-//generates a vector of all pawn moves for the black pieces
-static std::vector<Move> generatePawnMovesBlack(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied, uint64_t oppositionPieces) {
-    std::vector<Move> moves;
-    moves.reserve(8);
+static void addSinglePawnMoveWhite(std::vector<Move>& moves, SquareIndex startPos, SquareIndex endPos) {
+    if ((1ULL << endPos) & 0x8080808080808080) {
+        //promotion moves
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_QUEEN}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_BISHOP}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_KNIGHT}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_ROOK}});
+    }
+    else {
+        //normal move
+        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startPos, endPos, WHITE_PAWN}});
+    }
+}
 
-    //pawn push moves
-    uint64_t pushMoves = generatePawnPushBitboard(whiteTurn, pawns, unoccupied);
+static void addPawnPushMovesBlack(std::vector<Move>& moves, uint64_t pawns, uint64_t unoccupied) {
+    uint64_t pushMoves = generatePawnPushBitboard(WhiteTurn{false}, pawns, unoccupied);
 
     while (pushMoves) {
         SquareIndex targetSquareIndex = (SquareIndex)__builtin_ctzll(pushMoves);
@@ -305,36 +298,46 @@ static std::vector<Move> generatePawnMovesBlack(WhiteTurn whiteTurn, uint64_t pa
 
         if (northOne(targetSquare) & pushMoves) {
             //add double and single push move
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(northOne(targetSquareIndex)), targetSquareIndex, BLACK_PAWN}});
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(northOne(targetSquareIndex)), northOne(targetSquareIndex), BLACK_PAWN}});
+            addSinglePawnMoveBlack(moves, northOne(targetSquareIndex), targetSquareIndex);
+            addSinglePawnMoveBlack(moves, northOne(targetSquareIndex), targetSquareIndex);
 
-            pushMoves &= pushMoves-1;
             pushMoves &= pushMoves-1;
         }
         else {
             //add single push move
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northOne(targetSquareIndex), targetSquareIndex, BLACK_PAWN}});
-
-            pushMoves &= pushMoves-1;
+            addSinglePawnMoveBlack(moves, northOne(targetSquareIndex), targetSquareIndex);
         }
-    }
 
-    //pawn attack moves
-    uint64_t attackMoves = generatePawnAttackBitboard(whiteTurn, pawns, oppositionPieces);
+        pushMoves &= pushMoves-1;
+    }
+}
+static void addPawnAttackMovesBlack(std::vector<Move>& moves, uint64_t pawns, uint64_t oppositionPieces) {
+    uint64_t attackMoves = generatePawnAttackBitboard(WhiteTurn{false}, pawns, oppositionPieces);
     
     while (attackMoves) {
         SquareIndex targetSquareIndex = (SquareIndex)__builtin_ctzll(attackMoves);
         uint64_t targetSquare = 1ULL << targetSquareIndex;
         
         if (northEastOne(targetSquare) & pawns) {
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northEastOne(targetSquareIndex), targetSquareIndex, BLACK_PAWN}});
+            addSinglePawnMoveBlack(moves, northEastOne(targetSquareIndex), targetSquareIndex);
         }
         if (northWestOne(targetSquare) & pawns) {
-            moves.push_back({.flag=NORMAL, .normalMove=NormalMove{northWestOne(targetSquareIndex), targetSquareIndex, BLACK_PAWN}});
+            addSinglePawnMoveBlack(moves, northWestOne(targetSquareIndex), targetSquareIndex);
         }
 
         attackMoves &= attackMoves-1;
     }
-
-    return moves;
+}
+static void addSinglePawnMoveBlack(std::vector<Move>& moves, SquareIndex startPos, SquareIndex endPos) {
+    if ((1ULL << endPos) & 0x0101010101010101) {
+        //promotion moves
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_QUEEN}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_BISHOP}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_KNIGHT}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_ROOK}});
+    }
+    else {
+        //normal move
+        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startPos, endPos, BLACK_PAWN}});
+    }
 }
