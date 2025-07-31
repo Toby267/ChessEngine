@@ -1,4 +1,4 @@
-#include "board/MoveGeneration/MoveGeneratorInternals.hpp"
+#include "board/moveGeneration/MoveGeneratorInternals.hpp"
 
 #include <array>
 #include <cstdint>

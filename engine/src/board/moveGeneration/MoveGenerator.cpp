@@ -1,9 +1,9 @@
-#include "board/MoveGeneration/MoveGenerator.hpp"
+#include "board/moveGeneration/MoveGenerator.hpp"
 
 #include <vector>
 #include <cstdint>
 
-#include "board/MoveGeneration/MoveGeneratorInternals.hpp"
+#include "board/moveGeneration/MoveGeneratorInternals.hpp"
 #include "board/Move.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
