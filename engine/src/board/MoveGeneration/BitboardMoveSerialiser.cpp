@@ -1,4 +1,4 @@
-#include "board/MoveGeneration/BitboardMoveSerialiser.hpp"
+#include "board/MoveGeneration/MoveGeneratorInternals.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -6,7 +6,6 @@
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
 #include "board/Board.hpp"
-#include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //

@@ -3,9 +3,8 @@
 #include <vector>
 #include <cstdint>
 
+#include "board/MoveGeneration/MoveGeneratorInternals.hpp"
 #include "board/Move.hpp"
-#include "board/MoveGeneration/BitboardMoveSerialiser.hpp"
-#include "board/MoveGeneration/BitboardMoveGenerator.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 
