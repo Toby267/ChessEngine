@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstdint>
 
-#include "board/moveGeneration/MoveGeneratorInternals.hpp"
+#include "board/moveGeneration/Internals/MoveGeneratorInternals.hpp"
 #include "board/Move.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
