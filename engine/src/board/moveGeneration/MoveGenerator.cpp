@@ -3,10 +3,10 @@
 #include <vector>
 #include <cstdint>
 
-#include "board/moveGeneration/Internals/MoveGeneratorInternals.hpp"
 #include "board/Move.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
+#include "board/moveGeneration/internals/MoveGeneratorInternals.hpp"
 
 /**
  * Generates all possible moves based on a given board and whos to move
