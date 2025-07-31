@@ -29,7 +29,7 @@ Board::~Board() {
  * 
  * @param index the index of said piece
  */
-PieceType Board::getType(SquareIndex index) {
+PieceType Board::getType(SquareIndex index) const {
     if (isWhite(index)) {
         for (int i = 0; i < 6; i++) {
             if (bitBoards[i] & (1ULL << index)) {
@@ -59,13 +59,6 @@ const std::array<__uint128_t,  4>& Board::getCastleData() const {
 }
 const std::array<__uint128_t, 16>& Board::getEnPassantData() const {
     return enPassantData;
-}
-
-/**
- * Sets a specific bitboard to the given value
- */
-void Board::setBitBoard(uint64_t val, PieceType type) {
-    bitBoards[type] = val;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,14 +94,14 @@ void Board::makeMove(const Move& move) {
             break;
 
         case MoveType::PROMOTION:
-            togglePiece(getType(move.promotionMove.endPos), move.promotionMove.endPos);
+            togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
             updateSpecialMoveStatus(move);
             break;
 
         case MoveType::NORMAL:
-            togglePiece(getType(move.promotionMove.endPos), move.normalMove.endPos);
+            togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
             updateSpecialMoveStatus(move);
@@ -142,12 +135,12 @@ void Board::unMakeMove(const Move& move) {
             togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
             break;
         case MoveType::PROMOTION:
-            togglePiece(getType(move.promotionMove.endPos), move.promotionMove.endPos);
+            togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
             togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
             break;
         case MoveType::NORMAL:
-            togglePiece(getType(move.promotionMove.endPos), move.normalMove.endPos);
+            togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
             break;
@@ -346,10 +339,10 @@ bool Board::hasPiece(SquareIndex index) {
     return (bitBoards[PieceType::WHITE_PIECES] | bitBoards[PieceType::BLACK_PIECES]) & (1ULL << index);
 }
 //returns true if the given square has a white piece
-bool Board::isWhite(SquareIndex index) {
+bool Board::isWhite(SquareIndex index) const {
     return bitBoards[PieceType::WHITE_PIECES] & (1ULL << index);
 }
 //returns true if the given square has a black piece
-bool Board::isBlack(SquareIndex index) {
+bool Board::isBlack(SquareIndex index) const {
     return bitBoards[PieceType::BLACK_PIECES] & (1ULL << index);
 }

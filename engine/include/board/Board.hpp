@@ -32,10 +32,9 @@ public:
 
     //getters/setters
     const std::array<uint64_t, 14>& getBitBoards() const;
-    void setBitBoard(uint64_t val, PieceType type); //TODO: remove this method
     const std::array<__uint128_t, 4>& getCastleData() const;
     const std::array<__uint128_t, 16>& getEnPassantData() const;
-    PieceType getType(SquareIndex index);
+    PieceType getType(SquareIndex index) const;
     
     //public methods
     void makeMove(const Move& move);
@@ -60,7 +59,7 @@ private:
     void printBitBoardHex(PieceType board);
 
     //helper methods
-    bool isWhite(SquareIndex index);
-    bool isBlack(SquareIndex index);
+    bool isWhite(SquareIndex index) const;
+    bool isBlack(SquareIndex index) const;
     bool hasPiece(SquareIndex index);
 };
