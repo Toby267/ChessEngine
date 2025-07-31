@@ -5,6 +5,8 @@
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 
+// * ------------------------------------------ [ IS TARGETED ] ------------------------------------------ * //
+
 bool isTargeted(const Board& board, WhiteTurn whiteTurn, SquareIndex i);
 
 // * ----------------------------------- [ BITBOARD MOVE SERIALISATION ] --------------------------------- * //
