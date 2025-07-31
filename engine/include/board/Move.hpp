@@ -1,6 +1,6 @@
 #pragma once
 
-#include <board/BoardUtil.hpp>
+#include "BoardUtil.hpp"
 
 /**
  * must keep the order for startPos, endPos and pieceType the same for NormalMove, PromotionMove, and CastleMove

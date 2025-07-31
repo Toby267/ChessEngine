@@ -1,4 +1,4 @@
-#include <board/BoardUtil.hpp>
+#include "board/BoardUtil.hpp"
 
 //shifts a square by one in each orthoganol direction
 //doesn't check for if the piece goes off the board - even if it did

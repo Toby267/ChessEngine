@@ -4,8 +4,8 @@
 #include <string>
 #include <array>
 
-#include <board/BoardUtil.hpp>
-#include <board/Move.hpp>
+#include "BoardUtil.hpp"
+#include "Move.hpp"
 
 /**
  * Class representing the board and its relevent data, with varius functions for managing the board
