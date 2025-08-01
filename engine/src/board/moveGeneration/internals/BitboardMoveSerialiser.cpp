@@ -256,8 +256,8 @@ static void addPawnPushMovesBlack(std::vector<Move>& moves, const Board& board, 
 
         if (northOne(targetSquare) & pushMoves) {
             //add double and single push move
-            addSinglePawnMoveBlack(moves, board, northOne(targetSquareIndex), targetSquareIndex);
-            addSinglePawnMoveBlack(moves, board, northOne(targetSquareIndex), targetSquareIndex);
+            addSinglePawnMoveBlack(moves, board, northOne(northOne(targetSquareIndex)), targetSquareIndex);
+            addSinglePawnMoveBlack(moves, board, northOne(northOne(targetSquareIndex)), northOne(targetSquareIndex));
 
             pushMoves &= pushMoves-1;
         }

@@ -59,5 +59,4 @@ struct Move {
     };
 };
 
-
 void printMove(const Move& m);
