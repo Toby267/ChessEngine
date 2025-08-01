@@ -20,17 +20,7 @@ Engine::Engine() {
     printASCIIBoard();
 
     Move moves[] = {
-        // {.flag=NORMAL, .normalMove=NormalMove{b1, b3, WHITE_KNIGHT}},
-        // {.flag=NORMAL, .normalMove=NormalMove{c1, c3, WHITE_BISHOP}},
-        // {.flag=NORMAL, .normalMove=NormalMove{d1, d3, WHITE_QUEEN}},
-        // {.flag=NORMAL, .normalMove=NormalMove{f1, f3, WHITE_BISHOP}},
-        // {.flag=NORMAL, .normalMove=NormalMove{g1, g3, WHITE_KNIGHT}},
-
-        // {.flag=NORMAL, .normalMove=NormalMove{b8, b6, BLACK_KNIGHT}},
-        // {.flag=NORMAL, .normalMove=NormalMove{c8, c6, BLACK_BISHOP}},
-        // {.flag=NORMAL, .normalMove=NormalMove{d8, d6, BLACK_QUEEN}},
-        // {.flag=NORMAL, .normalMove=NormalMove{f8, f6, BLACK_BISHOP}},
-        // {.flag=NORMAL, .normalMove=NormalMove{g8, g6, BLACK_KNIGHT}},
+        {.flag=NORMAL, .normalMove=NormalMove{b8, d3, BLACK_KNIGHT, INVALID}},
     };
     for (auto& i : moves) {
         board->makeMove(i);
@@ -42,7 +32,6 @@ Engine::Engine() {
         board->makeMove(i);
         printASCIIBoard();
         board->unMakeMove(i);
-        printASCIIBoard();
     }
 }
 

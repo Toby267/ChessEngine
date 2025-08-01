@@ -10,6 +10,7 @@
 
 /**
  * Generates all possible moves based on a given board and whos to move
+ * Probably should make this part of a class or make moves, board and whiteTurn global to the internals translation unit so that Im not passing it though loads of function calls
  * 
  * @param board the board
  * @param whiteTurn whether or not it is whites turn to move
@@ -30,7 +31,8 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
     const uint64_t                      occupied            = whitePieces | blackPieces;
     const uint64_t                      unoccupied          = ~occupied;
     const short                         indexOffset         = whiteTurn ? 0 : 6;
-
+    const SquareIndex                   kingIndex           = (SquareIndex)__builtin_ctzll(bitBoards[PieceType::WHITE_KING + indexOffset]);
+    
     //generate moves
     generateKingMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);
     generateKnightMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KNIGHT + indexOffset], friendlyPieces);
@@ -42,10 +44,18 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
     generateEnPassantMoves(moves, board, whiteTurn, friendlyPieces, enPassantData);
 
     //filter out moves that leave the king in check
-    // for (int i = 0; i < moves.size(); i++) {
-    //     board.makeMove(moves[i]);
-    // }
+    std::vector<Move> retMoves;
+    retMoves.reserve(moves.size());
+
+    for (auto& move : moves) {
+        board.makeMove(move);
+
+        if (!isTargeted(board, !whiteTurn, kingIndex))
+            retMoves.emplace_back(move);
+
+        board.unMakeMove(move);
+    }
 
     //finally return
-    return moves;
+    return retMoves;
 }
