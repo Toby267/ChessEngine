@@ -31,7 +31,6 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
     const uint64_t                      occupied            = whitePieces | blackPieces;
     const uint64_t                      unoccupied          = ~occupied;
     const short                         indexOffset         = whiteTurn ? 0 : 6;
-    const SquareIndex                   kingIndex           = (SquareIndex)__builtin_ctzll(bitBoards[PieceType::WHITE_KING + indexOffset]);
     
     //generate moves
     generateKingMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);
@@ -47,8 +46,11 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
     std::vector<Move> retMoves;
     retMoves.reserve(moves.size());
 
+    SquareIndex kingIndex;
+
     for (auto& move : moves) {
         board.makeMove(move);
+        kingIndex = (SquareIndex)__builtin_ctzll(bitBoards[PieceType::WHITE_KING + indexOffset]);
 
         if (!isTargeted(board, !whiteTurn, kingIndex))
             retMoves.emplace_back(move);

@@ -1,5 +1,6 @@
 #include "Engine.hpp"
 
+#include <cstdint>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,25 +15,20 @@
 /**
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
-Engine::Engine() {
-    board->setDefaultBoard();
-    // parseFen("8/P7/7P/8/8/p7/7p/8 w KQkq - 0 1");
-    printASCIIBoard();
+Engine::Engine() {    
+    for (int i = 0; i <= 5; i++) {
+        // board->setDefaultBoard();                                                               //position 1         - bug at depth 3, off by 1
+        // parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");       //position 2         - bug at depth 2, off by a lot
+        parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");                                  //position 3         - bug at depth 2, off by 1
+        // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");           //position 4         - bug at depth 2, off by a bit
+        // parseFen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");                //position 5         - bug at depth 2, off by 2
+        // parseFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");  //position 6         - bug at depth 2, off by 1
 
-    Move moves[] = {
-        {.flag=NORMAL, .normalMove=NormalMove{b8, d3, BLACK_KNIGHT, INVALID}},
-    };
-    for (auto& i : moves) {
-        board->makeMove(i);
-        printASCIIBoard();
+        std::cout << "depth: " << i << " nodes: " << perft(i) << '\n';
     }
 
-    std::vector<Move> moves2 = generateMoves(*board, whiteTurn);
-    for (auto& i : moves2) {
-        board->makeMove(i);
-        printASCIIBoard();
-        board->unMakeMove(i);
-    }
+    parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
+    perftDivide(2);
 }
 
 Engine::~Engine() {
@@ -40,6 +36,59 @@ Engine::~Engine() {
 }
 
 // * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
+
+uint64_t Engine::perft(int depth) {
+    std::vector<Move> moves;
+    uint64_t nodes = 0;
+
+    if (depth == 0)
+        return  1ULL;
+
+    moves = generateMoves(*board, whiteTurn);
+
+    for (auto& i : moves) {
+        board->makeMove(i);
+        whiteTurn = !whiteTurn;
+
+        nodes += perft(depth -1);
+
+        board->unMakeMove(i);
+        whiteTurn = !whiteTurn;
+    }
+
+    return nodes;
+}
+
+uint64_t Engine::perftDivide(int depth) {
+    std::vector<Move> moves;
+    std::vector<int> childMoveCount;
+    uint64_t nodes = 0;
+
+    if (depth == 0)
+        return  1ULL;
+
+    moves = generateMoves(*board, whiteTurn);
+
+    for (auto& i : moves) {
+        board->makeMove(i);
+        whiteTurn = !whiteTurn;
+
+        uint64_t childMoves = perftDivide(depth -1);
+        nodes += childMoves;
+        childMoveCount.push_back(childMoves);
+
+        board->unMakeMove(i);
+        whiteTurn = !whiteTurn;
+    }
+
+    std::cout << "=============================== " << "depth: " << depth << " ===============================" << '\n';
+    for (int i = 0; i < moves.size(); i++) {
+        printMove(moves[i]);
+        std::cout << "child moves: " << childMoveCount[i] << '\n' << '\n';
+    }
+
+    return nodes;
+}
 
 /**
  * Parses a given fen, storing relevent information here, and passing it to the board to parse there

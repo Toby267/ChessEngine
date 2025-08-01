@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BoardUtil.hpp"
+#include <iostream>
 
 /**
  * must keep the order for startPos, endPos and pieceType the same for NormalMove, PromotionMove, and CastleMove
@@ -57,3 +58,6 @@ struct Move {
         CastleMove    castleMove;
     };
 };
+
+
+void printMove(const Move& m);

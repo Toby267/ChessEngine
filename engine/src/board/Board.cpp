@@ -174,7 +174,7 @@ void Board::setDefaultBoard() {
  * Resets the board back to its initial/default state
  */
 void Board::resetBoard() {
-    castleData = {};
+    castleData = {1, 1, 1, 1};
     enPassantData = {};
     bitBoards = {};
 }
