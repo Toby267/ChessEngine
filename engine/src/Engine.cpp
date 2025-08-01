@@ -16,19 +16,20 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {    
-    for (int i = 0; i <= 5; i++) {
-        // board->setDefaultBoard();                                                               //position 1         - bug at depth 3, off by 1
-        // parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");       //position 2         - bug at depth 2, off by a lot
-        parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");                                  //position 3         - bug at depth 2, off by 1
-        // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");           //position 4         - bug at depth 2, off by a bit
-        // parseFen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");                //position 5         - bug at depth 2, off by 2
-        // parseFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");  //position 6         - bug at depth 2, off by 1
+    for (int i = 1; i <= 5; i++) {
+        // board->setDefaultBoard();                                                                //position 1                    - bug at depth 5, off by ~300
+        // parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");        //position 2                    - bug at depth 3, off by 1000
+        // parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");                                   //position 3                    - bug at depth 4, off by 4
+        // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");            //position 4                    - bug at depth 3, off by 250          
+            // parseFen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");       //alternate to position 4       - bug at depth 4, off by 20     - but breaks at a different point?  - must mean there is a bug with white move generation that there isnt for black move generation
+        // parseFen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");                 //position 5                    - bug at depth 3, off by ~100
+        // parseFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");   //position 6                    - bug at depth 2, off by 1      (should be 2079, but is 2080)
 
         std::cout << "depth: " << i << " nodes: " << perft(i) << '\n';
     }
 
-    parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
-    perftDivide(2);
+    // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+    // perftDivide(2);
 }
 
 Engine::~Engine() {

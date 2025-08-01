@@ -147,6 +147,8 @@ void generateCastlingMoves(std::vector<Move>& moves, const Board& board, WhiteTu
 void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData) {
     //very cursed line. I could of just put the ternary in the two lines that this is used as its just as efficient time wise and more efficient space wise but this looks cooler
     SquareIndex (*forwardOne)(int) = whiteTurn ? (SquareIndex(*)(int))northOne : (SquareIndex(*)(int))southOne;
+    PieceType pieceType = whiteTurn ? WHITE_PAWN : BLACK_PAWN;
+    PieceType killPieceType = whiteTurn ? BLACK_PAWN : WHITE_PAWN;
 
     for (int i = 0; i < enPassantData.size(); i++) {
         if (!(enPassantData[i] & 1)) continue;
@@ -157,10 +159,10 @@ void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteT
         if (pawnBitboard & friendlyPieces) continue;
 
         if (westOne(pawnBitboard) & friendlyPieces) {
-            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{westOne(killIndex), forwardOne(killIndex), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{westOne(killIndex), forwardOne(killIndex), pieceType, (SquareIndex)killIndex, killPieceType}});
         }
         else if (eastOne(pawnBitboard) & friendlyPieces) {
-            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{eastOne(killIndex), forwardOne(killIndex), WHITE_PAWN, (SquareIndex)killIndex, BLACK_PAWN}});
+            moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{eastOne(killIndex), forwardOne(killIndex), pieceType, (SquareIndex)killIndex, killPieceType}});
         }
     }
 }
@@ -177,7 +179,7 @@ static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, 
         }
     }
     if (castleData[CastlePieces::W_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000001010100)) == 0) {
-        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::b1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::c1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d1)) {
+        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::c1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d1)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, c1, WHITE_KING, a1, d1, WHITE_ROOK}});
         }
     }
@@ -185,12 +187,12 @@ static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, 
 //generates a vector of all castling moves for the black pieces
 static void addCastlingMovesBlack(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (!castleData[CastlePieces::B_KING] && !(occupied & (uint64_t)(0x0080800000000000))) {
-        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::f8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::g8)) {
+        if (!isTargeted(board, WhiteTurn{true}, SquareIndex::f8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::g8)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, g8, WHITE_KING, h8, f8, WHITE_ROOK}});
         }
     }
     if (!castleData[CastlePieces::B_QUEEN] && !(occupied & (uint64_t)(0x0000000080808000))) {
-        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::b8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::c8) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d8)) {
+        if (!isTargeted(board, WhiteTurn{true}, SquareIndex::c8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::d8)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, WHITE_KING, a8, d8, WHITE_ROOK}});
         }
     }
