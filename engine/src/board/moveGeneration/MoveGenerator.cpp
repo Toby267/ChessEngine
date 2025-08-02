@@ -40,7 +40,7 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
     generateQueenMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_QUEEN + indexOffset], occupied, friendlyPieces);
     generatePawnMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], unoccupied, oppositionPieces);
     generateCastlingMoves(moves, board, whiteTurn, occupied, castleData);
-    generateEnPassantMoves(moves, board, whiteTurn, friendlyPieces, enPassantData);
+    generateEnPassantMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], enPassantData);
 
     //filter out moves that leave the king in check
     std::vector<Move> retMoves;

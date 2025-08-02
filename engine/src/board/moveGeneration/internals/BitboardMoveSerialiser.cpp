@@ -144,7 +144,7 @@ void generateCastlingMoves(std::vector<Move>& moves, const Board& board, WhiteTu
 }
 
 //generates a vector of all en passant moves
-void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t friendlyPieces, std::array<__uint128_t, 16> enPassantData) {
+void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t pawns, std::array<__uint128_t, 16> enPassantData) {
     //very cursed line. I could of just put the ternary in the two lines that this is used as its just as efficient time wise and more efficient space wise but this looks cooler
     SquareIndex (*forwardOne)(int) = whiteTurn ? (SquareIndex(*)(int))northOne : (SquareIndex(*)(int))southOne;
     PieceType pieceType = whiteTurn ? WHITE_PAWN : BLACK_PAWN;
@@ -156,12 +156,12 @@ void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteT
         int killIndex = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
         uint64_t pawnBitboard = 1ULL << killIndex;
 
-        if (pawnBitboard & friendlyPieces) continue;
+        if (pawnBitboard & pawns) continue;
 
-        if (westOne(pawnBitboard) & friendlyPieces) {
+        if (westOne(pawnBitboard) & pawns) {
             moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{westOne(killIndex), forwardOne(killIndex), pieceType, (SquareIndex)killIndex, killPieceType}});
         }
-        else if (eastOne(pawnBitboard) & friendlyPieces) {
+        else if (eastOne(pawnBitboard) & pawns) {
             moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{eastOne(killIndex), forwardOne(killIndex), pieceType, (SquareIndex)killIndex, killPieceType}});
         }
     }

@@ -16,14 +16,14 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {    
-    for (int i = 1; i <= 5; i++) {
-        // board->setDefaultBoard();                                                                //position 1                    - bug at depth 5, off by ~300
+    for (int i = 1; i <= 15; i++) {
+        // board->setDefaultBoard();                                                                //position 1                    - bug at depth >7 somewhere..., maybe...
         // parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");        //position 2                    - bug at depth 3, off by 30
-        // parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");                                   //position 3                    - bug at depth 4, off by 4
-        // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");            //position 4                    - bug at depth 4, off by 20          
-            // parseFen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");       //alternate to position 4       - bug at depth 4, off by 20
-        // parseFen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");                 //position 5                    - bug at depth 3, off by 3
-        parseFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");   //position 6                    - bug at depth 2, off by 1      (should be 2079, but is 2080)
+        // parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");                                   //position 3                    - bug at depth 5, off by 2
+        // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");            //position 4                    - bug at depth 5, off by 50          
+            // parseFen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");       //alternate to position 4       - bug at depth 5, off by 50
+        // parseFen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");                 //position 5                    - passed
+        // parseFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");   //position 6                    - bug at depth >6 somewhere..., maybe...
 
         std::cout << "depth: " << i << " nodes: " << perft(i) << '\n';
     }
