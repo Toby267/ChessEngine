@@ -179,7 +179,7 @@ static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, 
         }
     }
     if (castleData[CastlePieces::W_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000001010100)) == 0) {
-        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::d1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::e1)) {
+        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::e1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d1)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, c1, WHITE_KING, a1, d1, WHITE_ROOK}});
         }
     }
@@ -192,7 +192,7 @@ static void addCastlingMovesBlack(std::vector<Move>& moves, const Board &board, 
         }
     }
     if (!castleData[CastlePieces::B_QUEEN] && !(occupied & (uint64_t)(0x0000000080808000))) {
-        if (!isTargeted(board, WhiteTurn{true}, SquareIndex::d8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::e8)) {
+        if (!isTargeted(board, WhiteTurn{true}, SquareIndex::e8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::d8)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, BLACK_KING, a8, d8, BLACK_ROOK}});
         }
     }
