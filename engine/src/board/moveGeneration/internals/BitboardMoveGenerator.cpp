@@ -176,10 +176,10 @@ uint64_t generateEnPassantBitboard(WhiteTurn whiteTurn, uint64_t pawns, std::arr
         int index = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
         uint64_t pawnBitboard = 1ULL << index;
 
-        if (pawnBitboard & pawns) continue;
+        if (pawnBitboard & pawns) return 0ULL;
 
         if ((westOne(pawnBitboard) & pawns) || (eastOne(pawnBitboard) & pawns)) {
-            return whiteTurn ? northOne(pawnBitboard) : southOne(pawnBitboard);
+            return pawnBitboard;
         }
     }
 

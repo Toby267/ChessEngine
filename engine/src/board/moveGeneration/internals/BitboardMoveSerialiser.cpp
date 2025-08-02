@@ -156,7 +156,7 @@ void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteT
         int killIndex = ((i % 8) * 8) + ((i > 7) ? 4 : 3);
         uint64_t pawnBitboard = 1ULL << killIndex;
 
-        if (pawnBitboard & pawns) continue;
+        if (pawnBitboard & pawns) return;
 
         if (westOne(pawnBitboard) & pawns) {
             moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{westOne(killIndex), forwardOne(killIndex), pieceType, (SquareIndex)killIndex, killPieceType}});
