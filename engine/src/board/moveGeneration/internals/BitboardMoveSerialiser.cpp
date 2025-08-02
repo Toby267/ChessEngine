@@ -174,12 +174,12 @@ void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteT
 //generates a vector of all castling moves for the white pieces
 static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (castleData[CastlePieces::W_KING]  == 0 && (occupied & (uint64_t)(0x0001010000000000)) == 0) {
-        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::f1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::g1)) {
+        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::e1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::f1)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, g1, WHITE_KING, h1, f1, WHITE_ROOK}});
         }
     }
     if (castleData[CastlePieces::W_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000001010100)) == 0) {
-        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::c1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d1)) {
+        if (!isTargeted(board, WhiteTurn{false}, SquareIndex::d1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::e1)) {
             moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, c1, WHITE_KING, a1, d1, WHITE_ROOK}});
         }
     }
@@ -187,13 +187,13 @@ static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, 
 //generates a vector of all castling moves for the black pieces
 static void addCastlingMovesBlack(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (!castleData[CastlePieces::B_KING] && !(occupied & (uint64_t)(0x0080800000000000))) {
-        if (!isTargeted(board, WhiteTurn{true}, SquareIndex::f8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::g8)) {
-            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, g8, WHITE_KING, h8, f8, WHITE_ROOK}});
+        if (!isTargeted(board, WhiteTurn{true}, SquareIndex::e8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::f8)) {
+            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, g8, BLACK_KING, h8, f8, BLACK_ROOK}});
         }
     }
     if (!castleData[CastlePieces::B_QUEEN] && !(occupied & (uint64_t)(0x0000000080808000))) {
-        if (!isTargeted(board, WhiteTurn{true}, SquareIndex::c8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::d8)) {
-            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, WHITE_KING, a8, d8, WHITE_ROOK}});
+        if (!isTargeted(board, WhiteTurn{true}, SquareIndex::d8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::e8)) {
+            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, BLACK_KING, a8, d8, BLACK_ROOK}});
         }
     }
 }
