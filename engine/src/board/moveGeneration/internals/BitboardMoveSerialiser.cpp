@@ -161,7 +161,7 @@ void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteT
         if (westOne(pawnBitboard) & pawns) {
             moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{westOne(killIndex), forwardOne(killIndex), pieceType, (SquareIndex)killIndex, killPieceType}});
         }
-        else if (eastOne(pawnBitboard) & pawns) {
+        if (eastOne(pawnBitboard) & pawns) {
             moves.push_back({.flag=EN_PASSANT, .enPassantMove=EnPassantMove{eastOne(killIndex), forwardOne(killIndex), pieceType, (SquareIndex)killIndex, killPieceType}});
         }
     }
