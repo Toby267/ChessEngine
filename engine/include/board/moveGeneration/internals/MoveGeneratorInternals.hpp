@@ -40,4 +40,5 @@ uint64_t generateQueenBitboardSingular(SquareIndex square, uint64_t occupied, ui
 
 uint64_t generatePawnPushBitboard(WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied);
 uint64_t generatePawnAttackBitboard(WhiteTurn whiteTurn, uint64_t pawns, uint64_t oppositionPieces);
+uint64_t generatePawnTargetBitboard(WhiteTurn whiteTurn, uint64_t pawns);
 uint64_t generateEnPassantBitboard(WhiteTurn whiteTurn, uint64_t pawns, std::array<__uint128_t, 16> enPassantData);

@@ -24,18 +24,18 @@ bool isTargeted(const Board& board, WhiteTurn whiteTurn, SquareIndex i) {
     //generate bitboards for the king and knights
     uint64_t kingMoves      = generateKingBitboard(bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);
     uint64_t knightMoves    = generateKnightBitboard(bitBoards[PieceType::WHITE_KNIGHT + indexOffset], friendlyPieces);
-    if (targetedPiece & kingMoves || targetedPiece & knightMoves) return  true;
+    if (targetedPiece & kingMoves || targetedPiece & knightMoves) return true;
 
     //generate bitboards for sliding pieces
     uint64_t rookMoves      = generateRookBitboard(bitBoards[PieceType::WHITE_ROOK + indexOffset], occupied, friendlyPieces);
     uint64_t bishopMoves    = generateBishopBitboard(bitBoards[PieceType::WHITE_BISHOP + indexOffset], occupied, friendlyPieces);
     uint64_t queenMoves     = generateQueenBitboard(bitBoards[PieceType::WHITE_QUEEN + indexOffset], occupied, friendlyPieces);
-    if (targetedPiece & rookMoves || targetedPiece & bishopMoves || targetedPiece & queenMoves) return  true;
+    if (targetedPiece & rookMoves || targetedPiece & bishopMoves || targetedPiece & queenMoves) return true;
 
     //generate bitboards for pawns
-    uint64_t pawnAttacks    = generatePawnAttackBitboard(whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], oppositionPieces);
+    uint64_t pawnAttacks    = generatePawnTargetBitboard(whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset]);
     uint64_t enPassantMoves = generateEnPassantBitboard(whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], enPassantData);
-    if (targetedPiece & pawnAttacks || targetedPiece & enPassantMoves) return  true;
+    if (targetedPiece & pawnAttacks || targetedPiece & enPassantMoves) return true;
 
     return false;
 }

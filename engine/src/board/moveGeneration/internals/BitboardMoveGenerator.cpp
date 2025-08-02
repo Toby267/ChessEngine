@@ -158,6 +158,16 @@ uint64_t generatePawnAttackBitboard(WhiteTurn whiteTurn, uint64_t pawns, uint64_
         return moves & oppositionPieces;
     }   
 }
+uint64_t generatePawnTargetBitboard(WhiteTurn whiteTurn, uint64_t pawns) {
+    if (whiteTurn) {
+        uint64_t moves = northEastOne(pawns) | northWestOne(pawns);
+        return moves;
+    }
+    else {
+        uint64_t moves = southEastOne(pawns) | southWestOne(pawns);
+        return moves;
+    } 
+}
 //generates a bitboard of the en passant target square if there is one
 uint64_t generateEnPassantBitboard(WhiteTurn whiteTurn, uint64_t pawns, std::array<__uint128_t, 16> enPassantData){ 
     for (int i = 0; i < enPassantData.size(); i++) {
