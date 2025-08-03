@@ -2,6 +2,8 @@
 
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
+#include "board/Move.hpp"
+#include <string>
 
 /**
  * Class representing the engine as a whole
@@ -20,11 +22,16 @@ public:
     ~Engine();
 
     //public methods
-    uint64_t perft(int depth);
-    uint64_t perftDivide(int depth);
+    void playMatch();
     void parseFen(const std::string& FEN);
 
 private:
     //private methods
     void printASCIIBoard();
+
+    Move getUserMove();
+    bool validateMove(Move& move, std::string moveString);
+
+    uint64_t perft(int depth);
+    uint64_t perftDivide(int depth);
 };

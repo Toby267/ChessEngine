@@ -34,57 +34,18 @@ Engine::~Engine() {
 
 // * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
 
-uint64_t Engine::perft(int depth) {
-    std::vector<Move> moves;
-    uint64_t nodes = 0;
-
-    if (depth == 0)
-        return  1ULL;
-
-    moves = generateMoves(*board, whiteTurn);
-
-    for (auto& i : moves) {
-        board->makeMove(i);
-        whiteTurn = !whiteTurn;
-
-        nodes += perft(depth -1);
-
-        board->unMakeMove(i);
-        whiteTurn = !whiteTurn;
+void playMatch() {
+    //array of size 2 of the 'Playable' interface that contains the bot, and the player
+    //use the whiteTurn variable to index the above array. it is a bool, which are implicitly converted to intergers under teh hood 
+    
+    for (;;) {
+        //Move move = playableArray[whiteTurn].getNextMove();
+        //if (moves.size())
+            //play move
+            //whiteTurn = !whiteTurn
+        //else
+            //handle game over logic
     }
-
-    return nodes;
-}
-
-uint64_t Engine::perftDivide(int depth) {
-    std::vector<Move> moves;
-    std::vector<int> childMoveCount;
-    uint64_t nodes = 0;
-
-    if (depth == 0)
-        return  1ULL;
-
-    moves = generateMoves(*board, whiteTurn);
-
-    for (auto& i : moves) {
-        board->makeMove(i);
-        whiteTurn = !whiteTurn;
-
-        uint64_t childMoves = perftDivide(depth -1);
-        nodes += childMoves;
-        childMoveCount.push_back(childMoves);
-
-        board->unMakeMove(i);
-        whiteTurn = !whiteTurn;
-    }
-
-    std::cout << "=============================== " << "depth: " << depth << " ===============================" << '\n';
-    for (int i = 0; i < moves.size(); i++) {
-        printMove(moves[i]);
-        std::cout << "child moves: " << childMoveCount[i] << '\n' << '\n';
-    }
-
-    return nodes;
 }
 
 /**
@@ -140,4 +101,85 @@ void Engine::printASCIIBoard() {
     }
 
     std::cout << '\n';
+}
+
+Move Engine::getUserMove() {
+    std::string input;
+    Move move;
+
+    for (;;) {
+        std::cout << "Enter your next move: ";
+        std::cin >> input;
+
+        if (validateMove(move, input))
+            return move;
+    }
+}
+bool Engine::validateMove(Move& move, std::string moveString) {
+    std::vector<Move> moves = generateMoves(*board, whiteTurn);
+
+    SquareIndex startPos, endPos;
+    PieceType promotionPiece = INVALID;
+    //extract start, end pos and promotionPiece (if any)
+    
+    for (auto& i : moves) {
+        //if (start and end pos match with i)
+            //copy i into move
+            //if (promotionPiece != INVALID) (or if pieceType of i is promotion)
+                //set newPieceType to promotionPiece
+            break;
+    }
+}
+
+uint64_t Engine::perft(int depth) {
+    std::vector<Move> moves;
+    uint64_t nodes = 0;
+
+    if (depth == 0)
+        return  1ULL;
+
+    moves = generateMoves(*board, whiteTurn);
+
+    for (auto& i : moves) {
+        board->makeMove(i);
+        whiteTurn = !whiteTurn;
+
+        nodes += perft(depth -1);
+
+        board->unMakeMove(i);
+        whiteTurn = !whiteTurn;
+    }
+
+    return nodes;
+}
+
+uint64_t Engine::perftDivide(int depth) {
+    std::vector<Move> moves;
+    std::vector<int> childMoveCount;
+    uint64_t nodes = 0;
+
+    if (depth == 0)
+        return  1ULL;
+
+    moves = generateMoves(*board, whiteTurn);
+
+    for (auto& i : moves) {
+        board->makeMove(i);
+        whiteTurn = !whiteTurn;
+
+        uint64_t childMoves = perftDivide(depth -1);
+        nodes += childMoves;
+        childMoveCount.push_back(childMoves);
+
+        board->unMakeMove(i);
+        whiteTurn = !whiteTurn;
+    }
+
+    std::cout << "=============================== " << "depth: " << depth << " ===============================" << '\n';
+    for (int i = 0; i < moves.size(); i++) {
+        printMove(moves[i]);
+        std::cout << "child moves: " << childMoveCount[i] << '\n' << '\n';
+    }
+
+    return nodes;
 }
