@@ -16,11 +16,13 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {    
-    parseFen("6p1/2p4P/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1 ");
+    parseFen("7K/5q2/8/5k2/8/8/8/8 w - - 0 1");
     printASCIIBoard();
 
-    Move move = getUserMove();
-    printMove(move);
+    std::cout << getCurrentGameState() << '\n';
+
+    // Move move = getUserMove();
+    // printMove(move);
 }
 
 Engine::~Engine() {
@@ -31,7 +33,7 @@ Engine::~Engine() {
 
 void playMatch() {
     //array of size 2 of the 'Playable' interface that contains the bot, and the player
-    //use the whiteTurn variable to index the above array. it is a bool, which are implicitly converted to intergers under teh hood 
+    //use the whiteTurn variable to index the above array. it is a bool, which are implicitly converted to intergers under the hood 
     
     for (;;) {
         //Move move = playableArray[whiteTurn].getNextMove();
@@ -159,6 +161,15 @@ bool Engine::validateMove(Move& move, std::string moveString) {
 
     //failed to find move with the same start pos and end pos
     return false;
+}
+
+gameState Engine::getCurrentGameState() {
+    std::vector<Move> moves = generateMoves(*board, whiteTurn);
+
+    if (!generateMoves(*board, whiteTurn).size())
+        return isKingTargeted(*board, whiteTurn) ? gameState::Checkmate : gameState::Stalemate;
+    
+    return gameState::Live;
 }
 
 uint64_t Engine::perft(int depth) {

@@ -5,6 +5,12 @@
 #include "board/Move.hpp"
 #include <string>
 
+enum gameState {
+    Live,
+    Checkmate,
+    Stalemate
+};
+
 /**
  * Class representing the engine as a whole
  * 
@@ -31,6 +37,8 @@ private:
 
     Move getUserMove();
     bool validateMove(Move& move, std::string moveString);
+
+    gameState getCurrentGameState();
 
     uint64_t perft(int depth);
     uint64_t perftDivide(int depth);

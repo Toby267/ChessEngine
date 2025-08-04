@@ -61,3 +61,10 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
     //finally return
     return retMoves;
 }
+
+bool isKingTargeted(Board& board, WhiteTurn whiteTurn) {
+    const std::array<uint64_t, 14>& bitBoards = board.getBitBoards();
+    uint64_t kingBitboard = whiteTurn ? bitBoards[WHITE_KING] : bitBoards[BLACK_KING];
+    SquareIndex kingIndex = (SquareIndex)__builtin_ctzll(kingBitboard);
+    return isTargeted(board, !whiteTurn, kingIndex);
+}
