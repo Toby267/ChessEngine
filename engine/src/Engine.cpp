@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "Bot.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
@@ -16,33 +17,41 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {    
-    parseFen("7K/5q2/8/5k2/8/8/8/8 w - - 0 1");
-    printASCIIBoard();
+    bot = new Bot(*board);
+    
+    // * ------------ below is testing code ------------ * //
 
-    std::cout << getCurrentGameState() << '\n';
-
-    // Move move = getUserMove();
-    // printMove(move);
+    playMatch();
 }
 
 Engine::~Engine() {
     delete board;
+    delete bot;
 }
 
 // * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
 
-void playMatch() {
+void Engine::playMatch() {
     //array of size 2 of the 'Playable' interface that contains the bot, and the player
-    //use the whiteTurn variable to index the above array. it is a bool, which are implicitly converted to intergers under the hood 
-    
+    //use the whiteTurn variable to index the above array. it is a bool, which are implicitly converted to intergers under the hood
+
     for (;;) {
-        //Move move = playableArray[whiteTurn].getNextMove();
-        //if (moves.size())
-            //play move
-            //whiteTurn = !whiteTurn
-        //else
-            //handle game over logic
+        printASCIIBoard();
+
+        Move move = board->getWhiteTurn() ? getUserMove() : bot->getBestMove();
+        board->makeMove(move);
+
+        if (getCurrentGameState() != GameState::Live) break;
     }
+
+    GameState gameState = getCurrentGameState();
+    
+    if (gameState == GameState::Checkmate)
+        std::cout << (board->getWhiteTurn() ? "Black Wins!" : "White Wins!") << '\n';
+    else if (gameState == GameState::Stalemate)
+        std::cout << "Draw";
+
+    printASCIIBoard();
 }
 
 /**
@@ -55,18 +64,11 @@ void Engine::parseFen(const std::string& FEN) {
 
     int i;
 
-    //skips the first part of the FEN
+    //skips the first, second, third & fourth part of the FEN
     for (i = 0; i < FEN.length() && FEN[i] != ' '; i++)
         ;
-
-    //parses the second part of the FEN
-    for (i++; i < FEN.length(); i++) {
-        if (FEN[i] == ' ') break;
-
-        whiteTurn = FEN[i] == 'w' ? true : false;
-    }
-
-    //skips the third & fourth part of the FEN
+    for (i++; i < FEN.length() && FEN[i] != ' '; i++)
+        ;
     for (i++; i < FEN.length() && FEN[i] != ' '; i++)
         ;
     for (i++; i < FEN.length() && FEN[i] != ' '; i++)
@@ -96,6 +98,7 @@ void Engine::printASCIIBoard() {
         }
         std::cout << '\n';
     }
+    std::cout << '\n';
 }
 
 Move Engine::getUserMove() {
@@ -103,7 +106,7 @@ Move Engine::getUserMove() {
     Move move;
 
     for (;;) {
-        std::cout << '\n' << "Enter your next move: ";
+        std::cout << "Enter your next move: ";
         std::getline(std::cin, input);
 
         if (validateMove(move, input))
@@ -128,16 +131,16 @@ bool Engine::validateMove(Move& move, std::string moveString) {
 
     if (promotionPieceStr.size()) {
         switch (promotionPieceStr[0]) {
-            case 'Q': case 'q': { promotionPiece = whiteTurn ? WHITE_QUEEN  : BLACK_QUEEN;    break; }
-            case 'R': case 'r': { promotionPiece = whiteTurn ? WHITE_ROOK   : BLACK_ROOK;     break; }
-            case 'B': case 'b': { promotionPiece = whiteTurn ? WHITE_BISHOP : BLACK_BISHOP;   break; }
-            case 'K': case 'k': { promotionPiece = whiteTurn ? WHITE_KNIGHT : BLACK_KNIGHT;   break; }
+            case 'Q': case 'q': { promotionPiece = board->getWhiteTurn() ? WHITE_QUEEN  : BLACK_QUEEN;    break; }
+            case 'R': case 'r': { promotionPiece = board->getWhiteTurn() ? WHITE_ROOK   : BLACK_ROOK;     break; }
+            case 'B': case 'b': { promotionPiece = board->getWhiteTurn() ? WHITE_BISHOP : BLACK_BISHOP;   break; }
+            case 'K': case 'k': { promotionPiece = board->getWhiteTurn() ? WHITE_KNIGHT : BLACK_KNIGHT;   break; }
             default:            { return false; } //user has given invalid promotion piece
         }
     }
 
     //check for a valid move with the given start pos and end pos
-    std::vector<Move> moves = generateMoves(*board, whiteTurn);
+    std::vector<Move> moves = generateMoves(*board);
     for (auto& i : moves) {
         //if start and end positions don't match
         if (i.normalMove.startPos != startPos || i.normalMove.endPos != endPos)
@@ -163,13 +166,13 @@ bool Engine::validateMove(Move& move, std::string moveString) {
     return false;
 }
 
-gameState Engine::getCurrentGameState() {
-    std::vector<Move> moves = generateMoves(*board, whiteTurn);
+GameState Engine::getCurrentGameState() {
+    std::vector<Move> moves = generateMoves(*board);
 
-    if (!generateMoves(*board, whiteTurn).size())
-        return isKingTargeted(*board, whiteTurn) ? gameState::Checkmate : gameState::Stalemate;
+    if (!moves.size())
+        return isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
     
-    return gameState::Live;
+    return GameState::Live;
 }
 
 uint64_t Engine::perft(int depth) {
@@ -179,16 +182,14 @@ uint64_t Engine::perft(int depth) {
     if (depth == 0)
         return  1ULL;
 
-    moves = generateMoves(*board, whiteTurn);
+    moves = generateMoves(*board);
 
     for (auto& i : moves) {
         board->makeMove(i);
-        whiteTurn = !whiteTurn;
 
         nodes += perft(depth -1);
 
         board->unMakeMove(i);
-        whiteTurn = !whiteTurn;
     }
 
     return nodes;
@@ -202,18 +203,16 @@ uint64_t Engine::perftDivide(int depth) {
     if (depth == 0)
         return  1ULL;
 
-    moves = generateMoves(*board, whiteTurn);
+    moves = generateMoves(*board);
 
     for (auto& i : moves) {
         board->makeMove(i);
-        whiteTurn = !whiteTurn;
 
         uint64_t childMoves = perftDivide(depth -1);
         nodes += childMoves;
         childMoveCount.push_back(childMoves);
 
         board->unMakeMove(i);
-        whiteTurn = !whiteTurn;
     }
 
     std::cout << "=============================== " << "depth: " << depth << " ===============================" << '\n';

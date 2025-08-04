@@ -24,6 +24,7 @@ private:
     std::array<__uint128_t, 4> castleData{};        //1 in any bit means no
                                                     //every time a castle or rook move is played it is shifted left
                                                     //then shifted right when unplayed
+    WhiteTurn whiteTurn = true;
 
 public:
     //constructors/destructor
@@ -34,6 +35,7 @@ public:
     const std::array<uint64_t, 14>& getBitBoards() const;
     const std::array<__uint128_t, 4>& getCastleData() const;
     const std::array<__uint128_t, 16>& getEnPassantData() const;
+    WhiteTurn getWhiteTurn() const;
     PieceType getType(SquareIndex index) const;
     
     //public methods

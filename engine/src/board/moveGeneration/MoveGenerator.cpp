@@ -15,7 +15,7 @@
  * @param board the board
  * @param whiteTurn whether or not it is whites turn to move
  */
-std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
+std::vector<Move> generateMoves(Board& board) {
     //return vector containing all moves converted into type Move.
     std::vector<Move> moves;
     moves.reserve(32);
@@ -24,6 +24,7 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
     const std::array<uint64_t, 14>&     bitBoards           = board.getBitBoards();
     const std::array<__uint128_t, 16>&  enPassantData       = board.getEnPassantData();
     const std::array<__uint128_t, 4>&   castleData          = board.getCastleData();
+    const WhiteTurn                     whiteTurn           = board.getWhiteTurn();
     const uint64_t                      whitePieces         = bitBoards[PieceType::WHITE_PIECES];
     const uint64_t                      blackPieces         = bitBoards[PieceType::BLACK_PIECES];
     const uint64_t                      friendlyPieces      = whiteTurn ? whitePieces : blackPieces;
@@ -62,9 +63,11 @@ std::vector<Move> generateMoves(Board& board, WhiteTurn whiteTurn) {
     return retMoves;
 }
 
-bool isKingTargeted(Board& board, WhiteTurn whiteTurn) {
-    const std::array<uint64_t, 14>& bitBoards = board.getBitBoards();
-    uint64_t kingBitboard = whiteTurn ? bitBoards[WHITE_KING] : bitBoards[BLACK_KING];
-    SquareIndex kingIndex = (SquareIndex)__builtin_ctzll(kingBitboard);
+bool isKingTargeted(Board& board) {
+    const std::array<uint64_t, 14>& bitBoards       = board.getBitBoards();
+    const WhiteTurn                 whiteTurn       = board.getWhiteTurn();
+    const uint64_t                  kingBitboard    = whiteTurn ? bitBoards[WHITE_KING] : bitBoards[BLACK_KING];
+    const SquareIndex               kingIndex       = (SquareIndex)__builtin_ctzll(kingBitboard);
+    
     return isTargeted(board, !whiteTurn, kingIndex);
 }

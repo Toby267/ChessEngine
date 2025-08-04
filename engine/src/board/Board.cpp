@@ -60,6 +60,9 @@ const std::array<__uint128_t,  4>& Board::getCastleData() const {
 const std::array<__uint128_t, 16>& Board::getEnPassantData() const {
     return enPassantData;
 }
+WhiteTurn Board::getWhiteTurn() const {
+    return whiteTurn;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
@@ -71,6 +74,8 @@ const std::array<__uint128_t, 16>& Board::getEnPassantData() const {
  * @param move the move to be made
  */
 void Board::makeMove(const Move& move) {
+    whiteTurn = !whiteTurn;
+    
     for (auto& i : castleData) {
         i <<= 1;
     }
@@ -115,6 +120,8 @@ void Board::makeMove(const Move& move) {
  * @param move the move to be unmade
  */
 void Board::unMakeMove(const Move& move) {
+    whiteTurn = !whiteTurn;
+    
     for (auto& i : castleData) {
         i >>= 1;
     }
@@ -209,9 +216,12 @@ void Board::parseFen(const std::string& FEN) {
         }
     }
 
-    //skips the second part of the FEN
-    for (i++; i < FEN.length() && FEN[i] != ' '; i++)
-        ;
+    //parses the second part of the FEN
+    for (i++; i < FEN.length(); i++) {
+        if (FEN[i] == ' ') break;
+
+        whiteTurn = FEN[i] == 'w' ? true : false;
+    }
 
     //parses the third part of the FEN
     for (i++; i < FEN.length(); i++) {
