@@ -2,8 +2,11 @@
 
 #include "Bot.hpp"
 #include "board/Board.hpp"
+#include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
 #include <string>
+
+typedef bool UserColour;
 
 enum GameState {
     Live,
@@ -19,12 +22,15 @@ enum GameState {
 class Engine {
 private:
     Board* board = new Board();
-    Bot* bot;
+    Bot* bot = new Bot(*board);
+
+    const WhiteTurn isBotWhite = false;
     int drawMoveCounter = 0;
 
 public:
     //constructors/destructor
     Engine();
+    Engine(UserColour isBotWhite);
     ~Engine();
 
     //public methods

@@ -17,10 +17,9 @@
  * Defualt constructor, takes no arguments and sets up default values for the engine
  */
 Engine::Engine() {    
-    bot = new Bot(*board);
-    
-    // * ------------ below is testing code ------------ * //
-
+    playMatch();
+}
+Engine::Engine(UserColour isBotWhite) : isBotWhite(!isBotWhite){
     playMatch();
 }
 
@@ -38,7 +37,7 @@ void Engine::playMatch() {
     for (;;) {
         printASCIIBoard();
 
-        Move move = board->getWhiteTurn() ? getUserMove() : bot->getBestMove();
+        Move move = (board->getWhiteTurn() == isBotWhite) ? bot->getBestMove() : getUserMove();
         board->makeMove(move);
 
         if (getCurrentGameState() != GameState::Live) break;
