@@ -1,18 +1,37 @@
 #include "board/Move.hpp"
 
-void printMove(const Move& m) {
-    switch (m.flag) {
-        case NORMAL:
-            std::cout << "Start: " << m.normalMove.startPos << ", End: " << m.normalMove.endPos << '\n';
+#include <iostream>
+
+void printMove(const Move& move) {
+    switch (move.flag) {
+        case NORMAL: {
+            NormalMove m = move.normalMove;
+            std::cout << "Start pos: "<< m.startPos << ", End pos: " << m.endPos << '\n';
+            std::cout << "Piece type: " << m.pieceType << ", Kill piece type: " << m.killPieceType  << '\n';
             break;
-        case PROMOTION:
-            std::cout << "Start: " << m.promotionMove.startPos << ", End: " << m.promotionMove.endPos << '\n';
+        }
+        case PROMOTION: {
+            PromotionMove m = move.promotionMove;
+            std::cout << "Start pos: " << m.startPos << ", End pos: " << m.endPos << '\n';
+            std::cout << "Old piece type: "  << m.oldPieceType << ", New piece type: " << m.newPieceType << '\n';
+            std::cout << "Kill piece type: " << m.killPieceType << '\n';
             break;
-        case EN_PASSANT:
-            std::cout << "Start: " << m.enPassantMove.startPos << ", End: " << m.enPassantMove.endPos << '\n';
+        }
+        case EN_PASSANT: {
+            EnPassantMove m = move.enPassantMove;
+            std::cout << "Start pos: " << m.startPos << ", End pos: " << m.endPos << '\n';
+            std::cout << "Piece type: " << m.pieceType << '\n';
+            std::cout << "Kill piece type: " << m.killPieceType << ", Kill piece square: " << m.killPieceType << '\n';
             break;
-        case CASTLE:
-            std::cout << "Start: " << m.castleMove.primaryStartPos << ", End: " << m.castleMove.primaryEndPos << '\n';
+        }
+        case CASTLE: {
+            CastleMove m = move.castleMove;
+            std::cout << "Primary start pos: " << m.primaryStartPos << ", Primary end pos: " << m.primaryEndPos << ", Primary piece type: " << m.primaryPieceType << '\n';
+            std::cout << "Secondary start pos: " << m.secondaryStartPos << ", Secondary end pos: " << m.secondaryEndPos << ", Secondary piece type: " << m.secondaryPieceType << '\n';
             break;
+        }
+        default: {
+            std::cout << "Invalid Move struct" << '\n';
+        }
     }
 }

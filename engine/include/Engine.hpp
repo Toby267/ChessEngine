@@ -34,4 +34,5 @@ private:
 
     uint64_t perft(int depth);
     uint64_t perftDivide(int depth);
+    void runPerftTests();
 };

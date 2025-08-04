@@ -1,7 +1,5 @@
 /**
  * TODO:
- * Move generation (without checking for check and the like)
- * Arbiter to make move generation check for check and the like
  * Validate moves
  * Game endings
  */
