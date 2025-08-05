@@ -5,6 +5,12 @@
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 
+/**
+ * Contains various functions used for generating target bitboards, and piece moves for a given board
+ * 
+ * Used by the move generator function to generate all possible moves for a given board
+*/
+
 // * ------------------------------------------ [ IS TARGETED ] ------------------------------------------ * //
 
 bool isTargeted(const Board& board, WhiteTurn whiteTurn, SquareIndex i);

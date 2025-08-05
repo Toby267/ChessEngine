@@ -27,6 +27,8 @@ static void addSinglePawnMoveBlack(std::vector<Move>& moves, const Board& board,
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// * ------------------------------------------- [ EASY MOVES ] ------------------------------------------ * //
+
 //generates a vector of all king moves
 void generateKingMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t king, uint64_t friendlyPieces) {
     const SquareIndex   startSquare = (SquareIndex)__builtin_ctzll(king);
@@ -42,7 +44,6 @@ void generateKingMoves(std::vector<Move>& moves, const Board& board, WhiteTurn w
         movesBitboard &= movesBitboard-1;
     }
 }
-
 //generates a vector of all knight moves
 void generateKnightMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t knights, uint64_t friendlyPieces) {
     const PieceType pieceType = whiteTurn ? WHITE_KNIGHT : BLACK_KNIGHT;
@@ -63,6 +64,8 @@ void generateKnightMoves(std::vector<Move>& moves, const Board& board, WhiteTurn
     }
 }
 
+// * ------------------------------------------ [ SLIDING MOVES ] ---------------------------------------- * //
+
 //generates a vector of all rook moves
 void generateRookMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t rooks, uint64_t occupied, uint64_t friendlyPieces) {
     const PieceType pieceType = whiteTurn ? WHITE_ROOK : BLACK_ROOK;
@@ -82,7 +85,6 @@ void generateRookMoves(std::vector<Move>& moves, const Board& board, WhiteTurn w
         rooks &= rooks-1;
     }
 }
-
 //generates a vector of all bishop moves
 void generateBishopMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces) {
     const PieceType pieceType = whiteTurn ? WHITE_BISHOP : BLACK_BISHOP;
@@ -102,7 +104,6 @@ void generateBishopMoves(std::vector<Move>& moves, const Board& board, WhiteTurn
         bishops &= bishops-1;
     }
 }
-
 //generates a vector of all queen moves
 void generateQueenMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t queens, uint64_t occupied, uint64_t friendlyPieces) {
     const PieceType pieceType = whiteTurn ? WHITE_QUEEN : BLACK_QUEEN;
@@ -123,6 +124,8 @@ void generateQueenMoves(std::vector<Move>& moves, const Board& board, WhiteTurn 
     }
 }
 
+// * -------------------------------------- [ PAWN & SPECIAL MOVES ] ------------------------------------- * //
+
 //generates a vector of all pawn moves
 void generatePawnMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t pawns, uint64_t unoccupied, uint64_t oppositionPieces) {
     if (whiteTurn) {
@@ -134,7 +137,6 @@ void generatePawnMoves(std::vector<Move>& moves, const Board& board, WhiteTurn w
         addPawnAttackMovesBlack(moves, board, pawns, oppositionPieces);
     }
 }
-
 //generates a vector of all castling moves
 void generateCastlingMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (whiteTurn)
@@ -142,7 +144,6 @@ void generateCastlingMoves(std::vector<Move>& moves, const Board& board, WhiteTu
     else
         addCastlingMovesBlack(moves, board, occupied, castleData);
 }
-
 //generates a vector of all en passant moves
 void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t pawns, std::array<__uint128_t, 16> enPassantData) {
     //very cursed line. I could of just put the ternary in the two lines that this is used as its just as efficient time wise and more efficient space wise but this looks cooler
@@ -171,6 +172,8 @@ void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteT
 // * ----------------------------------------- [ STATIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// * ------------------------------------------ [ CASTLING MOVES ] --------------------------------------- * //
+
 //generates a vector of all castling moves for the white pieces
 static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (castleData[CastlePieces::W_KING]  == 0 && (occupied & (uint64_t)(0x0001010000000000)) == 0) {
@@ -197,6 +200,8 @@ static void addCastlingMovesBlack(std::vector<Move>& moves, const Board &board, 
         }
     }
 }
+
+// * ------------------------------------------- [ EASY MOVES ] ------------------------------------------ * //
 
 static void addPawnPushMovesWhite(std::vector<Move>& moves, const Board& board, uint64_t pawns, uint64_t unoccupied) {
     uint64_t pushMoves = generatePawnPushBitboard(WhiteTurn{true}, pawns, unoccupied);

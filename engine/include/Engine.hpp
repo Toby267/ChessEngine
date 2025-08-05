@@ -28,7 +28,6 @@ private:
     Bot* bot = new Bot(*board);
 
     const WhiteTurn isBotWhite = false;
-
     GameState gameState = GameState::Live;
 
 public:
@@ -36,6 +35,8 @@ public:
     Engine();
     Engine(UserColour isBotWhite);
     ~Engine();
+
+    //getters/setters
 
     //public methods
     void playMatch();
@@ -45,12 +46,14 @@ private:
     //private methods
     void printASCIIBoard();
 
-    Move getUserMove();
-    bool validateMove(Move& move, std::string moveString);
-
     GameState getCurrentGameState();
+    Move getUserMove();
+    
+    void runPerftTests();
+
+    //helper methods
+    bool validateMove(Move& move, std::string moveString);
 
     uint64_t perft(int depth);
     uint64_t perftDivide(int depth);
-    void runPerftTests();
 };

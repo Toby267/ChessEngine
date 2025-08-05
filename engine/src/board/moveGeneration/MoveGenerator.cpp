@@ -10,7 +10,6 @@
 
 /**
  * Generates all possible moves based on a given board and whos to move
- * Probably should make this part of a class or make moves, board and whiteTurn global to the internals translation unit so that Im not passing it though loads of function calls
  * 
  * @param board the board
  * @param whiteTurn whether or not it is whites turn to move
@@ -63,6 +62,11 @@ std::vector<Move> generateMoves(Board& board) {
     return retMoves;
 }
 
+/**
+ * Determines whether the king is currently being targetted in the given board
+ * 
+ * @param board the board
+ */
 bool isKingTargeted(const Board& board) {
     const std::array<uint64_t, 14>& bitBoards       = board.getBitBoards();
     const WhiteTurn                 whiteTurn       = board.getWhiteTurn();

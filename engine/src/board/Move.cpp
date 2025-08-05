@@ -2,6 +2,11 @@
 
 #include <iostream>
 
+/**
+ * Prints all data related to a given move
+ * 
+ * @param move the move to be printed
+ */
 void printMove(const Move& move) {
     switch (move.flag) {
         case NORMAL: {

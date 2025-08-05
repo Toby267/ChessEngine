@@ -2,6 +2,10 @@
 
 #include <cstdint>
 
+/**
+ * Contains utility typedefs, enums, and functions used to help in various operations on the board such as move generation
+*/
+
 typedef bool WhiteTurn;
 
 enum SquareIndex {

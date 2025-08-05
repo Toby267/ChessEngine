@@ -49,7 +49,7 @@ PieceType Board::getType(SquareIndex index) const {
 }
 
 /**
- * Getters returning const references
+ * Const getters
  */
 const std::array<uint64_t, 14>& Board::getBitBoards() const {
     return bitBoards;
@@ -250,20 +250,6 @@ void Board::parseFen(const std::string& FEN) {
         drawMoveCounter = FEN[i] - '0';
     else
         drawMoveCounter = 10 * (FEN[i] - '0') + (FEN[i+1] - '0');
-
-    std::cout << "draw move counter: " << drawMoveCounter << '\n';
-}
-
-/**
- * Prints debug data for use during development
- */
-void Board::printDebugData() {
-    for (auto& i : castleData)
-        std::cout << std::bitset<128>(i) << '\n';
-    std::cout << '\n';
-    for (auto& i : enPassantData)
-        std::cout << std::bitset<128>(i) << '\n';
-    std::cout << "\n//////////////////////////////////////////////////////////////////////////////////////////////\n";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -359,7 +345,7 @@ void Board::printBitBoardHex(PieceType board) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //returns true if the given square has a piece
-bool Board::hasPiece(SquareIndex index) {
+bool Board::hasPiece(SquareIndex index) const {
     return (bitBoards[PieceType::WHITE_PIECES] | bitBoards[PieceType::BLACK_PIECES]) & (1ULL << index);
 }
 //returns true if the given square has a white piece

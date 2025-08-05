@@ -11,16 +11,14 @@
 #include "board/Move.hpp"
 #include "board/moveGeneration/MoveGenerator.hpp"
 
-// * ---------------------------------- [ CONSTRUCTORS/DESCTUCTOR ] ---------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Defualt constructor, takes no arguments and sets up default values for the engine
- */
 Engine::Engine() {    
     playMatch();
 }
 Engine::Engine(UserColour isBotWhite) : isBotWhite(!isBotWhite){
-    board->parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 99 1");
     playMatch();
 }
 
@@ -29,8 +27,13 @@ Engine::~Engine() {
     delete bot;
 }
 
-// * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Plays a game of chess with the user through the CLI
+ */
 void Engine::playMatch() {
     for (;;) {
         printASCIIBoard();
@@ -59,7 +62,9 @@ void Engine::parseFen(const std::string& FEN) {
     board->parseFen(FEN);
 }
 
-// * ---------------------------------- [ PRIVATE METHODS ] ----------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ---------------------------------------- [ PRIVATE METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Prints out the board using unicode characters for the chess pieces
@@ -78,6 +83,24 @@ void Engine::printASCIIBoard() {
     std::cout << '\n';
 }
 
+/**
+ * Returns the Current state of the game whether it be live, checkmate, or any variation of a draw
+ */
+GameState Engine::getCurrentGameState() {
+    std::vector<Move> moves = generateMoves(*board);
+
+    if (!moves.size())
+        return isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
+    
+    //TODO: Draw by insufficient material
+    //TODO: Draw by 50 move rule
+    //TODO: Draw by repetition
+
+    return GameState::Live;
+}
+/**
+ * Gets, and validates the users move from the command line
+ */
 Move Engine::getUserMove() {
     std::string input;
     Move move;
@@ -92,6 +115,35 @@ Move Engine::getUserMove() {
             std::cout << "Entered move is invalid, try again" << '\n';
     }
 }
+
+/**
+ * Runs all perft tests outputting the results to the console
+ */
+void Engine::runPerftTests() {
+    board->setDefaultBoard();                                                                //position 1                    - passed perf(7), further depths unfeasable
+    // parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");        //position 2                    - passed
+    // parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");                                   //position 3                    - passed
+    // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");            //position 4                    - passed
+        // parseFen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");       //alternate to position 4       - passed
+    // parseFen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");                 //position 5                    - passed
+    // parseFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");   //position 6                    - passed perf(6), further depths unfeasable
+
+    for (int i = 1; i <= 15; i++)
+        std::cout << "depth: " << i << " nodes: " << perft(i) << '\n';
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ----------------------------------------- [ HELPER METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Validates, and parses a given move with the current board state
+ * 
+ * @param move the move reference to return the move to
+ * @param moveString the move string to be parsed
+ *
+ * @return whether or not it is a valid move
+ */
 bool Engine::validateMove(Move& move, std::string moveString) {
     if (moveString.size() < 4)
         return false;
@@ -143,19 +195,11 @@ bool Engine::validateMove(Move& move, std::string moveString) {
     return false;
 }
 
-GameState Engine::getCurrentGameState() {
-    std::vector<Move> moves = generateMoves(*board);
-
-    if (!moves.size())
-        return isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
-    
-    //TODO: Draw by insufficient material
-    //TODO: Draw by 50 move rule
-    //TODO: Draw by repetition
-
-    return GameState::Live;
-}
-
+/**
+ * Runs perft up to a given depth on the current board
+ * 
+ * @param depth the depth to run up to
+ */
 uint64_t Engine::perft(int depth) {
     std::vector<Move> moves;
     uint64_t nodes = 0;
@@ -175,7 +219,11 @@ uint64_t Engine::perft(int depth) {
 
     return nodes;
 }
-
+/**
+ * Runs perft up to a given depth on the current board, while printing out each node
+ * 
+ * @param depth the depth to run up to
+ */
 uint64_t Engine::perftDivide(int depth) {
     std::vector<Move> moves;
     std::vector<int> childMoveCount;
@@ -203,17 +251,4 @@ uint64_t Engine::perftDivide(int depth) {
     }
 
     return nodes;
-}
-
-void Engine::runPerftTests() {
-    board->setDefaultBoard();                                                                //position 1                    - passed perf(7), further depths unfeasable
-    // parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");        //position 2                    - passed
-    // parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");                                   //position 3                    - passed
-    // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");            //position 4                    - passed
-        // parseFen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");       //alternate to position 4       - passed
-    // parseFen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");                 //position 5                    - passed
-    // parseFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");   //position 6                    - passed perf(6), further depths unfeasable
-
-    for (int i = 1; i <= 15; i++)
-        std::cout << "depth: " << i << " nodes: " << perft(i) << '\n';
 }

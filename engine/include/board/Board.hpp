@@ -33,11 +33,11 @@ public:
     ~Board();
 
     //getters/setters
+    PieceType getType(SquareIndex index) const;
     const std::array<uint64_t, 14>& getBitBoards() const;
     const std::array<__uint128_t, 4>& getCastleData() const;
     const std::array<__uint128_t, 16>& getEnPassantData() const;
     WhiteTurn getWhiteTurn() const;
-    PieceType getType(SquareIndex index) const;
     
     //public methods
     void makeMove(const Move& move);
@@ -47,8 +47,6 @@ public:
     void resetBoard();
 
     void parseFen(const std::string& FEN);
-
-    void printDebugData();
 
 private:
     //private methods
@@ -62,7 +60,7 @@ private:
     void printBitBoardHex(PieceType board);
 
     //helper methods
+    bool hasPiece(SquareIndex index) const;
     bool isWhite(SquareIndex index) const;
     bool isBlack(SquareIndex index) const;
-    bool hasPiece(SquareIndex index);
 };

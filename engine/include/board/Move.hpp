@@ -3,7 +3,9 @@
 #include "BoardUtil.hpp"
 
 /**
- * must keep the order for startPos, endPos and pieceType the same for NormalMove, PromotionMove, and CastleMove
+ * Contains the structs, enums and functions used to store and manipulate any possible chess move
+ * 
+ * Must keep the order for startPos, endPos and pieceType the same for NormalMove, PromotionMove, and CastleMove
  * for the genericupdateSpecialMoveStatus() method in Board.cpp
  *
  * If you change their order in any way, use the MoveType specific methods in commit: b316dec916c7e2c140d3900867e1b1c7139a67c1

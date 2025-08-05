@@ -1,8 +1,8 @@
 #include "board/BoardUtil.hpp"
 
-//shifts a square by one in each orthoganol direction
-//doesn't check for if the piece goes off the board - even if it did
-//there would be no way to remove the piece from the board completely
+// * ------------------------------------ [ ORTHOGANOL SHIFTERS INT ] ------------------------------------ * //
+
+//doesn't check for if the piece goes off the board
 SquareIndex northOne(int piece) {
     return (SquareIndex)(piece+1);
 }
@@ -28,6 +28,8 @@ SquareIndex southEastOne(int piece) {
 SquareIndex southWestOne(int piece) {
     return (SquareIndex)(piece-9);
 }
+
+// * ----------------------------------- [ ORTHOGANOL SHIFTERS UINT64 ] ---------------------------------- * //
 
 //shifts the board square by one in each orthoganol direction
 uint64_t northOne(uint64_t board) {
@@ -56,6 +58,8 @@ uint64_t southWestOne(uint64_t board) {
     return (board >> 9) & 0x007F7F7F7F7F7F7FULL;
 }
 
+// * ------------------------------------ [ DIRECTION RAY FUNCTIONS ] ------------------------------------ * //
+
 //returns all square in a specific orthoganol direction given a square
 uint64_t calcNorthMask(SquareIndex square) {
     return 2 * ((1ULL << (square|7)) - (1ULL << square));
@@ -77,16 +81,6 @@ uint64_t calcNorthEastMask(SquareIndex square){
     uint64_t mask = 0x0101010101010101ULL * ((1ULL << n) -1);
 
     return diagonal & ~mask;
-
-    // uint64_t mask = 0;
-    // for (int i = 0; i < (square & 7) + 1; i++)
-    //     mask += 0x0101010101010101 << i;
-    
-    //the used method for the mask is equivalent to the loop as (1ULL << n) -1 is a mask equivalent to a*(2^n -1)
-    //which is what the loop is doing: a*(2^0) + a*(2^1) + a*(2^2) + ... + a*(2^(n-1))
-    //                                  = a*(2^0 + 2^1 + 2^2 + ... + 2^(n-1))
-    //                                  = a*(2^n -1)
-    //where a = 0x0101010101010101ULL
 }
 uint64_t calcNorthWestMask(SquareIndex square){
     uint64_t diagonal = 0x0102040810204000ULL >> (square ^ 63);
