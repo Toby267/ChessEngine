@@ -63,7 +63,7 @@ std::vector<Move> generateMoves(Board& board) {
     return retMoves;
 }
 
-bool isKingTargeted(Board& board) {
+bool isKingTargeted(const Board& board) {
     const std::array<uint64_t, 14>& bitBoards       = board.getBitBoards();
     const WhiteTurn                 whiteTurn       = board.getWhiteTurn();
     const uint64_t                  kingBitboard    = whiteTurn ? bitBoards[WHITE_KING] : bitBoards[BLACK_KING];
