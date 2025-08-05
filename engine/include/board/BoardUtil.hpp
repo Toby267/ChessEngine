@@ -49,6 +49,8 @@ enum CastlePieces{
     W_KING, W_QUEEN, B_KING, B_QUEEN
 };
 
+// * ------------------------------------ [ ORTHOGANOL SHIFTERS INT ] ------------------------------------ * //
+
 //these functions move one piece one unit in the given bitboard in a certain direction
 SquareIndex northOne(int piece);
 SquareIndex southOne(int piece);
@@ -60,6 +62,8 @@ SquareIndex northWestOne(int piece);
 SquareIndex southEastOne(int piece);
 SquareIndex southWestOne(int piece);
 
+// * ----------------------------------- [ ORTHOGANOL SHIFTERS UINT64 ] ---------------------------------- * //
+
 //these functions move each piece one unit in the given bitboard in a certain direction
 uint64_t northOne(uint64_t board);
 uint64_t southOne(uint64_t board);
@@ -70,6 +74,8 @@ uint64_t northEastOne(uint64_t board);
 uint64_t northWestOne(uint64_t board);
 uint64_t southEastOne(uint64_t board);
 uint64_t southWestOne(uint64_t board);
+
+// * ------------------------------------ [ DIRECTION RAY FUNCTIONS ] ------------------------------------ * //
 
 //these functions return a mask for each square in a certain direction from the given square, not including the given square
 uint64_t calcNorthMask(SquareIndex square);

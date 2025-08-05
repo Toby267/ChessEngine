@@ -6,6 +6,7 @@
  * @param board the board
  * @param whiteTurn whether or not it is whites turn to move
  * @param i the given square index
+ * @return whether or not the given index is being targeted
  */
 bool isTargeted(const Board& board, WhiteTurn whiteTurn, SquareIndex i) {
     //targeted piece

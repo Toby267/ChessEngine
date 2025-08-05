@@ -28,6 +28,7 @@ Board::~Board() {
  * Returns the type of piece stored at the given index
  * 
  * @param index the index of said piece
+ * @return the piece type
  */
 PieceType Board::getType(SquareIndex index) const {
     if (isWhite(index)) {

@@ -85,6 +85,8 @@ void Engine::printASCIIBoard() {
 
 /**
  * Returns the Current state of the game whether it be live, checkmate, or any variation of a draw
+ * 
+ * @return the current game state
  */
 GameState Engine::getCurrentGameState() {
     std::vector<Move> moves = generateMoves(*board);
@@ -100,6 +102,8 @@ GameState Engine::getCurrentGameState() {
 }
 /**
  * Gets, and validates the users move from the command line
+ * 
+ * @return the users move
  */
 Move Engine::getUserMove() {
     std::string input;
@@ -141,7 +145,6 @@ void Engine::runPerftTests() {
  * 
  * @param move the move reference to return the move to
  * @param moveString the move string to be parsed
- *
  * @return whether or not it is a valid move
  */
 bool Engine::validateMove(Move& move, std::string moveString) {
@@ -199,6 +202,7 @@ bool Engine::validateMove(Move& move, std::string moveString) {
  * Runs perft up to a given depth on the current board
  * 
  * @param depth the depth to run up to
+ * @return the total number of positions for the given depth
  */
 uint64_t Engine::perft(int depth) {
     std::vector<Move> moves;
@@ -223,6 +227,7 @@ uint64_t Engine::perft(int depth) {
  * Runs perft up to a given depth on the current board, while printing out each node
  * 
  * @param depth the depth to run up to
+ * @return the total number of positions for the given depth
  */
 uint64_t Engine::perftDivide(int depth) {
     std::vector<Move> moves;

@@ -13,6 +13,7 @@
  * 
  * @param board the board
  * @param whiteTurn whether or not it is whites turn to move
+ * @return a vector of valid moves
  */
 std::vector<Move> generateMoves(Board& board) {
     //return vector containing all moves converted into type Move.
@@ -66,6 +67,7 @@ std::vector<Move> generateMoves(Board& board) {
  * Determines whether the king is currently being targetted in the given board
  * 
  * @param board the board
+ * @return whether or not the king is being targeted
  */
 bool isKingTargeted(const Board& board) {
     const std::array<uint64_t, 14>& bitBoards       = board.getBitBoards();
