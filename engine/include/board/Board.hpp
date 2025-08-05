@@ -25,6 +25,7 @@ private:
                                                     //every time a castle or rook move is played it is shifted left
                                                     //then shifted right when unplayed
     WhiteTurn whiteTurn = true;
+    int drawMoveCounter = 0;
 
 public:
     //constructors/destructor

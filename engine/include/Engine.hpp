@@ -11,7 +11,10 @@ typedef bool UserColour;
 enum GameState {
     Live,
     Checkmate,
-    Stalemate
+    Stalemate,
+    InsufficientMaterial,
+    FiftyMoveRule,
+    Repetitions
 };
 
 /**
@@ -25,7 +28,8 @@ private:
     Bot* bot = new Bot(*board);
 
     const WhiteTurn isBotWhite = false;
-    int drawMoveCounter = 0;
+
+    GameState gameState = GameState::Live;
 
 public:
     //constructors/destructor

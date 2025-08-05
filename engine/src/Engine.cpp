@@ -20,6 +20,7 @@ Engine::Engine() {
     playMatch();
 }
 Engine::Engine(UserColour isBotWhite) : isBotWhite(!isBotWhite){
+    board->parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 99 1");
     playMatch();
 }
 
@@ -31,54 +32,31 @@ Engine::~Engine() {
 // * ---------------------------------- [ PUBLIC METHODS ] ----------------------------------- * //
 
 void Engine::playMatch() {
-    //array of size 2 of the 'Playable' interface that contains the bot, and the player
-    //use the whiteTurn variable to index the above array. it is a bool, which are implicitly converted to intergers under the hood
-
     for (;;) {
         printASCIIBoard();
 
         Move move = (board->getWhiteTurn() == isBotWhite) ? bot->getBestMove() : getUserMove();
         board->makeMove(move);
-
-        if (getCurrentGameState() != GameState::Live) break;
+        
+        gameState = getCurrentGameState();
+        if (gameState != GameState::Live) break;
     }
 
-    GameState gameState = getCurrentGameState();
-    
     if (gameState == GameState::Checkmate)
         std::cout << (board->getWhiteTurn() ? "Black Wins!" : "White Wins!") << '\n';
     else if (gameState == GameState::Stalemate)
-        std::cout << "Draw";
+        std::cout << "Draw" << '\n';
 
     printASCIIBoard();
 }
 
 /**
- * Parses a given fen, storing relevent information here, and passing it to the board to parse there
+ * Passes the fen to the board to parse
  * 
  * @param FEN the fen that is to be parsed
 */
 void Engine::parseFen(const std::string& FEN) {
     board->parseFen(FEN);
-
-    int i;
-
-    //skips the first, second, third & fourth part of the FEN
-    for (i = 0; i < FEN.length() && FEN[i] != ' '; i++)
-        ;
-    for (i++; i < FEN.length() && FEN[i] != ' '; i++)
-        ;
-    for (i++; i < FEN.length() && FEN[i] != ' '; i++)
-        ;
-    for (i++; i < FEN.length() && FEN[i] != ' '; i++)
-        ;
-
-    //parses the fifth part of the FEN
-    i++;
-    if (FEN[i+1] == ' ')
-        drawMoveCounter = FEN[i] - '0';
-    else
-        drawMoveCounter = 10* (FEN[i] - '0') + (FEN[i+1] - '0');
 }
 
 // * ---------------------------------- [ PRIVATE METHODS ] ----------------------------------- * //
@@ -171,6 +149,10 @@ GameState Engine::getCurrentGameState() {
     if (!moves.size())
         return isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
     
+    //TODO: Draw by insufficient material
+    //TODO: Draw by 50 move rule
+    //TODO: Draw by repetition
+
     return GameState::Live;
 }
 

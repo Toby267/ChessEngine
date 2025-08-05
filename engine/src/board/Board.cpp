@@ -75,6 +75,7 @@ WhiteTurn Board::getWhiteTurn() const {
  */
 void Board::makeMove(const Move& move) {
     whiteTurn = !whiteTurn;
+    drawMoveCounter++;
     
     for (auto& i : castleData) {
         i <<= 1;
@@ -121,7 +122,8 @@ void Board::makeMove(const Move& move) {
  */
 void Board::unMakeMove(const Move& move) {
     whiteTurn = !whiteTurn;
-    
+    drawMoveCounter--;
+
     for (auto& i : castleData) {
         i >>= 1;
     }
@@ -160,6 +162,7 @@ void Board::unMakeMove(const Move& move) {
 void Board::setDefaultBoard() {
     enPassantData = {};
     castleData = {};
+    drawMoveCounter = 0;
     
     bitBoards[PieceType::WHITE_PIECES]  = 0x0303030303030303ULL;
     bitBoards[PieceType::WHITE_KING]    = 0x0000000100000000ULL;
@@ -184,6 +187,7 @@ void Board::resetBoard() {
     castleData = {1, 1, 1, 1};
     enPassantData = {};
     bitBoards = {};
+    drawMoveCounter = 0;
 }
 
 /**
@@ -234,10 +238,20 @@ void Board::parseFen(const std::string& FEN) {
     }
 
     //parses the fourth part of the FEN
-    if (FEN[++i] != '-') {
-        int index = (FEN[i] - 'a') + (FEN[i+1] =='3' ? 0 : 8);
+    if (FEN[i+1] != '-') {
+        int index = (FEN[i+1] - 'a') + (FEN[i+2] =='3' ? 0 : 8);
         enPassantData[(EnPassantPieces)(index)] = 1;
+        i--;
     }
+
+    //parses the fifth part of the FEN
+    i += 3;
+    if (FEN[i+1] == ' ')
+        drawMoveCounter = FEN[i] - '0';
+    else
+        drawMoveCounter = 10 * (FEN[i] - '0') + (FEN[i+1] - '0');
+
+    std::cout << "draw move counter: " << drawMoveCounter << '\n';
 }
 
 /**
