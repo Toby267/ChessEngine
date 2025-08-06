@@ -1,5 +1,7 @@
 #include "Engine.hpp"
 
+#include <cassert>
+#include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <string>
@@ -16,9 +18,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Engine::Engine() {    
-    playMatch();
+    runPerftTests(2);
+    // playMatch();
 }
-Engine::Engine(UserColour isBotWhite) : isBotWhite(!isBotWhite){
+Engine::Engine(UserColour isBotWhite) : isBotWhite(isBotWhite){
     playMatch();
 }
 
@@ -123,17 +126,51 @@ Move Engine::getUserMove() {
 /**
  * Runs all perft tests outputting the results to the console
  */
-void Engine::runPerftTests() {
-    board->setDefaultBoard();                                                                //position 1                    - passed perf(7), further depths unfeasable
-    // parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");        //position 2                    - passed
-    // parseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");                                   //position 3                    - passed
-    // parseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");            //position 4                    - passed
-        // parseFen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");       //alternate to position 4       - passed
-    // parseFen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");                 //position 5                    - passed
-    // parseFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");   //position 6                    - passed perf(6), further depths unfeasable
+void Engine::runPerftTests(int rigor) {
+    std::array<std::string, 7> fens = {
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0",
+        "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+        "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+        "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ",
+        "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ",
+        "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 "
+    };
 
-    for (int i = 1; i <= 15; i++)
-        std::cout << "depth: " << i << " nodes: " << perft(i) << '\n';
+    std::vector<std::vector<long>> expectedResults = {
+        { 20, 400, 8902, 197281,  4865609, 119060324, 3195901860, 84998978956, 2439530234167, 69352859712417, 2097651003696806, 62854969236701747, 1981066775000396239 },
+        { 48, 2039, 97862, 4085603, 193690690, 8031647685 },
+        { 14, 191, 2812, 43238, 674624, 11030083, 178633661, 3009794393  },
+        { 6, 264, 9467, 422333, 15833292, 706045033 },
+        { 6, 264, 9467, 422333, 15833292, 706045033 },
+        { 44, 1486, 62379,  2103487,  89941194 },
+        { 46, 2079, 89890, 3894594, 164075551, 6923051137, 287188994746, 11923589843526, 490154852788714 }
+    };
+    
+    std::array<int, 7>   depths;
+    if      (rigor == 1) depths = {5, 4, 6, 4, 4, 4, 4}; //in the millions of nodes
+    else if (rigor == 2) depths = {6, 5, 7, 5, 5, 5, 5}; //in the tens-hundreds of millions of nodes
+    else if (rigor == 3) depths = {7, 6, 8, 6, 6, 5, 6}; //in the billions of nodes
+
+
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    for (int i = 0; i < 7; i++) {
+        parseFen(fens[i]);
+        std::cout << "fen: " << fens[i] << '\n';
+
+        for (int j = 1; j <= depths[i]; j++) {
+            long nodes = perft(j);
+            std::cout << "depth: " << j << " nodes: " << nodes << '\n';
+            assert(nodes == expectedResults[i][j-1]);
+        }
+
+        std::cout << '\n';
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "Time ellapsed (miliseconds): " << duration.count() << '\n';
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

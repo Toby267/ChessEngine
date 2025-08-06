@@ -17,6 +17,7 @@ class Board {
 private:
     //attribute default values are as if Board::resetBoard() has been called
     std::array<uint64_t, 14> bitBoards{};
+    std::array<int, 64> mailBoxBoard{};
 
     std::array<__uint128_t, 16> enPassantData{};    //1 in the right most bit means yes
                                                     //every time a move is played it is shifted left
@@ -33,10 +34,11 @@ public:
     ~Board();
 
     //getters/setters
-    PieceType getType(SquareIndex index) const;
     const std::array<uint64_t, 14>& getBitBoards() const;
+    const std::array<int, 64>& getMailboxBoard() const;
     const std::array<__uint128_t, 4>& getCastleData() const;
     const std::array<__uint128_t, 16>& getEnPassantData() const;
+    PieceType getType(SquareIndex index) const;
     WhiteTurn getWhiteTurn() const;
     
     //public methods

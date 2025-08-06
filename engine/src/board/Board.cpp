@@ -24,42 +24,23 @@ Board::~Board() {
 // * ---------------------------------------- [ GETTERS/SETTERS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Returns the type of piece stored at the given index
- * 
- * @param index the index of said piece
- * @return the piece type
- */
-PieceType Board::getType(SquareIndex index) const {
-    if (isWhite(index)) {
-        for (int i = 0; i < 6; i++) {
-            if (bitBoards[i] & (1ULL << index)) {
-                return (PieceType)i;
-            }
-        }
-    }
-    else if (isBlack(index)) {
-        for (int i = 6; i < 12; i++) {
-            if (bitBoards[i] & (1ULL << index)) {
-                return (PieceType)i;
-            }
-        }
-    }
-    
-    return PieceType::INVALID;
-}
 
-/**
- * Const getters
- */
+//const ref getters
 const std::array<uint64_t, 14>& Board::getBitBoards() const {
     return bitBoards;
+}
+const std::array<int, 64>& Board::getMailboxBoard() const {
+    return mailBoxBoard;
 }
 const std::array<__uint128_t,  4>& Board::getCastleData() const {
     return castleData;
 }
 const std::array<__uint128_t, 16>& Board::getEnPassantData() const {
     return enPassantData;
+}
+//const getters
+PieceType Board::getType(SquareIndex index) const {
+    return (PieceType)(mailBoxBoard[index]);
 }
 WhiteTurn Board::getWhiteTurn() const {
     return whiteTurn;
@@ -114,7 +95,6 @@ void Board::makeMove(const Move& move) {
             updateSpecialMoveStatus(move);
             break;
     }
-    //set flags for things like check, etc
 }
 /**
  * Logic for unmaking a move on the bitboards, and unsetting relevent flags
@@ -134,25 +114,25 @@ void Board::unMakeMove(const Move& move) {
 
     switch (move.flag) {
         case MoveType::CASTLE:
-            togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryStartPos);
-            togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryEndPos);
-            togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryStartPos);
             togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryEndPos);
+            togglePiece(move.castleMove.secondaryPieceType, move.castleMove.secondaryStartPos);
+            togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryEndPos);
+            togglePiece(move.castleMove.primaryPieceType, move.castleMove.primaryStartPos);
             break;
         case MoveType::EN_PASSANT:
-            togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
-            togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
             togglePiece(move.enPassantMove.killPieceType, move.enPassantMove.killSquare);
+            togglePiece(move.enPassantMove.pieceType, move.enPassantMove.endPos);
+            togglePiece(move.enPassantMove.pieceType, move.enPassantMove.startPos);
             break;
         case MoveType::PROMOTION:
-            togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
-            togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
             togglePiece(move.promotionMove.newPieceType, move.promotionMove.endPos);
+            togglePiece(move.promotionMove.oldPieceType, move.promotionMove.startPos);
+            togglePiece(move.promotionMove.killPieceType, move.promotionMove.endPos);
             break;
         case MoveType::NORMAL:
-            togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
-            togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
             togglePiece(move.normalMove.pieceType, move.normalMove.endPos);
+            togglePiece(move.normalMove.pieceType, move.normalMove.startPos);
+            togglePiece(move.normalMove.killPieceType, move.normalMove.endPos);
             break;
     }
 }
@@ -180,6 +160,17 @@ void Board::setDefaultBoard() {
     bitBoards[PieceType::BLACK_KNIGHT]  = 0x0080000000008000ULL;
     bitBoards[PieceType::BLACK_ROOK]    = 0x8000000000000080ULL;
     bitBoards[PieceType::BLACK_PAWN]    = 0x4040404040404040ULL;
+
+    mailBoxBoard = {
+        WHITE_ROOK,   WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_ROOK,
+        WHITE_KNIGHT, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_KNIGHT,
+        WHITE_BISHOP, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_BISHOP,
+        WHITE_QUEEN,  WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_QUEEN,
+        WHITE_KING,   WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_KING,
+        WHITE_BISHOP, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_BISHOP,
+        WHITE_KNIGHT, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_KNIGHT,
+        WHITE_ROOK,   WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_ROOK
+    };
 }
 /**
  * Resets the board back to its initial/default state
@@ -188,6 +179,7 @@ void Board::resetBoard() {
     castleData = {1, 1, 1, 1};
     enPassantData = {};
     bitBoards = {};
+    for (int i = 0; i < 64; i++) mailBoxBoard[i] = INVALID;
     drawMoveCounter = 0;
 }
 
@@ -318,18 +310,21 @@ void Board::addPiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] |= (1ULL << index);
     bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] |= (1ULL << index);
+    mailBoxBoard[index] = type;
 }
 //removes a piece to a given square
 void Board::removePiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] &= ~(1ULL << index);
     bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] &= ~(1ULL << index);
+    mailBoxBoard[index] = INVALID;
 }
 //toggles a piece in a given square
 void Board::togglePiece(PieceType type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] ^= (1ULL << index);
     bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] ^= (1ULL << index);
+    mailBoxBoard[index] = (mailBoxBoard[index] == INVALID) ? type : INVALID;
 }
 
 //prints the bitboard in binary

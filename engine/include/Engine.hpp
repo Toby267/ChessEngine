@@ -49,7 +49,7 @@ private:
     GameState getCurrentGameState();
     Move getUserMove();
     
-    void runPerftTests();
+    void runPerftTests(int rigor);
 
     //helper methods
     bool validateMove(Move& move, std::string moveString);
