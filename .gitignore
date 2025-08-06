@@ -1,4 +1,5 @@
 .vscode
+.TODO.txt
 engine/.cache
 engine/build/
 engine/bin/
