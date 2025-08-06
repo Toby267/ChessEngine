@@ -246,10 +246,10 @@ static void addPawnAttackMovesWhite(std::vector<Move>& moves, const Board& board
 static void addSinglePawnMoveWhite(std::vector<Move>& moves, const Board& board, SquareIndex startPos, SquareIndex endPos) {
     if ((1ULL << endPos) & 0x8080808080808080) {
         //promotion moves
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_QUEEN, board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_QUEEN,  board.getType(endPos)}});
         moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_BISHOP, board.getType(endPos)}});
         moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_KNIGHT, board.getType(endPos)}});
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_ROOK, board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_ROOK,   board.getType(endPos)}});
     }
     else {
         //normal move
@@ -302,10 +302,10 @@ static void addPawnAttackMovesBlack(std::vector<Move>& moves, const Board& board
 static void addSinglePawnMoveBlack(std::vector<Move>& moves, const Board& board, SquareIndex startPos, SquareIndex endPos) {
     if ((1ULL << endPos) & 0x0101010101010101) {
         //promotion moves
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_QUEEN, board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_QUEEN,  board.getType(endPos)}});
         moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_BISHOP, board.getType(endPos)}});
         moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_KNIGHT, board.getType(endPos)}});
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_ROOK, board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_ROOK,   board.getType(endPos)}});
     }
     else {
         //normal move
