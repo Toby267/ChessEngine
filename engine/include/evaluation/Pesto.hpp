@@ -6,5 +6,5 @@
  * Defines functions for a fast pesto evaluation of the board
  */
 
-void init_tables();
-int eval(const Board& boardRef);
+void initPestoTables();
+int pestoEval(const Board& boardRef);

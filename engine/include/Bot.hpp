@@ -12,6 +12,7 @@
 class Bot {
 private:
     Board& board;
+    static bool isPestoInitialised;
 
 public:
     //constructors/destructor
@@ -21,7 +22,7 @@ public:
     //getters/setters
 
     //public methods
-    Move getBestMove();
+    Move getBestMove(Board& board);
 
 private:
     //private methods

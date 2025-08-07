@@ -40,7 +40,7 @@ void Engine::playMatch() {
     for (;;) {
         printASCIIBoard();
 
-        Move move = (board->getWhiteTurn() == isBotWhite) ? bot->getBestMove() : getUserMove();
+        Move move = (board->getWhiteTurn() == isBotWhite) ? bot->getBestMove(*board) : getUserMove();
         board->makeMove(move);
         
         gameState = getCurrentGameState();
