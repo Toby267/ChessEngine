@@ -40,25 +40,7 @@ const std::array<__uint128_t, 16>& Board::getEnPassantData() const {
 }
 //const getters
 PieceType::Enum Board::getType(SquareIndex index) const {
-    //don't know which method is faster
     return (PieceType::Enum)(mailBoxBoard[index]);
-
-    // if (isWhite(index)) {
-    //     for (int i = 0; i < 6; i++) {
-    //         if (bitBoards[i] & (1ULL << index)) {
-    //             return (PieceType)i;
-    //         }
-    //     }
-    // }
-    // else if (isBlack(index)) {
-    //     for (int i = 6; i < 12; i++) {
-    //         if (bitBoards[i] & (1ULL << index)) {
-    //             return (PieceType)i;
-    //         }
-    //     }
-    // }
-    
-    // return PieceType::INVALID;
 }
 WhiteTurn Board::getWhiteTurn() const {
     return whiteTurn;
