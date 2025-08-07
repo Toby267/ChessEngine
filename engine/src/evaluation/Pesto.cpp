@@ -1,4 +1,4 @@
-/* credits to the chess wiki and Ronald Friederich from https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function */
+/* Modified from Ronald Friederich's code from https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function */
 
 #include "evaluation/Pesto.hpp"
 
@@ -6,18 +6,14 @@
 #include "board/BoardUtil.hpp"
 
 /* board representation */
-#define PAWN   0
-#define KING   5
-
 #define FLIP(sq) ((sq)^56)
 #define OTHER(side) ((side)^ 1)
 
+const int PAWN = 0;
+const int KING = 5;
+
 const int mg_value[6] = { 82, 337, 365, 477, 1025,  0};
 const int eg_value[6] = { 94, 281, 297, 512,  936,  0};
-
-/* piece/sq tables */
-/* values from Rofchade: http://www.talkchess.com/forum3/viewtopic.php?f=2&t=68311&start=19 */
-/* values are a combination of the standarad material approach and piece square tables */
 
 /*
 uses square mapping such that table[0] is a8, and table[63] is h1
@@ -33,6 +29,10 @@ mailBoxBoard = {
     WHITE_ROOK,   WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_ROOK
 };
 */
+
+/* piece/sq tables */
+/* values from Rofchade: http://www.talkchess.com/forum3/viewtopic.php?f=2&t=68311&start=19 */
+
 const int mg_pawn_table[64] = {
       0,   0,   0,   0,   0,   0,  0,   0,
      98, 134,  61,  95,  68, 126, 34, -11,
@@ -211,10 +211,10 @@ int eval(const Board& boardRef)
     int eg[2];
     int gamePhase = 0;
 
-    mg[WHITE] = 0;
-    mg[BLACK] = 0;
-    eg[WHITE] = 0;
-    eg[BLACK] = 0;
+    mg[PieceType::WHITE] = 0;
+    mg[PieceType::BLACK] = 0;
+    eg[PieceType::WHITE] = 0;
+    eg[PieceType::BLACK] = 0;
 
     /* evaluate each piece */
     for (int sq = 0; sq < 64; ++sq) {

@@ -31,7 +31,7 @@ std::vector<Move> generateMoves(Board& board) {
     const uint64_t                      oppositionPieces    = whiteTurn ? blackPieces : whitePieces;
     const uint64_t                      occupied            = whitePieces | blackPieces;
     const uint64_t                      unoccupied          = ~occupied;
-    const short                         indexOffset         = whiteTurn ? 0 : BLACK-WHITE;
+    const short                         indexOffset         = whiteTurn ? 0 : PieceType::BLACK-PieceType::WHITE;
     
     //generate moves
     generateKingMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);

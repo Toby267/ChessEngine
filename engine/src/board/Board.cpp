@@ -308,21 +308,21 @@ void Board::updateSpecialMoveStatus(const Move& move) {
 void Board::addPiece(PieceType::Enum type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] |= (1ULL << index);
-    bitBoards[PIECE_COLOUR(type) == WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] |= (1ULL << index);
+    bitBoards[PIECE_COLOUR(type) == PieceType::WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] |= (1ULL << index);
     mailBoxBoard[index] = type;
 }
 //removes a piece to a given square
 void Board::removePiece(PieceType::Enum type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] &= ~(1ULL << index);
-    bitBoards[PIECE_COLOUR(type) == WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] &= ~(1ULL << index);
+    bitBoards[PIECE_COLOUR(type) == PieceType::WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] &= ~(1ULL << index);
     mailBoxBoard[index] = PieceType::INVALID;
 }
 //toggles a piece in a given square
 void Board::togglePiece(PieceType::Enum type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] ^= (1ULL << index);
-    bitBoards[PIECE_COLOUR(type) == WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] ^= (1ULL << index);
+    bitBoards[PIECE_COLOUR(type) == PieceType::WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] ^= (1ULL << index);
     mailBoxBoard[index] = (mailBoxBoard[index] == PieceType::INVALID) ? type : PieceType::INVALID;
 }
 

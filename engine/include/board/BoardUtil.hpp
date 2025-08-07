@@ -22,9 +22,10 @@ enum SquareIndex {
 
 namespace PieceType {
     //the #defines are usable outside this namespace
-    #define WHITE  0
-    #define BLACK  1
     #define PIECE_COLOUR(p) ((p)&1)
+
+    const int WHITE = 0;
+    const int BLACK = 1;
 
     const std::string pieceChars[] = {"o", "♟", "♙", "♞", "♘", "♝", "♗", "♜", "♖", "♛", "♕", "♚", "♔"};
     const std::string enumOrder = "PpNnBbRrQqKk";
