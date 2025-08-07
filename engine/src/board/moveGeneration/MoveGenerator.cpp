@@ -31,7 +31,7 @@ std::vector<Move> generateMoves(Board& board) {
     const uint64_t                      oppositionPieces    = whiteTurn ? blackPieces : whitePieces;
     const uint64_t                      occupied            = whitePieces | blackPieces;
     const uint64_t                      unoccupied          = ~occupied;
-    const short                         indexOffset         = whiteTurn ? 0 : 6;
+    const short                         indexOffset         = whiteTurn ? 0 : BLACK-WHITE;
     
     //generate moves
     generateKingMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);
@@ -72,7 +72,7 @@ std::vector<Move> generateMoves(Board& board) {
 bool isKingTargeted(const Board& board) {
     const std::array<uint64_t, 14>& bitBoards       = board.getBitBoards();
     const WhiteTurn                 whiteTurn       = board.getWhiteTurn();
-    const uint64_t                  kingBitboard    = whiteTurn ? bitBoards[WHITE_KING] : bitBoards[BLACK_KING];
+    const uint64_t                  kingBitboard    = whiteTurn ? bitBoards[PieceType::WHITE_KING] : bitBoards[PieceType::BLACK_KING];
     const SquareIndex               kingIndex       = (SquareIndex)__builtin_ctzll(kingBitboard);
     
     return isTargeted(board, !whiteTurn, kingIndex);

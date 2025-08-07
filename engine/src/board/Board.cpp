@@ -39,8 +39,26 @@ const std::array<__uint128_t, 16>& Board::getEnPassantData() const {
     return enPassantData;
 }
 //const getters
-PieceType Board::getType(SquareIndex index) const {
-    return (PieceType)(mailBoxBoard[index]);
+PieceType::Enum Board::getType(SquareIndex index) const {
+    //don't know which method is faster
+    return (PieceType::Enum)(mailBoxBoard[index]);
+
+    // if (isWhite(index)) {
+    //     for (int i = 0; i < 6; i++) {
+    //         if (bitBoards[i] & (1ULL << index)) {
+    //             return (PieceType)i;
+    //         }
+    //     }
+    // }
+    // else if (isBlack(index)) {
+    //     for (int i = 6; i < 12; i++) {
+    //         if (bitBoards[i] & (1ULL << index)) {
+    //             return (PieceType)i;
+    //         }
+    //     }
+    // }
+    
+    // return PieceType::INVALID;
 }
 WhiteTurn Board::getWhiteTurn() const {
     return whiteTurn;
@@ -161,6 +179,7 @@ void Board::setDefaultBoard() {
     bitBoards[PieceType::BLACK_ROOK]    = 0x8000000000000080ULL;
     bitBoards[PieceType::BLACK_PAWN]    = 0x4040404040404040ULL;
 
+    using namespace PieceType;
     mailBoxBoard = {
         WHITE_ROOK,   WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_ROOK,
         WHITE_KNIGHT, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_KNIGHT,
@@ -179,7 +198,7 @@ void Board::resetBoard() {
     castleData = {1, 1, 1, 1};
     enPassantData = {};
     bitBoards = {};
-    for (int i = 0; i < 64; i++) mailBoxBoard[i] = INVALID;
+    for (int i = 0; i < 64; i++) mailBoxBoard[i] = PieceType::INVALID;
     drawMoveCounter = 0;
 }
 
@@ -191,14 +210,12 @@ void Board::resetBoard() {
 void Board::parseFen(const std::string& FEN) {
     resetBoard();
 
-    const std::string fenChars = "KQBNRPkqbnrp";
     int i = 0;
-
     //parses the first part of the FEN
     for (int file = -1, rank = 7; i < FEN.length(); i++) {
         if (FEN[i] == ' ') break;
         
-        size_t index = fenChars.find(FEN[i]);
+        size_t index = PieceType::enumOrder.find(FEN[i]);
         file++;
 
         if (FEN[i] == '/') {
@@ -209,7 +226,7 @@ void Board::parseFen(const std::string& FEN) {
             file += FEN[i] - '1'; //'0'-1
         }
         else {
-            addPiece((PieceType)index, (SquareIndex)(8*file+rank));
+            addPiece((PieceType::Enum)index, (SquareIndex)(8*file+rank));
         }
     }
 
@@ -306,33 +323,33 @@ void Board::updateSpecialMoveStatus(const Move& move) {
 }
 
 //adds a piece to a given square
-void Board::addPiece(PieceType type, SquareIndex index) {
+void Board::addPiece(PieceType::Enum type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] |= (1ULL << index);
-    bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] |= (1ULL << index);
+    bitBoards[PIECE_COLOUR(type) == WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] |= (1ULL << index);
     mailBoxBoard[index] = type;
 }
 //removes a piece to a given square
-void Board::removePiece(PieceType type, SquareIndex index) {
+void Board::removePiece(PieceType::Enum type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] &= ~(1ULL << index);
-    bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] &= ~(1ULL << index);
-    mailBoxBoard[index] = INVALID;
+    bitBoards[PIECE_COLOUR(type) == WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] &= ~(1ULL << index);
+    mailBoxBoard[index] = PieceType::INVALID;
 }
 //toggles a piece in a given square
-void Board::togglePiece(PieceType type, SquareIndex index) {
+void Board::togglePiece(PieceType::Enum type, SquareIndex index) {
     if (type == PieceType::INVALID) return;
     bitBoards[type] ^= (1ULL << index);
-    bitBoards[type <= 5 ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] ^= (1ULL << index);
-    mailBoxBoard[index] = (mailBoxBoard[index] == INVALID) ? type : INVALID;
+    bitBoards[PIECE_COLOUR(type) == WHITE ? PieceType::WHITE_PIECES : PieceType::BLACK_PIECES] ^= (1ULL << index);
+    mailBoxBoard[index] = (mailBoxBoard[index] == PieceType::INVALID) ? type : PieceType::INVALID;
 }
 
 //prints the bitboard in binary
-void Board::printBitBoardBin(PieceType board) {
+void Board::printBitBoardBin(PieceType::Enum board) {
     std::cout << std::bitset<64>(bitBoards[board]) << '\n';
 }
 //prints the bitboard in hex
-void Board::printBitBoardHex(PieceType board) {
+void Board::printBitBoardHex(PieceType::Enum board) {
     printf("0x%016lx\n", bitBoards[board]);
 }
 

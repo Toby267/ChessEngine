@@ -19,7 +19,6 @@
 
 Engine::Engine() {    
     runPerftTests(2);
-    // playMatch();
 }
 Engine::Engine(UserColour isBotWhite) : isBotWhite(isBotWhite){
     playMatch();
@@ -48,12 +47,12 @@ void Engine::playMatch() {
         if (gameState != GameState::Live) break;
     }
 
+    printASCIIBoard();
+
     if (gameState == GameState::Checkmate)
         std::cout << (board->getWhiteTurn() ? "Black Wins!" : "White Wins!") << '\n';
     else if (gameState == GameState::Stalemate)
         std::cout << "Draw" << '\n';
-
-    printASCIIBoard();
 }
 
 /**
@@ -72,14 +71,12 @@ void Engine::parseFen(const std::string& FEN) {
 /**
  * Prints out the board using unicode characters for the chess pieces
  */
-void Engine::printASCIIBoard() {
-    const std::string pieceChars[] = {"o", "♚", "♛", "♝", "♞", "♜", "♟", "♔", "♕", "♗", "♘", "♖", "♙"};
-    
+void Engine::printASCIIBoard() {    
     for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {
-            PieceType type = board->getType((SquareIndex)(8*file+rank));
+            PieceType::Enum type = board->getType((SquareIndex)(8*file+rank));
 
-            std::cout << pieceChars[(int)type+1] << ' ';
+            std::cout << PieceType::pieceChars[(int)type+1] << ' ';
         }
         std::cout << '\n';
     }
@@ -196,14 +193,14 @@ bool Engine::validateMove(Move& move, std::string moveString) {
     //extract start, end pos and promotionPiece as enums
     SquareIndex startPos            = SquareIndex(8 * (startPosStr[0] - 'a') + (startPosStr[1] - '1'));
     SquareIndex endPos              = SquareIndex(8 * (endPosStr[0]   - 'a') + (endPosStr[1]   - '1'));
-    PieceType   promotionPiece      = INVALID;
+    PieceType::Enum   promotionPiece      = PieceType::INVALID;
 
     if (promotionPieceStr.size()) {
         switch (promotionPieceStr[0]) {
-            case 'Q': case 'q': { promotionPiece = board->getWhiteTurn() ? WHITE_QUEEN  : BLACK_QUEEN;    break; }
-            case 'R': case 'r': { promotionPiece = board->getWhiteTurn() ? WHITE_ROOK   : BLACK_ROOK;     break; }
-            case 'B': case 'b': { promotionPiece = board->getWhiteTurn() ? WHITE_BISHOP : BLACK_BISHOP;   break; }
-            case 'K': case 'k': { promotionPiece = board->getWhiteTurn() ? WHITE_KNIGHT : BLACK_KNIGHT;   break; }
+            case 'Q': case 'q': { promotionPiece = board->getWhiteTurn() ? PieceType::WHITE_QUEEN  : PieceType::BLACK_QUEEN;    break; }
+            case 'R': case 'r': { promotionPiece = board->getWhiteTurn() ? PieceType::WHITE_ROOK   : PieceType::BLACK_ROOK;     break; }
+            case 'B': case 'b': { promotionPiece = board->getWhiteTurn() ? PieceType::WHITE_BISHOP : PieceType::BLACK_BISHOP;   break; }
+            case 'K': case 'k': { promotionPiece = board->getWhiteTurn() ? PieceType::WHITE_KNIGHT : PieceType::BLACK_KNIGHT;   break; }
             default:            { return false; } //user has given invalid promotion piece
         }
     }
@@ -216,7 +213,7 @@ bool Engine::validateMove(Move& move, std::string moveString) {
             continue;
 
         bool isPromotionMove = i.flag == MoveType::PROMOTION;
-        bool promotionPieceGiven = promotionPiece != INVALID;
+        bool promotionPieceGiven = promotionPiece != PieceType::INVALID;
 
         //if there a promotion piece is given when it shouldn't be or vice versa
         if (isPromotionMove != promotionPieceGiven)

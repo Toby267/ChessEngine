@@ -1,3 +1,4 @@
+#include "board/BoardUtil.hpp"
 #include "board/moveGeneration/internals/MoveGeneratorInternals.hpp"
 
 /**
@@ -20,7 +21,7 @@ bool isTargeted(const Board& board, WhiteTurn whiteTurn, SquareIndex i) {
     const uint64_t                      friendlyPieces      = whiteTurn ? whitePieces : blackPieces;
     const uint64_t                      oppositionPieces    = whiteTurn ? blackPieces : whitePieces;
     const uint64_t                      occupied            = whitePieces | blackPieces;
-    const short                         indexOffset         = whiteTurn ? 0 : 6;
+    const short                         indexOffset         = whiteTurn ? 0 : BLACK-WHITE;
 
     //generate bitboards for the king and knights
     uint64_t kingMoves      = generateKingBitboard(bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);

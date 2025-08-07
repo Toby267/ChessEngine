@@ -38,7 +38,7 @@ public:
     const std::array<int, 64>& getMailboxBoard() const;
     const std::array<__uint128_t, 4>& getCastleData() const;
     const std::array<__uint128_t, 16>& getEnPassantData() const;
-    PieceType getType(SquareIndex index) const;
+    PieceType::Enum getType(SquareIndex index) const;
     WhiteTurn getWhiteTurn() const;
     
     //public methods
@@ -54,12 +54,12 @@ private:
     //private methods
     void updateSpecialMoveStatus(const Move& move);
 
-    void addPiece(PieceType type, SquareIndex index);
-    void removePiece(PieceType type, SquareIndex index);
-    void togglePiece(PieceType type, SquareIndex index);    
+    void addPiece(PieceType::Enum type, SquareIndex index);
+    void removePiece(PieceType::Enum type, SquareIndex index);
+    void togglePiece(PieceType::Enum type, SquareIndex index);    
 
-    void printBitBoardBin(PieceType board);
-    void printBitBoardHex(PieceType board);
+    void printBitBoardBin(PieceType::Enum board);
+    void printBitBoardHex(PieceType::Enum board);
 
     //helper methods
     bool hasPiece(SquareIndex index) const;

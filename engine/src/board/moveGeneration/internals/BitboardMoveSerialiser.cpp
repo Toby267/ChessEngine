@@ -32,7 +32,7 @@ static void addSinglePawnMoveBlack(std::vector<Move>& moves, const Board& board,
 //generates and adds all king moves to the moves reference
 void generateKingMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t king, uint64_t friendlyPieces) {
     const SquareIndex   startSquare = (SquareIndex)__builtin_ctzll(king);
-    const PieceType     pieceType = whiteTurn ? WHITE_KING : BLACK_KING;
+    const PieceType::Enum     pieceType = whiteTurn ? PieceType::WHITE_KING : PieceType::BLACK_KING;
 
     uint64_t movesBitboard = generateKingBitboard(king, friendlyPieces);
     while (movesBitboard) {
@@ -46,7 +46,7 @@ void generateKingMoves(std::vector<Move>& moves, const Board& board, WhiteTurn w
 }
 //generates and adds all knight moves to the moves reference
 void generateKnightMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t knights, uint64_t friendlyPieces) {
-    const PieceType pieceType = whiteTurn ? WHITE_KNIGHT : BLACK_KNIGHT;
+    const PieceType::Enum pieceType = whiteTurn ? PieceType::WHITE_KNIGHT : PieceType::BLACK_KNIGHT;
 
     while (knights) {
         SquareIndex startSquare = (SquareIndex)__builtin_ctzll(knights);
@@ -68,7 +68,7 @@ void generateKnightMoves(std::vector<Move>& moves, const Board& board, WhiteTurn
 
 //generates and adds all rook moves to the moves reference
 void generateRookMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t rooks, uint64_t occupied, uint64_t friendlyPieces) {
-    const PieceType pieceType = whiteTurn ? WHITE_ROOK : BLACK_ROOK;
+    const PieceType::Enum pieceType = whiteTurn ? PieceType::WHITE_ROOK : PieceType::BLACK_ROOK;
 
     while (rooks) {
         SquareIndex startSquare = (SquareIndex)__builtin_ctzll(rooks);
@@ -87,7 +87,7 @@ void generateRookMoves(std::vector<Move>& moves, const Board& board, WhiteTurn w
 }
 //generates and adds all bishop moves to the moves reference
 void generateBishopMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t bishops, uint64_t occupied, uint64_t friendlyPieces) {
-    const PieceType pieceType = whiteTurn ? WHITE_BISHOP : BLACK_BISHOP;
+    const PieceType::Enum pieceType = whiteTurn ? PieceType::WHITE_BISHOP : PieceType::BLACK_BISHOP;
 
     while (bishops) {
         SquareIndex startSquare = (SquareIndex)__builtin_ctzll(bishops);
@@ -106,7 +106,7 @@ void generateBishopMoves(std::vector<Move>& moves, const Board& board, WhiteTurn
 }
 //generates and adds all queen moves to the moves reference
 void generateQueenMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t queens, uint64_t occupied, uint64_t friendlyPieces) {
-    const PieceType pieceType = whiteTurn ? WHITE_QUEEN : BLACK_QUEEN;
+    const PieceType::Enum pieceType = whiteTurn ? PieceType::WHITE_QUEEN : PieceType::BLACK_QUEEN;
 
     while (queens) {
         SquareIndex startSquare = (SquareIndex)__builtin_ctzll(queens);
@@ -148,8 +148,8 @@ void generateCastlingMoves(std::vector<Move>& moves, const Board& board, WhiteTu
 void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteTurn whiteTurn, uint64_t pawns, std::array<__uint128_t, 16> enPassantData) {
     //very cursed line. I could of just put the ternary in the two lines that this is used as its just as efficient time wise and more efficient space wise but this looks cooler
     SquareIndex (*forwardOne)(int) = whiteTurn ? (SquareIndex(*)(int))northOne : (SquareIndex(*)(int))southOne;
-    PieceType pieceType = whiteTurn ? WHITE_PAWN : BLACK_PAWN;
-    PieceType killPieceType = whiteTurn ? BLACK_PAWN : WHITE_PAWN;
+    PieceType::Enum pieceType = whiteTurn ? PieceType::WHITE_PAWN : PieceType::BLACK_PAWN;
+    PieceType::Enum killPieceType = whiteTurn ? PieceType::BLACK_PAWN : PieceType::WHITE_PAWN;
 
     for (int i = 0; i < enPassantData.size(); i++) {
         if (!(enPassantData[i] & 1)) continue;
@@ -178,12 +178,12 @@ void generateEnPassantMoves(std::vector<Move>& moves, const Board& board, WhiteT
 static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (castleData[CastlePieces::W_KING]  == 0 && (occupied & (uint64_t)(0x0001010000000000)) == 0) {
         if (!isTargeted(board, WhiteTurn{false}, SquareIndex::e1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::f1)) {
-            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, g1, WHITE_KING, h1, f1, WHITE_ROOK}});
+            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, g1, PieceType::WHITE_KING, h1, f1, PieceType::WHITE_ROOK}});
         }
     }
     if (castleData[CastlePieces::W_QUEEN] == 0 && (occupied & (uint64_t)(0x0000000001010100)) == 0) {
         if (!isTargeted(board, WhiteTurn{false}, SquareIndex::e1) && !isTargeted(board, WhiteTurn{false}, SquareIndex::d1)) {
-            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, c1, WHITE_KING, a1, d1, WHITE_ROOK}});
+            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e1, c1, PieceType::WHITE_KING, a1, d1, PieceType::WHITE_ROOK}});
         }
     }
 }
@@ -191,12 +191,12 @@ static void addCastlingMovesWhite(std::vector<Move>& moves, const Board &board, 
 static void addCastlingMovesBlack(std::vector<Move>& moves, const Board &board, uint64_t occupied, std::array<__uint128_t, 4> castleData) {
     if (!castleData[CastlePieces::B_KING] && !(occupied & (uint64_t)(0x0080800000000000))) {
         if (!isTargeted(board, WhiteTurn{true}, SquareIndex::e8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::f8)) {
-            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, g8, BLACK_KING, h8, f8, BLACK_ROOK}});
+            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, g8, PieceType::BLACK_KING, h8, f8, PieceType::BLACK_ROOK}});
         }
     }
     if (!castleData[CastlePieces::B_QUEEN] && !(occupied & (uint64_t)(0x0000000080808000))) {
         if (!isTargeted(board, WhiteTurn{true}, SquareIndex::e8) && !isTargeted(board, WhiteTurn{true}, SquareIndex::d8)) {
-            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, BLACK_KING, a8, d8, BLACK_ROOK}});
+            moves.push_back({.flag=CASTLE, .castleMove=CastleMove{e8, c8, PieceType::BLACK_KING, a8, d8, PieceType::BLACK_ROOK}});
         }
     }
 }
@@ -246,14 +246,14 @@ static void addPawnAttackMovesWhite(std::vector<Move>& moves, const Board& board
 static void addSinglePawnMoveWhite(std::vector<Move>& moves, const Board& board, SquareIndex startPos, SquareIndex endPos) {
     if ((1ULL << endPos) & 0x8080808080808080) {
         //promotion moves
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_QUEEN,  board.getType(endPos)}});
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_BISHOP, board.getType(endPos)}});
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_KNIGHT, board.getType(endPos)}});
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, WHITE_PAWN, WHITE_ROOK,   board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, PieceType::WHITE_PAWN, PieceType::WHITE_QUEEN,  board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, PieceType::WHITE_PAWN, PieceType::WHITE_BISHOP, board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, PieceType::WHITE_PAWN, PieceType::WHITE_KNIGHT, board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, PieceType::WHITE_PAWN, PieceType::WHITE_ROOK,   board.getType(endPos)}});
     }
     else {
         //normal move
-        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startPos, endPos, WHITE_PAWN, board.getType(endPos)}});
+        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startPos, endPos, PieceType::WHITE_PAWN, board.getType(endPos)}});
     }
 }
 
@@ -302,13 +302,13 @@ static void addPawnAttackMovesBlack(std::vector<Move>& moves, const Board& board
 static void addSinglePawnMoveBlack(std::vector<Move>& moves, const Board& board, SquareIndex startPos, SquareIndex endPos) {
     if ((1ULL << endPos) & 0x0101010101010101) {
         //promotion moves
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_QUEEN,  board.getType(endPos)}});
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_BISHOP, board.getType(endPos)}});
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_KNIGHT, board.getType(endPos)}});
-        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, BLACK_PAWN, BLACK_ROOK,   board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, PieceType::BLACK_PAWN, PieceType::BLACK_QUEEN,  board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, PieceType::BLACK_PAWN, PieceType::BLACK_BISHOP, board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, PieceType::BLACK_PAWN, PieceType::BLACK_KNIGHT, board.getType(endPos)}});
+        moves.push_back({.flag=PROMOTION, .promotionMove=PromotionMove{startPos, endPos, PieceType::BLACK_PAWN, PieceType::BLACK_ROOK,   board.getType(endPos)}});
     }
     else {
         //normal move
-        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startPos, endPos, BLACK_PAWN, board.getType(endPos)}});
+        moves.push_back({.flag=NORMAL, .normalMove=NormalMove{startPos, endPos, PieceType::BLACK_PAWN, board.getType(endPos)}});
     }
 }

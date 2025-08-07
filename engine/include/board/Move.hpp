@@ -21,33 +21,33 @@ enum MoveType {
 struct NormalMove {
     SquareIndex startPos;
     SquareIndex endPos;
-    PieceType   pieceType;
-    PieceType   killPieceType;
+    PieceType::Enum   pieceType;
+    PieceType::Enum   killPieceType;
 };
 
 struct PromotionMove {
     SquareIndex startPos;
     SquareIndex endPos;
-    PieceType   oldPieceType;
-    PieceType   newPieceType;
-    PieceType   killPieceType;
+    PieceType::Enum   oldPieceType;
+    PieceType::Enum   newPieceType;
+    PieceType::Enum   killPieceType;
 };
 
 struct EnPassantMove {
     SquareIndex startPos;
     SquareIndex endPos;
-    PieceType   pieceType;
+    PieceType::Enum   pieceType;
     SquareIndex killSquare;
-    PieceType   killPieceType;
+    PieceType::Enum   killPieceType;
 };
 
 struct CastleMove {
     SquareIndex primaryStartPos;
     SquareIndex primaryEndPos;
-    PieceType   primaryPieceType;   //white king or black king
+    PieceType::Enum   primaryPieceType;   //white king or black king
     SquareIndex secondaryStartPos;
     SquareIndex secondaryEndPos;
-    PieceType   secondaryPieceType; //white rook or black rook
+    PieceType::Enum   secondaryPieceType; //white rook or black rook
 };
 
 struct Move {

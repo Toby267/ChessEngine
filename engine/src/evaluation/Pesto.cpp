@@ -5,29 +5,25 @@
 #include "board/Board.hpp"
 
 #define PAWN   0
-#define KNIGHT 1
-#define BISHOP 2
-#define ROOK   3
-#define QUEEN  4
 #define KING   5
 
 /* board representation */
 #define WHITE  0
 #define BLACK  1
 
-#define WHITE_PAWN      (2*PAWN   + WHITE)
-#define BLACK_PAWN      (2*PAWN   + BLACK)
-#define WHITE_KNIGHT    (2*KNIGHT + WHITE)
-#define BLACK_KNIGHT    (2*KNIGHT + BLACK)
-#define WHITE_BISHOP    (2*BISHOP + WHITE)
-#define BLACK_BISHOP    (2*BISHOP + BLACK)
-#define WHITE_ROOK      (2*ROOK   + WHITE)
-#define BLACK_ROOK      (2*ROOK   + BLACK)
-#define WHITE_QUEEN     (2*QUEEN  + WHITE)
-#define BLACK_QUEEN     (2*QUEEN  + BLACK)
-#define WHITE_KING      (2*KING   + WHITE)
-#define BLACK_KING      (2*KING   + BLACK)
-#define EMPTY           (BLACK_KING  +  1)
+#define WHITE_PAWN      (0)
+#define BLACK_PAWN      (1)
+#define WHITE_KNIGHT    (2)
+#define BLACK_KNIGHT    (3)
+#define WHITE_BISHOP    (4)
+#define BLACK_BISHOP    (5)
+#define WHITE_ROOK      (6)
+#define BLACK_ROOK      (7)
+#define WHITE_QUEEN     (8)
+#define BLACK_QUEEN     (9)
+#define WHITE_KING      (10)
+#define BLACK_KING      (11)
+#define EMPTY           (12) //this has a different value to the corresponding PieceType::INVALID in BoardUtil.hpp
 
 #define PCOLOR(p) ((p)&1)
 
@@ -41,7 +37,21 @@ int eg_value[6] = { 94, 281, 297, 512,  936,  0};
 /* values from Rofchade: http://www.talkchess.com/forum3/viewtopic.php?f=2&t=68311&start=19 */
 /* values are a combination of the standarad material approach and piece square tables */
 
-//uses square mapping such that table[0] is a8, and table[63] is h1
+/*
+uses square mapping such that table[0] is a8, and table[63] is h1
+TODO: convert to the following square mapping
+
+mailBoxBoard = {
+    WHITE_ROOK,   WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_ROOK,
+    WHITE_KNIGHT, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_KNIGHT,
+    WHITE_BISHOP, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_BISHOP,
+    WHITE_QUEEN,  WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_QUEEN,
+    WHITE_KING,   WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_KING,
+    WHITE_BISHOP, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_BISHOP,
+    WHITE_KNIGHT, WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_KNIGHT,
+    WHITE_ROOK,   WHITE_PAWN, INVALID, INVALID, INVALID, INVALID, BLACK_PAWN, BLACK_ROOK
+};
+*/
 int mg_pawn_table[64] = {
       0,   0,   0,   0,   0,   0,  0,   0,
      98, 134,  61,  95,  68, 126, 34, -11,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 /**
  * Contains utility typedefs, enums, and functions used to help in various operations on the board such as move generation
@@ -19,26 +20,35 @@ enum SquareIndex {
     h1, h2, h3, h4, h5, h6, h7, h8
 };
 
-enum PieceType {
-    WHITE_KING,
-    WHITE_QUEEN,
-    WHITE_BISHOP,
-    WHITE_KNIGHT,
-    WHITE_ROOK,
-    WHITE_PAWN,
+namespace PieceType {
+    #define WHITE  0
+    #define BLACK  1
+    #define PIECE_COLOUR(p) ((p)&1)
 
-    BLACK_KING,
-    BLACK_QUEEN,
-    BLACK_BISHOP,
-    BLACK_KNIGHT,
-    BLACK_ROOK,
-    BLACK_PAWN,
+    const std::string pieceChars[] = {"o", "♟", "♙", "♞", "♘", "♝", "♗", "♜", "♖", "♛", "♕", "♚", "♔"};
+    const std::string enumOrder = "PpNnBbRrQqKk";
 
-    WHITE_PIECES,
-    BLACK_PIECES,
+    enum Enum {
+        WHITE_PAWN,
+        BLACK_PAWN,
+        WHITE_KNIGHT,
+        BLACK_KNIGHT,
+        WHITE_BISHOP,
+        BLACK_BISHOP,
+        WHITE_ROOK,
+        BLACK_ROOK,
+        WHITE_QUEEN,
+        BLACK_QUEEN,
+        WHITE_KING,
+        BLACK_KING,
+        
+        WHITE_PIECES,
+        BLACK_PIECES,
 
-    INVALID = -1
-};
+        INVALID = -1
+    };
+}
+
 
 enum EnPassantPieces {
     A_WHITE, B_WHITE, C_WHITE, D_WHITE, E_WHITE, F_WHITE, G_WHITE, H_WHITE,
