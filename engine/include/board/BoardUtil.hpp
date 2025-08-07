@@ -21,6 +21,7 @@ enum SquareIndex {
 };
 
 namespace PieceType {
+    //the #defines are usable outside this namespace
     #define WHITE  0
     #define BLACK  1
     #define PIECE_COLOUR(p) ((p)&1)
