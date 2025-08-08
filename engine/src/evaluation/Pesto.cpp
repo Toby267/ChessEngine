@@ -3,6 +3,7 @@
 
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
+#include <iostream>
 
 #define FLIP(sq) ((sq)^56)
 #define OTHER(side) ((side)^ 1)
@@ -209,10 +210,11 @@ int pestoEval(const Board& boardRef)
     }
 
     /* tapered eval */
-    int mgScore = mg[side2move] - mg[OTHER(side2move)];
-    int egScore = eg[side2move] - eg[OTHER(side2move)];
+    int mgScore = mg[OTHER(side2move)] - mg[side2move];
+    int egScore = eg[OTHER(side2move)] - eg[side2move];
     int mgPhase = gamePhase;
     if (mgPhase > 24) mgPhase = 24; /* in case of early promotion */
     int egPhase = 24 - mgPhase;
+    // std::cout << "who to move: " << side2move << ", score: " << (mgScore * mgPhase + egScore * egPhase) / 24 << '\n';
     return (mgScore * mgPhase + egScore * egPhase) / 24;
 }

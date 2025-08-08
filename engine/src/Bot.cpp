@@ -1,6 +1,7 @@
 #include "Bot.hpp"
 
 #include <climits>
+#include <iostream>
 #include <vector>
 
 #include "board/Board.hpp"
@@ -38,8 +39,8 @@ Bot::~Bot() {
  * 
  * @return the best move
  */
-Move Bot::getBestMove(Board& board) {
-    return negaMax(board, 5);
+Move Bot::getBestMove(Board& board) {    
+    return negaMax(board, 4);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +55,7 @@ Move Bot::negaMax(Board& board, int depth) {
     for (int i = 0; i < moves.size(); i++) {
         board.makeMove(moves[i]);
 
-        int eval = negaMaxIter(board, depth - 1);
+        int eval = -negaMaxIter(board, depth - 1);
         
         if (eval > max) {
             max = eval;
@@ -75,7 +76,7 @@ int Bot::negaMaxIter(Board& board, int depth) {
     for (Move move : moves) {
         board.makeMove(move);
 
-        int eval = negaMaxIter(board, depth - 1);
+        int eval = -negaMaxIter(board, depth - 1);
         if (eval > max)
             max = eval;
 
