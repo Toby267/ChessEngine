@@ -11,12 +11,11 @@
  */
 class Bot {
 private:
-    Board& board;
     static bool isPestoInitialised;
 
 public:
     //constructors/destructor
-    Bot(Board& board);
+    Bot();
     ~Bot();
 
     //getters/setters
@@ -26,6 +25,9 @@ public:
 
 private:
     //private methods
+    Move negaMax(Board& board, int depth);
+    int negaMaxIter(Board& board, int depth);
+    
 
     //helper methods
 };

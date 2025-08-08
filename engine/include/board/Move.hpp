@@ -53,10 +53,10 @@ struct CastleMove {
 struct Move {
     MoveType flag;
     union {
-        NormalMove    normalMove;
-        PromotionMove promotionMove;
-        EnPassantMove enPassantMove;
-        CastleMove    castleMove;
+        NormalMove      normalMove;
+        PromotionMove   promotionMove;
+        EnPassantMove   enPassantMove;
+        CastleMove      castleMove;
     };
 
     //default constructor
