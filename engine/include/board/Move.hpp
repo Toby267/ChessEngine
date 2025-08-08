@@ -19,35 +19,35 @@ enum MoveType {
 };
 
 struct NormalMove {
-    SquareIndex startPos;
-    SquareIndex endPos;
-    PieceType::Enum   pieceType;
-    PieceType::Enum   killPieceType;
+    SquareIndex         startPos;
+    SquareIndex         endPos;
+    PieceType::Enum     pieceType;
+    PieceType::Enum     killPieceType;
 };
 
 struct PromotionMove {
-    SquareIndex startPos;
-    SquareIndex endPos;
-    PieceType::Enum   oldPieceType;
-    PieceType::Enum   newPieceType;
-    PieceType::Enum   killPieceType;
+    SquareIndex         startPos;
+    SquareIndex         endPos;
+    PieceType::Enum     oldPieceType;
+    PieceType::Enum     newPieceType;
+    PieceType::Enum     killPieceType;
 };
 
 struct EnPassantMove {
-    SquareIndex startPos;
-    SquareIndex endPos;
-    PieceType::Enum   pieceType;
-    SquareIndex killSquare;
-    PieceType::Enum   killPieceType;
+    SquareIndex         startPos;
+    SquareIndex         endPos;
+    PieceType::Enum     pieceType;
+    SquareIndex         killSquare;
+    PieceType::Enum     killPieceType;
 };
 
 struct CastleMove {
-    SquareIndex primaryStartPos;
-    SquareIndex primaryEndPos;
-    PieceType::Enum   primaryPieceType;   //white king or black king
-    SquareIndex secondaryStartPos;
-    SquareIndex secondaryEndPos;
-    PieceType::Enum   secondaryPieceType; //white rook or black rook
+    SquareIndex         primaryStartPos;
+    SquareIndex         primaryEndPos;
+    PieceType::Enum     primaryPieceType;   //white king or black king
+    SquareIndex         secondaryStartPos;
+    SquareIndex         secondaryEndPos;
+    PieceType::Enum     secondaryPieceType; //white rook or black rook
 };
 
 struct Move {
@@ -58,6 +58,30 @@ struct Move {
         EnPassantMove enPassantMove;
         CastleMove    castleMove;
     };
+
+    //default constructor
+    Move() : flag(MoveType(0)) {}
+
+    //constructors for each move type
+    Move(MoveType flag, NormalMove move) :
+        flag(flag),
+        normalMove(move)
+    {}
+
+    Move(MoveType flag, PromotionMove move) :
+        flag(flag),
+        promotionMove(move)
+    {}
+
+    Move(MoveType flag, EnPassantMove move) :
+        flag(flag),
+        enPassantMove(move)
+    {}
+
+    Move(MoveType flag, CastleMove move) :
+        flag(flag),
+        castleMove(move)
+    {}
 };
 
 void printMove(const Move& move);
