@@ -3,7 +3,6 @@
 
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
-#include <iostream>
 
 #define FLIP(sq) ((sq)^56)
 #define OTHER(side) ((side)^ 1)

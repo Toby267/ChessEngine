@@ -73,6 +73,7 @@ void Engine::parseFen(const std::string& FEN) {
  */
 void Engine::printASCIIBoard() {    
     for (int rank = 7; rank >= 0; rank--) {
+        std::cout << rank+1 << " ";
         for (int file = 0; file < 8; file++) {
             PieceType::Enum type = board->getType((SquareIndex)(8*file+rank));
 
@@ -80,7 +81,7 @@ void Engine::printASCIIBoard() {
         }
         std::cout << '\n';
     }
-    std::cout << '\n';
+    std::cout << "  A B C D E F G H" << '\n';
 }
 
 /**

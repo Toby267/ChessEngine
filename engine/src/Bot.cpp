@@ -1,7 +1,6 @@
 #include "Bot.hpp"
 
 #include <climits>
-#include <iostream>
 #include <vector>
 
 #include "board/Board.hpp"
@@ -40,7 +39,7 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove(Board& board) {    
-    return negaMax(board, 4);
+    return negaMax(board, 5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
