@@ -41,7 +41,7 @@ Move Bot::getBestMove(Board& board) {
     Move move;
     
     for (int i = 1; i <= 5; i++)
-        if (negaMax(move, board, i) == 9999)
+        if (negaMax(move, board, i) == 9999999)
             break;
 
     return move;
@@ -54,7 +54,7 @@ Move Bot::getBestMove(Board& board) {
 //depth >= 1
 int Bot::negaMax(Move& moveRef, Board& board, int depth) {
     std::vector<Move> moves = generateMoves(board);
-    int max = -9999, maxIndex;
+    int max = -9999999, maxIndex;
 
     for (int i = 0; i < moves.size(); i++) {
         board.makeMove(moves[i]);
@@ -77,7 +77,7 @@ int Bot::negaMaxIter(Board& board, int depth) {
 
     std::vector<Move> moves = generateMoves(board);
     if (!moves.size()) return terminalNodeEval(board);
-    int max = -9999;
+    int max = -9999999;
 
     for (Move move : moves) {
         board.makeMove(move);

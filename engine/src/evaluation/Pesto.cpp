@@ -221,7 +221,7 @@ int pestoEval(const Board& boardRef)
 int terminalNodeEval(const Board& boardRef) {
     if (isKingTargeted(boardRef)) {
         //is checkmate
-        return -9999;
+        return -9999999;
     }
     //stalemate
     return 0;

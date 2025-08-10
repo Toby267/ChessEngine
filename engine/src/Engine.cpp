@@ -81,7 +81,7 @@ void Engine::printASCIIBoard() {
         }
         std::cout << '\n';
     }
-    std::cout << "  A B C D E F G H" << '\n';
+    std::cout << "  A B C D E F G H" << "\n\n";
 }
 
 /**
