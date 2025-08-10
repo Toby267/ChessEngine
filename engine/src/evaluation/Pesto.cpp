@@ -188,7 +188,7 @@ void initPestoTables()
 int pestoEval(const Board& boardRef)
 {
     const std::array<int, 64>& board = boardRef.getMailboxBoard();
-    int side2move = !boardRef.getWhiteTurn();
+    int side2move = boardRef.getWhiteTurn();
     
     int mg[2];
     int eg[2];
@@ -210,8 +210,8 @@ int pestoEval(const Board& boardRef)
     }
 
     /* tapered eval */
-    int mgScore = mg[side2move] - mg[OTHER(side2move)];
-    int egScore = eg[side2move] - eg[OTHER(side2move)];
+    int mgScore = mg[OTHER(side2move)] - mg[side2move];
+    int egScore = eg[OTHER(side2move)] - eg[side2move];
     int mgPhase = gamePhase;
     if (mgPhase > 24) mgPhase = 24; /* in case of early promotion */
     int egPhase = 24 - mgPhase;
