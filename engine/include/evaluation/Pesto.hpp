@@ -8,3 +8,4 @@
 
 void initPestoTables();
 int pestoEval(const Board& boardRef);
+int terminalNodeEval(const Board& boardRef);

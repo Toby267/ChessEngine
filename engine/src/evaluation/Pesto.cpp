@@ -3,6 +3,7 @@
 
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
+#include "board/moveGeneration/MoveGenerator.hpp"
 
 #define FLIP(sq) ((sq)^56)
 #define OTHER(side) ((side)^ 1)
@@ -214,6 +215,14 @@ int pestoEval(const Board& boardRef)
     int mgPhase = gamePhase;
     if (mgPhase > 24) mgPhase = 24; /* in case of early promotion */
     int egPhase = 24 - mgPhase;
-    // std::cout << "who to move: " << side2move << ", score: " << (mgScore * mgPhase + egScore * egPhase) / 24 << '\n';
     return (mgScore * mgPhase + egScore * egPhase) / 24;
+}
+
+int terminalNodeEval(const Board& boardRef) {
+    if (isKingTargeted(boardRef)) {
+        //is checkmate
+        return -9999;
+    }
+    //stalemate
+    return 0;
 }

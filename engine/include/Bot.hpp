@@ -25,9 +25,8 @@ public:
 
 private:
     //private methods
-    Move negaMax(Board& board, int depth);
+    int negaMax(Move& moveRef, Board& board, int depth);
     int negaMaxIter(Board& board, int depth);
     
-
     //helper methods
 };

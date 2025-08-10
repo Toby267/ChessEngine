@@ -1,6 +1,5 @@
 #include "Bot.hpp"
 
-#include <climits>
 #include <vector>
 
 #include "board/Board.hpp"
@@ -39,7 +38,13 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove(Board& board) {    
-    return negaMax(board, 5);
+    Move move;
+    
+    for (int i = 1; i <= 5; i++)
+        if (negaMax(move, board, i) == 9999)
+            break;
+
+    return move;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,9 +52,9 @@ Move Bot::getBestMove(Board& board) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //depth >= 1
-Move Bot::negaMax(Board& board, int depth) {
+int Bot::negaMax(Move& moveRef, Board& board, int depth) {
     std::vector<Move> moves = generateMoves(board);
-    int max = INT_MIN, maxIndex;
+    int max = -9999, maxIndex;
 
     for (int i = 0; i < moves.size(); i++) {
         board.makeMove(moves[i]);
@@ -64,13 +69,15 @@ Move Bot::negaMax(Board& board, int depth) {
         board.unMakeMove(moves[i]);
     }
 
-    return moves[maxIndex];
+    moveRef = moves[maxIndex];
+    return max;
 }
 int Bot::negaMaxIter(Board& board, int depth) {
     if (depth == 0) return pestoEval(board);
 
     std::vector<Move> moves = generateMoves(board);
-    int max = INT_MIN;
+    if (!moves.size()) return terminalNodeEval(board);
+    int max = -9999;
 
     for (Move move : moves) {
         board.makeMove(move);
