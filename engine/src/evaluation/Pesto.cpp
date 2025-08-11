@@ -8,8 +8,12 @@
 #define FLIP(sq) ((sq)^56)
 #define OTHER(side) ((side)^ 1)
 
+int leafNodesEvaluated = 0;
+
 const int PAWN = 0;
 const int KING = 5;
+
+const int CHEKMATE_ABSOLUTE_SCORE = 9999999;
 
 const int mg_value[6] = { 82, 337, 365, 477, 1025,  0};
 const int eg_value[6] = { 94, 281, 297, 512,  936,  0};
@@ -187,6 +191,8 @@ void initPestoTables()
 
 int pestoEval(const Board& boardRef)
 {
+    leafNodesEvaluated++;
+
     const std::array<int, 64>& board = boardRef.getMailboxBoard();
     int side2move = boardRef.getWhiteTurn();
     
@@ -219,9 +225,11 @@ int pestoEval(const Board& boardRef)
 }
 
 int terminalNodeEval(const Board& boardRef) {
+    leafNodesEvaluated++;
+
     if (isKingTargeted(boardRef)) {
         //is checkmate
-        return -9999999;
+        return -CHEKMATE_ABSOLUTE_SCORE;
     }
     //stalemate
     return 0;
