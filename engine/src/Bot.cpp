@@ -50,7 +50,7 @@ Move Bot::getBestMove(Board board) {
     for (i = 1;; i++) {
         // std::cout << "about to do negaMax(" << i << ')' << ", completed negaMax(" << i-1 << ')' << '\n';
         if (negaMax(moves[i&1], board, i, -INT_MAX, INT_MAX) == CHEKMATE_ABSOLUTE_SCORE)
-            break;
+            return moves[i&1];
         if (searchDeadlineReached)
             break;
     }

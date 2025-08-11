@@ -7,7 +7,6 @@
  */
 
 extern const int CHEKMATE_ABSOLUTE_SCORE;
-extern int leafNodesEvaluated;
 
 void initPestoTables();
 int pestoEval(const Board& boardRef);
