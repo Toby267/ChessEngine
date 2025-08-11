@@ -34,14 +34,14 @@ std::vector<Move> generateMoves(Board& board) {
     const short                         indexOffset         = whiteTurn ? 0 : PieceType::BLACK-PieceType::WHITE;
     
     //generate moves
-    generateKingMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);
-    generateKnightMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KNIGHT + indexOffset], friendlyPieces);
-    generateRookMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_ROOK + indexOffset], occupied, friendlyPieces);
-    generateBishopMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_BISHOP + indexOffset], occupied, friendlyPieces);
-    generateQueenMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_QUEEN + indexOffset], occupied, friendlyPieces);
-    generatePawnMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], unoccupied, oppositionPieces);
-    generateCastlingMoves(moves, board, whiteTurn, occupied, castleData);
     generateEnPassantMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], enPassantData);
+    generateCastlingMoves(moves, board, whiteTurn, occupied, castleData);
+    generateKnightMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KNIGHT + indexOffset], friendlyPieces);
+    generatePawnMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_PAWN + indexOffset], unoccupied, oppositionPieces);
+    generateBishopMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_BISHOP + indexOffset], occupied, friendlyPieces);
+    generateRookMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_ROOK + indexOffset], occupied, friendlyPieces);
+    generateQueenMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_QUEEN + indexOffset], occupied, friendlyPieces);
+    generateKingMoves(moves, board, whiteTurn, bitBoards[PieceType::WHITE_KING + indexOffset], friendlyPieces);
 
     //filter out moves that leave the king in check
     std::vector<Move> retMoves;
