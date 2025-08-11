@@ -1,7 +1,6 @@
 #include "Bot.hpp"
 
 #include <climits>
-#include <iostream>
 #include <vector>
 #include <chrono>
 
@@ -90,7 +89,7 @@ int Bot::negaMax(Move& moveRef, Board& board, int depth, int alpha, int beta) {
 }
 int Bot::negaMaxIter(Board& board, int depth, int alpha, int beta) {
     //timer for iterative deepening, checks at a certain frequency, and sets searchDeadlineReached to true once the deadline is reached
-    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta;// effectively snipping this branch like in alpha-beta
+    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta. could also return a heuristic for this move
     
     if (depth == 0) return pestoEval(board);
 
