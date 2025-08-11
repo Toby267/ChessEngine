@@ -33,8 +33,8 @@ public:
 
 private:
     //private methods
-    int negaMax(Move& moveRef, Board& board, int depth);
-    int negaMaxIter(Board& board, int depth);
+    int negaMax(Move& moveRef, Board& board, int depth, int alpha, int beta);
+    int negaMaxIter(Board& board, int depth, int alpha, int beta);
     
     //helper methods
     bool checkTimer();
