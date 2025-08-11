@@ -90,7 +90,7 @@ int Bot::negaMax(Move& moveRef, Board& board, int depth, int alpha, int beta) {
 }
 int Bot::negaMaxIter(Board& board, int depth, int alpha, int beta) {
     //timer for iterative deepening, checks at a certain frequency, and sets searchDeadlineReached to true once the deadline is reached
-    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return INT_MAX; //haven't finished this move, so assume its bad
+    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta;// effectively snipping this branch like in alpha-beta
     
     if (depth == 0) return pestoEval(board);
 
