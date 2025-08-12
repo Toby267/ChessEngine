@@ -21,6 +21,7 @@ Engine::Engine() {
     runPerftTests(2);
 }
 Engine::Engine(UserColour isBotWhite) : isBotWhite(isBotWhite){
+    boardPositionCounter[board->getBitBoardsAsBitset()]++;
     playMatch();
 }
 
@@ -53,7 +54,9 @@ void Engine::playMatch() {
     if (gameState == GameState::Checkmate)
         std::cout << (board->getWhiteTurn() ? "Black Wins!" : "White Wins!") << '\n';
     else if (gameState == GameState::Stalemate)
-        std::cout << "Draw" << '\n';
+        std::cout << "Draw by stalemate" << '\n';
+    else if (gameState == GameState::DrawByRepetition)
+        std::cout << "Draw by repetition" << '\n';
 }
 
 /**
@@ -63,6 +66,7 @@ void Engine::playMatch() {
 */
 void Engine::parseFen(const std::string& FEN) {
     board->parseFen(FEN);
+    boardPositionCounter[board->getBitBoardsAsBitset()]++;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,10 +99,9 @@ GameState Engine::getCurrentGameState() {
 
     if (!moves.size())
         return isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
-    
-    //TODO: Draw by insufficient material
-    //TODO: Draw by 50 move rule
-    //TODO: Draw by repetition
+
+    if (++boardPositionCounter[board->getBitBoardsAsBitset()] == 3)
+        return GameState::DrawByRepetition;
 
     return GameState::Live;
 }

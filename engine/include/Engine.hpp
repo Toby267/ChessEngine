@@ -4,7 +4,9 @@
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
+#include <bitset>
 #include <string>
+#include <unordered_map>
 
 typedef bool UserColour;
 
@@ -12,9 +14,7 @@ enum GameState {
     Live,
     Checkmate,
     Stalemate,
-    InsufficientMaterial,
-    FiftyMoveRule,
-    Repetitions
+    DrawByRepetition
 };
 
 /**
@@ -29,6 +29,8 @@ private:
 
     const WhiteTurn isBotWhite = false;
     GameState gameState = GameState::Live;
+
+    std::unordered_map<std::bitset<64*14>, int> boardPositionCounter;
 
 public:
     //constructors/destructor

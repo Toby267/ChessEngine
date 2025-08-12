@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitset>
 #include <cstdint>
 #include <string>
 #include <array>
@@ -35,6 +36,7 @@ public:
 
     //getters/setters
     const std::array<uint64_t, 14>& getBitBoards() const;
+    const std::bitset<64*14> getBitBoardsAsBitset() const;
     const std::array<int, 64>& getMailboxBoard() const;
     const std::array<__uint128_t, 4>& getCastleData() const;
     const std::array<__uint128_t, 16>& getEnPassantData() const;
