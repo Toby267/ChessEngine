@@ -57,7 +57,6 @@ WhiteTurn Board::getWhiteTurn() const {
  */
 void Board::makeMove(const Move& move) {
     whiteTurn = !whiteTurn;
-    drawMoveCounter++;
     
     for (auto& i : castleData) {
         i <<= 1;
@@ -103,7 +102,6 @@ void Board::makeMove(const Move& move) {
  */
 void Board::unMakeMove(const Move& move) {
     whiteTurn = !whiteTurn;
-    drawMoveCounter--;
 
     for (auto& i : castleData) {
         i >>= 1;
