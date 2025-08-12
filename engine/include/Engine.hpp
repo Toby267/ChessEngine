@@ -5,6 +5,7 @@
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
 #include <bitset>
+#include <queue>
 #include <string>
 #include <unordered_map>
 
@@ -32,6 +33,8 @@ private:
 
     std::unordered_map<std::bitset<64*14>, int> boardPositionCounter;
 
+    std::queue<Move> previousMoves;
+    
 public:
     //constructors/destructor
     Engine();

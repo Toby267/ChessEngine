@@ -42,6 +42,7 @@ void Engine::playMatch() {
         printASCIIBoard();
 
         Move move = (board->getWhiteTurn() == isBotWhite) ? bot->getBestMove(*board) : getUserMove();
+        previousMoves.push(move);
         board->makeMove(move);
         board->cleanup();
         
@@ -57,6 +58,10 @@ void Engine::playMatch() {
         std::cout << "Draw by stalemate" << '\n';
     else if (gameState == GameState::DrawByRepetition)
         std::cout << "Draw by repetition" << '\n';
+
+    std::cout << '\n' << "Moves played: " << '\n';
+    for (; !previousMoves.empty(); previousMoves.pop())
+        std::cout << moveToString(previousMoves.front()) << '\n';
 }
 
 /**
@@ -191,14 +196,14 @@ bool Engine::validateMove(Move& move, std::string moveString) {
         return false;
 
     //extract start, end pos and promotionPiece as strings
-    std::string startPosStr         = moveString.substr(0, 2);
-    std::string endPosStr           = moveString.substr(2, 2);
-    std::string promotionPieceStr   = moveString.substr(4);
+    std::string     startPosStr         = moveString.substr(0, 2);
+    std::string     endPosStr           = moveString.substr(2, 2);
+    std::string     promotionPieceStr   = moveString.substr(4);
 
     //extract start, end pos and promotionPiece as enums
-    SquareIndex startPos            = SquareIndex(8 * (startPosStr[0] - 'a') + (startPosStr[1] - '1'));
-    SquareIndex endPos              = SquareIndex(8 * (endPosStr[0]   - 'a') + (endPosStr[1]   - '1'));
-    PieceType::Enum   promotionPiece      = PieceType::INVALID;
+    SquareIndex     startPos            = SquareIndex(8 * (startPosStr[0] - 'a') + (startPosStr[1] - '1'));
+    SquareIndex     endPos              = SquareIndex(8 * (endPosStr[0]   - 'a') + (endPosStr[1]   - '1'));
+    PieceType::Enum promotionPiece      = PieceType::INVALID;
 
     if (promotionPieceStr.size()) {
         switch (promotionPieceStr[0]) {

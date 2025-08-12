@@ -85,3 +85,4 @@ struct Move {
 };
 
 void printMove(const Move& move);
+std::string moveToString(const Move& move);
