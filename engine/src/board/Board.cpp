@@ -246,11 +246,9 @@ void Board::parseFen(const std::string& FEN) {
     }
 
     //parses the fifth part of the FEN
-    i += 3;
-    if (FEN[i+1] == ' ')
-        drawMoveCounter = FEN[i] - '0';
-    else
-        drawMoveCounter = 10 * (FEN[i] - '0') + (FEN[i+1] - '0');
+    for (i += 3; FEN[i] != ' '; i++) {
+        drawMoveCounter = 10 *drawMoveCounter + (FEN[i]-'0');
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
