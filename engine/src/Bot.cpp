@@ -46,16 +46,12 @@ Move Bot::getBestMove(Board board) {
     searchDeadlineReached = false;
     searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
     
-    int i;
-    for (i = 1;; i++) {
-        // std::cout << "about to do negaMax(" << i << ')' << ", completed negaMax(" << i-1 << ')' << '\n';
+    for (int i = 1;; i++) {
         if (negaMax(moves[i&1], board, i, -INT_MAX, INT_MAX) == CHEKMATE_ABSOLUTE_SCORE)
             return moves[i&1];
         if (searchDeadlineReached)
-            break;
+            return moves[!(i&1)];
     }
-
-    return moves[!(i&1)];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
