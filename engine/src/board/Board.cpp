@@ -138,6 +138,15 @@ void Board::unMakeMove(const Move& move) {
 }
 
 /**
+ * Used after completing a move, makes it so that there are no bit overflows after 64 full moves for castle data
+ * Don't use if you need to go back a move for perft or minimax
+ */
+void Board::cleanup() {
+    for (auto& rook : castleData)
+        if (rook) rook = 0b1;
+}
+
+/**
  * Sets up the board in its starting position
  */
 void Board::setDefaultBoard() {

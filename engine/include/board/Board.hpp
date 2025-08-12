@@ -45,6 +45,8 @@ public:
     void makeMove(const Move& move);
     void unMakeMove(const Move& move);
 
+    void cleanup();
+
     void setDefaultBoard();
     void resetBoard();
 

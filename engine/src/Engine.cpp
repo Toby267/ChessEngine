@@ -42,6 +42,7 @@ void Engine::playMatch() {
 
         Move move = (board->getWhiteTurn() == isBotWhite) ? bot->getBestMove(*board) : getUserMove();
         board->makeMove(move);
+        board->cleanup();
         
         gameState = getCurrentGameState();
         if (gameState != GameState::Live) break;
