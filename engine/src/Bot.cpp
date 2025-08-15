@@ -47,7 +47,7 @@ Move Bot::getBestMove() {
     searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
 
     for (int i = 1;; i++) {
-        // std::cout << "about to do negaMax(" << i << ')' << ", done negaMax(" << (i-1) << ')' << '\n';
+        std::cout << "about to do negaMax(" << i << ')' << ", done negaMax(" << (i-1) << ')' << '\n';
         pVariation pvLine;
         if (negaMax(i, -INT_MAX, INT_MAX, &pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
@@ -99,7 +99,10 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
 }
 
 void Bot::orderMoves(std::vector<Move>& moves) {
-
+    //TODO: move ordering based on pv tree
+    std::sort(moves.begin(), moves.end(), [this](const Move& a, const Move& b){
+        return a.heuristic > b.heuristic;
+    });
 }
 
 bool Bot::checkTimer() {

@@ -6,7 +6,7 @@
  * Contains the structs, enums and functions used to store and manipulate any possible chess move
  * 
  * Must keep the order for startPos, endPos and pieceType the same for NormalMove, PromotionMove, and CastleMove
- * for the genericupdateSpecialMoveStatus() method in Board.cpp
+ * for the generic updateSpecialMoveStatus() method in Board.cpp
  *
  * If you change their order in any way, use the MoveType specific methods in commit: b316dec916c7e2c140d3900867e1b1c7139a67c1
 */
@@ -52,6 +52,7 @@ struct CastleMove {
 
 struct Move {
     MoveType flag;
+    int heuristic; //used for basic move ordering
     union {
         NormalMove      normalMove;
         PromotionMove   promotionMove;
@@ -60,29 +61,42 @@ struct Move {
     };
 
     //default constructor
-    Move() : flag(MoveType(0)) {}
+    Move() : flag(NORMAL) {}
 
     //constructors for each move type
     Move(MoveType flag, NormalMove move) :
         flag(flag),
-        normalMove(move)
+        normalMove(move),
+        heuristic(move.killPieceType == PieceType::INVALID ? 0 : 3)
     {}
 
     Move(MoveType flag, PromotionMove move) :
         flag(flag),
-        promotionMove(move)
+        promotionMove(move),
+        heuristic(move.killPieceType == PieceType::INVALID ? 2 : 5)
     {}
 
     Move(MoveType flag, EnPassantMove move) :
         flag(flag),
-        enPassantMove(move)
+        enPassantMove(move),
+        heuristic(4)
     {}
 
     Move(MoveType flag, CastleMove move) :
         flag(flag),
-        castleMove(move)
+        castleMove(move),
+        heuristic(1)
     {}
 
     void print();
     std::string toString();
 };
+
+/*
+promotion capture       5
+en passant              4
+normal capture          3
+promotion non capture   2
+castle                  1
+normal non capture      0
+*/
