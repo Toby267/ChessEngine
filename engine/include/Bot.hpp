@@ -4,6 +4,11 @@
 #include "board/Move.hpp"
 #include <chrono>
 
+typedef struct pVariation {
+    int moveCount;
+    Move moves[15];
+} pVariation;
+
 /**
  * Class representing the Bot and its relevent data/ references.
  * 
@@ -14,6 +19,8 @@ class Bot {
 private:
     static bool isPestoInitialised;
 
+    Board& board;
+
     const std::chrono::milliseconds MAX_SEARCH_TIME_MS;
     const int SEARCH_TIMER_NODE_FREQUENCY;
 
@@ -23,18 +30,17 @@ private:
 
 public:
     //constructors/destructor
-    Bot();
+    Bot(Board& board);
     ~Bot();
 
     //getters/setters
 
     //public methods
-    Move getBestMove(Board board);
+    Move getBestMove();
 
 private:
     //private methods
-    int negaMax(Move& moveRef, Board& board, int depth, int alpha, int beta);
-    int negaMaxIter(Board& board, int depth, int alpha, int beta);
+    int negaMax(int depth, int alpha, int beta, pVariation* pline);
     
     //helper methods
     bool checkTimer();

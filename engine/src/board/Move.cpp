@@ -8,30 +8,30 @@
  * 
  * @param move the move to be printed
  */
-void printMove(const Move& move) {
-    switch (move.flag) {
+void Move::printMove() {
+    switch (flag) {
         case NORMAL: {
-            NormalMove m = move.normalMove;
+            NormalMove m = normalMove;
             std::cout << "Start pos: "<< m.startPos << ", End pos: " << m.endPos << '\n';
             std::cout << "Piece type: " << m.pieceType << ", Kill piece type: " << m.killPieceType  << '\n';
             break;
         }
         case PROMOTION: {
-            PromotionMove m = move.promotionMove;
+            PromotionMove m = promotionMove;
             std::cout << "Start pos: " << m.startPos << ", End pos: " << m.endPos << '\n';
             std::cout << "Old piece type: "  << m.oldPieceType << ", New piece type: " << m.newPieceType << '\n';
             std::cout << "Kill piece type: " << m.killPieceType << '\n';
             break;
         }
         case EN_PASSANT: {
-            EnPassantMove m = move.enPassantMove;
+            EnPassantMove m = enPassantMove;
             std::cout << "Start pos: " << m.startPos << ", End pos: " << m.endPos << '\n';
             std::cout << "Piece type: " << m.pieceType << '\n';
             std::cout << "Kill piece type: " << m.killPieceType << ", Kill piece square: " << m.killPieceType << '\n';
             break;
         }
         case CASTLE: {
-            CastleMove m = move.castleMove;
+            CastleMove m = castleMove;
             std::cout << "Primary start pos: " << m.primaryStartPos << ", Primary end pos: " << m.primaryEndPos << ", Primary piece type: " << m.primaryPieceType << '\n';
             std::cout << "Secondary start pos: " << m.secondaryStartPos << ", Secondary end pos: " << m.secondaryEndPos << ", Secondary piece type: " << m.secondaryPieceType << '\n';
             break;
@@ -42,14 +42,14 @@ void printMove(const Move& move) {
     }
 }
 
-std::string moveToString(const Move& move) {
+std::string Move::moveToString() {
     std::string moveStr     = {
-        (char)(move.normalMove.startPos / 8 + 'a'), (char)(move.normalMove.startPos % 8 + '1'),
-        (char)(move.normalMove.endPos   / 8 + 'a'), (char)(move.normalMove.endPos   % 8 + '1')
+        (char)(normalMove.startPos / 8 + 'a'), (char)(normalMove.startPos % 8 + '1'),
+        (char)(normalMove.endPos   / 8 + 'a'), (char)(normalMove.endPos   % 8 + '1')
     };
 
-    if (move.flag == PROMOTION) {    
-        switch (move.promotionMove.newPieceType) {
+    if (flag == PROMOTION) {    
+        switch (promotionMove.newPieceType) {
             case PieceType::WHITE_QUEEN:
             case PieceType::BLACK_QUEEN:
                 moveStr.append("queen");

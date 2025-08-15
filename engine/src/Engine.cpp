@@ -22,6 +22,7 @@ Engine::Engine() {
 }
 Engine::Engine(UserColour isBotWhite) : isBotWhite(isBotWhite){
     boardPositionCounter[board->getBitBoardsAsBitset()]++;
+    bot = new Bot(*board);
     playMatch();
 }
 
@@ -41,7 +42,7 @@ void Engine::playMatch() {
     for (;;) {
         printASCIIBoard();
 
-        Move move = (board->getWhiteTurn() == isBotWhite) ? bot->getBestMove(*board) : getUserMove();
+        Move move = (board->getWhiteTurn() == isBotWhite) ? bot->getBestMove() : getUserMove();
         previousMoves.push(move);
         board->makeMove(move);
         board->cleanup();
@@ -61,7 +62,7 @@ void Engine::playMatch() {
 
     std::cout << '\n' << "Moves played: " << '\n';
     for (; !previousMoves.empty(); previousMoves.pop())
-        std::cout << moveToString(previousMoves.front()) << '\n';
+        std::cout << previousMoves.front().moveToString() << '\n';
 }
 
 /**
@@ -296,7 +297,7 @@ uint64_t Engine::perftDivide(int depth) {
 
     std::cout << "=============================== " << "depth: " << depth << " ===============================" << '\n';
     for (int i = 0; i < moves.size(); i++) {
-        printMove(moves[i]);
+        moves[i].printMove();
         std::cout << "child moves: " << childMoveCount[i] << '\n' << '\n';
     }
 

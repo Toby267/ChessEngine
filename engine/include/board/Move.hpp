@@ -82,7 +82,7 @@ struct Move {
         flag(flag),
         castleMove(move)
     {}
-};
 
-void printMove(const Move& move);
-std::string moveToString(const Move& move);
+    void printMove();
+    std::string moveToString();
+};

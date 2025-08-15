@@ -26,7 +26,7 @@ enum GameState {
 class Engine {
 private:
     Board* board = new Board();
-    Bot* bot = new Bot();
+    Bot* bot;
 
     const WhiteTurn isBotWhite = false;
     GameState gameState = GameState::Live;
