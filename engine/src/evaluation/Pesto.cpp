@@ -6,20 +6,20 @@
 #include "board/moveGeneration/MoveGenerator.hpp"
 #include <climits>
 
-const int Eval::CHEKMATE_ABSOLUTE_SCORE = INT_MAX;
-
 #define FLIP(sq) ((sq)^56)
 #define OTHER(side) ((side)^ 1)
 
-const int PAWN = 0;
-const int KING = 5;
+const int Eval::CHEKMATE_ABSOLUTE_SCORE = INT_MAX;
 
-const int mg_value[6] = { 82, 337, 365, 477, 1025,  0};
-const int eg_value[6] = { 94, 281, 297, 512,  936,  0};
+const static int PAWN = 0;
+const static int KING = 5;
+
+const static int mg_value[6] = { 82, 337, 365, 477, 1025,  0};
+const static int eg_value[6] = { 94, 281, 297, 512,  936,  0};
 
 /* values from Rofchade: http://www.talkchess.com/forum3/viewtopic.php?f=2&t=68311&start=19 */
 /* values also reordered to match my board representation */
-const int mg_pawn_table[64] = {
+const static int mg_pawn_table[64] = {
     0, -35, -26, -27, -14, -6, 98, 0,
     0, -1, -4, -2, 13, 7, 134, 0,
     0, -20, -4, -5, 6, 26, 61, 0,
@@ -30,7 +30,7 @@ const int mg_pawn_table[64] = {
     0, -22, -12, -25, -23, -20, -11, 0
 };
 
-const int eg_pawn_table[64] = {
+const static int eg_pawn_table[64] = {
     0, 13, 4, 13, 32, 94, 178, 0,
     0, 8, 7, 9, 24, 100, 173, 0,
     0, 8, -6, -3, 13, 85, 158, 0,
@@ -41,7 +41,7 @@ const int eg_pawn_table[64] = {
     0, -7, -8, -1, 17, 84, 187, 0
 };
 
-const int mg_knight_table[64] = {
+const static int mg_knight_table[64] = {
     -105, -29, -23, -13, -9, -47, -73, -167,
     -21, -53, -9, 4, 17, 60, -41, -89,
     -58, -12, 12, 16, 19, 37, 72, -34,
@@ -52,7 +52,7 @@ const int mg_knight_table[64] = {
     -23, -19, -16, -8, 22, 44, -17, -107
 };
 
-const int eg_knight_table[64] = {
+const static int eg_knight_table[64] = {
     -29, -42, -23, -18, -17, -24, -25, -58,
     -51, -20, -3, -6, 3, -20, -8, -38,
     -23, -10, -1, 16, 22, 10, -25, -13,
@@ -63,7 +63,7 @@ const int eg_knight_table[64] = {
     -64, -44, -22, -18, -18, -41, -52, -99
 };
 
-const int mg_bishop_table[64] = {
+const static int mg_bishop_table[64] = {
     -33, 4, 0, -6, -4, -16, -26, -29,
     -3, 15, 15, 13, 5, 37, 16, 4,
     -14, 16, 15, 13, 19, 43, -18, -82,
@@ -74,7 +74,7 @@ const int mg_bishop_table[64] = {
     -21, 1, 10, 4, -2, -2, -47, -8
 };
 
-const int eg_bishop_table[64] = {
+const static int eg_bishop_table[64] = {
     -23, -14, -12, -6, -3, 2, -8, -14,
     -9, -18, -3, 3, 9, -8, -4, -21,
     -23, -7, 8, 13, 12, 0, 7, -11,
@@ -85,7 +85,7 @@ const int eg_bishop_table[64] = {
     -17, -27, -15, -9, 2, 4, -14, -24
 };
 
-const int mg_rook_table[64] = {
+const static int mg_rook_table[64] = {
     -19, -44, -45, -36, -24, -5, 27, 32,
     -13, -16, -25, -26, -11, 19, 32, 42,
     1, -20, -16, -12, 7, 26, 58, 32,
@@ -96,7 +96,7 @@ const int mg_rook_table[64] = {
     -26, -71, -33, -23, -20, 16, 44, 43
 };
 
-const int eg_rook_table[64] = {
+const static int eg_rook_table[64] = {
     -9, -6, -4, 3, 4, 7, 11, 13,
     2, -6, 0, 5, 3, 7, 13, 10,
     3, 0, -5, 8, 13, 7, 13, 18,
@@ -107,7 +107,7 @@ const int eg_rook_table[64] = {
     -20, -3, -16, -11, 2, -3, 3, 5
 };
 
-const int mg_queen_table[64] = {
+const static int mg_queen_table[64] = {
     -1, -35, -14, -9, -27, -13, -24, -28,
     -18, -8, 2, -26, -27, -17, -39, 0,
     -9, 11, -11, -9, -16, 7, -5, 29,
@@ -118,7 +118,7 @@ const int mg_queen_table[64] = {
     -50, 1, 5, -3, 1, 57, 54, 45
 };
 
-const int eg_queen_table[64] = {
+const static int eg_queen_table[64] = {
     -33, -22, -16, -18, 3, -20, -17, -9,
     -28, -23, -27, 28, 22, 6, 20, 22,
     -22, -30, 15, 19, 24, 9, 32, 22,
@@ -129,7 +129,7 @@ const int eg_queen_table[64] = {
     -41, -32, 5, 23, 36, 9, 0, 20
 };
 
-const int mg_king_table[64] = {
+const static int mg_king_table[64] = {
     -15, 1, -14, -49, -17, -9, 29, -65,
     36, 7, -14, -1, -20, 24, -1, 23,
     12, -8, -22, -27, -12, 2, -20, 16,
@@ -140,7 +140,7 @@ const int mg_king_table[64] = {
     14, 8, -27, -51, -36, -22, -29, 13
 };
 
-const int eg_king_table[64] = {
+const static int eg_king_table[64] = {
     -53, -27, -19, -18, -8, 10, -12, -74,
     -34, -11, -3, -4, 22, 17, 17, -35,
     -21, 4, 11, 21, 24, 23, 14, -18,
@@ -151,7 +151,7 @@ const int eg_king_table[64] = {
     -43, -17, -9, -11, 3, 13, 11, -17
 };
 
-const int* mg_pesto_table[6] =
+const static int* mg_pesto_table[6] =
 {
     mg_pawn_table,
     mg_knight_table,
@@ -161,7 +161,7 @@ const int* mg_pesto_table[6] =
     mg_king_table
 };
 
-const int* eg_pesto_table[6] =
+const static int* eg_pesto_table[6] =
 {
     eg_pawn_table,
     eg_knight_table,
@@ -172,8 +172,8 @@ const int* eg_pesto_table[6] =
 };
 
 const int gamephaseInc[12] = {0,0,1,1,1,1,2,2,4,4,0,0};
-int mg_table[12][64];
-int eg_table[12][64];
+static int mg_table[12][64];
+static int eg_table[12][64];
 
 void Eval::initPestoTables()
 {
