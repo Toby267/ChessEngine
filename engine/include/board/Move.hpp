@@ -83,6 +83,6 @@ struct Move {
         castleMove(move)
     {}
 
-    void printMove();
-    std::string moveToString();
+    void print();
+    std::string toString();
 };

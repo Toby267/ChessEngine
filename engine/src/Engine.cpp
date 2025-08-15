@@ -62,7 +62,7 @@ void Engine::playMatch() {
 
     std::cout << '\n' << "Moves played: " << '\n';
     for (; !previousMoves.empty(); previousMoves.pop())
-        std::cout << previousMoves.front().moveToString() << '\n';
+        std::cout << previousMoves.front().toString() << '\n';
 }
 
 /**
@@ -297,7 +297,7 @@ uint64_t Engine::perftDivide(int depth) {
 
     std::cout << "=============================== " << "depth: " << depth << " ===============================" << '\n';
     for (int i = 0; i < moves.size(); i++) {
-        moves[i].printMove();
+        moves[i].print();
         std::cout << "child moves: " << childMoveCount[i] << '\n' << '\n';
     }
 
