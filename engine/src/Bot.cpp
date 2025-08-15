@@ -45,15 +45,16 @@ Move Bot::getBestMove() {
     nodesSearched = 0;
     searchDeadlineReached = false;
     searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
-    
-    pVariation pvLists[2];
 
     for (int i = 1;; i++) {
         // std::cout << "about to do negaMax(" << i << ')' << ", done negaMax(" << (i-1) << ')' << '\n';
-        if (negaMax(i, -INT_MAX, INT_MAX, &pvLists[i&1]) == CHEKMATE_ABSOLUTE_SCORE)
-            return pvLists[i&1].moves[0];
+        pVariation pvLine;
+        if (negaMax(i, -INT_MAX, INT_MAX, &pvLine) == CHEKMATE_ABSOLUTE_SCORE)
+            return pvLine.moves[0];
         if (searchDeadlineReached)
-            return pvLists[!(i&1)].moves[0];
+            return principalVariation.moves[0];
+
+        principalVariation = pvLine;
     }
 }
 
@@ -61,23 +62,24 @@ Move Bot::getBestMove() {
 // * ---------------------------------------- [ PRIVATE METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int Bot::negaMax(int depth, int alpha, int beta, pVariation* pline) {
+int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
     //timer for iterative deepening, checks at a certain frequency, and sets searchDeadlineReached to true once the deadline is reached
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta. could also return a heuristic for this move
 
-    pVariation line;
+    pVariation childLine;
     if (depth == 0) {
-        pline->moveCount = 0;
+        parentLine->moveCount = 0;
         return pestoEval(board);
     }
 
     std::vector<Move> moves = generateMoves(board);
     if (!moves.size()) return terminalNodeEval(board);
+    orderMoves(moves);
 
     for (Move move : moves) {
         board.makeMove(move);
 
-        int eval = -negaMax(depth-1, -beta, -alpha, &line);
+        int eval = -negaMax(depth-1, -beta, -alpha, &childLine);
         
         board.unMakeMove(move);
 
@@ -87,13 +89,17 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* pline) {
         if (eval > alpha) {
             alpha = eval;
 
-            pline->moves[0] = move;
-            memcpy(pline->moves+1, line.moves, line.moveCount * sizeof(Move));
-            pline->moveCount = line.moveCount + 1;
+            parentLine->moves[0] = move;
+            memcpy(parentLine->moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
+            parentLine->moveCount = childLine.moveCount + 1;
         }
     }
 
     return alpha;
+}
+
+void Bot::orderMoves(std::vector<Move>& moves) {
+    
 }
 
 bool Bot::checkTimer() {

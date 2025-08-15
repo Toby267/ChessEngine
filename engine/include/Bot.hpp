@@ -3,10 +3,16 @@
 #include "board/Board.hpp"
 #include "board/Move.hpp"
 #include <chrono>
+#include <iostream>
 
 typedef struct pVariation {
     int moveCount;
     Move moves[15];
+
+    void print() {
+        for (int i = 0; i < moveCount; i++)
+            std::cout << moves[i].toString() << '\n';
+    }
 } pVariation;
 
 /**
@@ -20,6 +26,7 @@ private:
     static bool isPestoInitialised;
 
     Board& board;
+    pVariation principalVariation;
 
     const std::chrono::milliseconds MAX_SEARCH_TIME_MS;
     const int SEARCH_TIMER_NODE_FREQUENCY;
@@ -41,6 +48,7 @@ public:
 private:
     //private methods
     int negaMax(int depth, int alpha, int beta, pVariation* pline);
+    void orderMoves(std::vector<Move>& moves);
     
     //helper methods
     bool checkTimer();
