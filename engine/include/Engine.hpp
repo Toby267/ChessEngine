@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Bot.hpp"
+#include "bot/Bot.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"

@@ -1,9 +1,9 @@
 /* Modified from Ronald Friederich's code from https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function */
-#include "evaluation/Pesto.hpp"
+#include "bot/Eval.hpp"
 
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
-#include "board/moveGeneration/MoveGenerator.hpp"
+#include "moveGeneration/MoveGenerator.hpp"
 #include <climits>
 
 #define FLIP(sq) ((sq)^56)

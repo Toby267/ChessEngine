@@ -2,18 +2,9 @@
 
 #include "board/Board.hpp"
 #include "board/Move.hpp"
+#include "bot/PrincipalVariation.hpp"
+
 #include <chrono>
-#include <iostream>
-
-typedef struct pVariation {
-    int moveCount;
-    Move moves[15];
-
-    void print() {
-        for (int i = 0; i < moveCount; i++)
-            std::cout << moves[i].toString() << '\n';
-    }
-} pVariation;
 
 /**
  * Class representing the Bot and its relevent data/ references.

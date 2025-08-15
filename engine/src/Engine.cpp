@@ -7,11 +7,11 @@
 #include <string>
 #include <vector>
 
-#include "Bot.hpp"
+#include "bot/Bot.hpp"
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
-#include "board/moveGeneration/MoveGenerator.hpp"
+#include "moveGeneration/MoveGenerator.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //

@@ -1,5 +1,5 @@
 #include "board/BoardUtil.hpp"
-#include "board/moveGeneration/internals/MoveGeneratorInternals.hpp"
+#include "moveGeneration/MoveGeneratorInternals.hpp"
 
 /**
  * Returns if a specific square is being targeted by any pseduo legal move in a given position 

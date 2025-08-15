@@ -1,4 +1,4 @@
-#include "Bot.hpp"
+#include "bot/Bot.hpp"
 
 #include <climits>
 #include <cstring>
@@ -8,8 +8,9 @@
 
 #include "board/Board.hpp"
 #include "board/Move.hpp"
-#include "board/moveGeneration/MoveGenerator.hpp"
-#include "evaluation/Pesto.hpp"
+#include "bot/PrincipalVariation.hpp"
+#include "moveGeneration/MoveGenerator.hpp"
+#include "bot/Eval.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ STATIC MEMBERS ] ---------------------------------------- * //
