@@ -24,7 +24,7 @@ bool Bot::isPestoInitialised = false;
 Bot::Bot(Board& board) : board(board), MAX_SEARCH_TIME_MS(30000), SEARCH_TIMER_NODE_FREQUENCY(1024) {
     if (!isPestoInitialised) {
         isPestoInitialised = true;
-        initPestoTables();
+        Eval::initPestoTables();
     }
 }
 Bot::~Bot() {
@@ -49,7 +49,7 @@ Move Bot::getBestMove() {
     for (int i = 1;; i++) {
         // std::cout << "about to do negaMax(" << i << ')' << ", done negaMax(" << (i-1) << ')' << '\n';
         pVariation pvLine;
-        if (negaMax(i, -INT_MAX, INT_MAX, &pvLine) == CHEKMATE_ABSOLUTE_SCORE)
+        if (negaMax(i, -INT_MAX, INT_MAX, &pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
         if (searchDeadlineReached)
             return principalVariation.moves[0];
@@ -69,11 +69,11 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
     pVariation childLine;
     if (depth == 0) {
         parentLine->moveCount = 0;
-        return pestoEval(board);
+        return Eval::pestoEval(board);
     }
 
-    std::vector<Move> moves = generateMoves(board);
-    if (!moves.size()) return terminalNodeEval(board);
+    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    if (!moves.size()) return Eval::terminalNodeEval(board);
     orderMoves(moves);
 
     for (Move move : moves) {
@@ -99,7 +99,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
 }
 
 void Bot::orderMoves(std::vector<Move>& moves) {
-    
+
 }
 
 bool Bot::checkTimer() {

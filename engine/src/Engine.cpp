@@ -101,10 +101,10 @@ void Engine::printASCIIBoard() {
  * @return the current game state
  */
 GameState Engine::getCurrentGameState() {
-    std::vector<Move> moves = generateMoves(*board);
+    std::vector<Move> moves = MoveGeneration::generateMoves(*board);
 
     if (!moves.size())
-        return isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
+        return MoveGeneration::isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
 
     if (++boardPositionCounter[board->getBitBoardsAsBitset()] == 3)
         return GameState::DrawByRepetition;
@@ -164,7 +164,7 @@ bool Engine::validateMove(Move& move, std::string moveString) {
     }
 
     //check for a valid move with the given start pos and end pos
-    std::vector<Move> moves = generateMoves(*board);
+    std::vector<Move> moves = MoveGeneration::generateMoves(*board);
     for (auto& i : moves) {
         //if start and end positions don't match
         if (i.normalMove.startPos != startPos || i.normalMove.endPos != endPos)
@@ -257,7 +257,7 @@ uint64_t Engine::perft(int depth) {
     if (depth == 0)
         return  1ULL;
 
-    moves = generateMoves(*board);
+    moves = MoveGeneration::generateMoves(*board);
 
     for (auto& i : moves) {
         board->makeMove(i);
@@ -283,7 +283,7 @@ uint64_t Engine::perftDivide(int depth) {
     if (depth == 0)
         return  1ULL;
 
-    moves = generateMoves(*board);
+    moves = MoveGeneration::generateMoves(*board);
 
     for (auto& i : moves) {
         board->makeMove(i);

@@ -15,7 +15,7 @@
  * @param whiteTurn whether or not it is whites turn to move
  * @return a vector of valid moves
  */
-std::vector<Move> generateMoves(Board& board) {
+std::vector<Move> MoveGeneration::generateMoves(Board& board) {
     //return vector containing all moves converted into type Move.
     std::vector<Move> moves;
     moves.reserve(32);
@@ -69,7 +69,7 @@ std::vector<Move> generateMoves(Board& board) {
  * @param board the board
  * @return whether or not the king is being targeted
  */
-bool isKingTargeted(const Board& board) {
+bool MoveGeneration::isKingTargeted(const Board& board) {
     const std::array<uint64_t, 14>& bitBoards       = board.getBitBoards();
     const WhiteTurn                 whiteTurn       = board.getWhiteTurn();
     const uint64_t                  kingBitboard    = whiteTurn ? bitBoards[PieceType::WHITE_KING] : bitBoards[PieceType::BLACK_KING];

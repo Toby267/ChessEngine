@@ -6,13 +6,13 @@
 #include "board/moveGeneration/MoveGenerator.hpp"
 #include <climits>
 
+const int Eval::CHEKMATE_ABSOLUTE_SCORE = INT_MAX;
+
 #define FLIP(sq) ((sq)^56)
 #define OTHER(side) ((side)^ 1)
 
 const int PAWN = 0;
 const int KING = 5;
-
-const int CHEKMATE_ABSOLUTE_SCORE = INT_MAX;
 
 const int mg_value[6] = { 82, 337, 365, 477, 1025,  0};
 const int eg_value[6] = { 94, 281, 297, 512,  936,  0};
@@ -175,7 +175,7 @@ const int gamephaseInc[12] = {0,0,1,1,1,1,2,2,4,4,0,0};
 int mg_table[12][64];
 int eg_table[12][64];
 
-void initPestoTables()
+void Eval::initPestoTables()
 {
     int pc, p, sq;
     for (p = PAWN, pc = PieceType::WHITE_PAWN; p <= KING; pc += 2, p++) {
@@ -188,7 +188,7 @@ void initPestoTables()
     }
 }
 
-int pestoEval(const Board& boardRef) {
+int Eval::pestoEval(const Board& boardRef) {
     const std::array<int, 64>& board = boardRef.getMailboxBoard();
     int side2move = boardRef.getWhiteTurn();
     
@@ -220,9 +220,9 @@ int pestoEval(const Board& boardRef) {
     return (mgScore * mgPhase + egScore * egPhase) / 24;
 }
 
-int terminalNodeEval(const Board& boardRef) {
-    if (isKingTargeted(boardRef)) {
-        //is checkmate
+int Eval::terminalNodeEval(const Board& boardRef) {
+    if (MoveGeneration::isKingTargeted(boardRef)) {
+        //checkmate
         return -CHEKMATE_ABSOLUTE_SCORE;
     }
     //stalemate
