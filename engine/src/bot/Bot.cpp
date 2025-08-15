@@ -49,7 +49,7 @@ Move Bot::getBestMove() {
 
     for (int i = 1;; i++) {
         std::cout << "about to do negaMax(" << i << ')' << ", done negaMax(" << (i-1) << ')' << '\n';
-        pVariation pvLine;
+        pVariation pvLine; //TODO: move this to the heap, to avoid stack overflow
         if (negaMax(i, -INT_MAX, INT_MAX, &pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
         if (searchDeadlineReached)

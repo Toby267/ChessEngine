@@ -74,6 +74,6 @@ std::string Move::toString() const {
     return moveStr;
 }
 
-bool Move::operator==(const Move& other) const {
-
+bool Move::operator ==(const Move& other) const {
+    //TODO: this
 }

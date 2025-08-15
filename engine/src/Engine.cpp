@@ -106,8 +106,9 @@ GameState Engine::getCurrentGameState() {
     if (!moves.size())
         return MoveGeneration::isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
 
-    if (++boardPositionCounter[board->getBitBoardsAsBitset()] == 3)
-        return GameState::DrawByRepetition;
+    //TODO: fix 3 move repetition
+    // if (++boardPositionCounter[board->getBitBoardsAsBitset()] == 3)
+        // return GameState::DrawByRepetition;
 
     return GameState::Live;
 }
