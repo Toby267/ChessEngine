@@ -48,17 +48,14 @@ public:
     void parseFen(const std::string& FEN);
 
 private:
-    //private methods
+    //play match methods
     void printASCIIBoard();
-
     GameState getCurrentGameState();
     Move getUserMove();
-    
-    void runPerftTests(int rigor);
-
-    //helper methods
     bool validateMove(Move& move, std::string moveString);
-
+    
+    //perft methods
+    void runPerftTests(int rigor);
     uint64_t perft(int depth);
     uint64_t perftDivide(int depth);
 };
