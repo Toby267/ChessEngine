@@ -88,8 +88,10 @@ struct Move {
         heuristic(1)
     {}
 
-    void print();
-    std::string toString();
+    void print() const;
+    std::string toString() const;
+
+    bool operator==(const Move& other) const;
 };
 
 /*

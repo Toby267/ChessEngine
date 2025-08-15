@@ -6,5 +6,5 @@ typedef struct pVariation {
     int moveCount;
     Move moves[15];
 
-    void print();
+    void print() const;
 } pVariation;

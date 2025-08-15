@@ -8,7 +8,7 @@
  * 
  * @param move the move to be printed
  */
-void Move::print() {
+void Move::print() const {
     switch (flag) {
         case NORMAL: {
             NormalMove m = normalMove;
@@ -42,7 +42,7 @@ void Move::print() {
     }
 }
 
-std::string Move::toString() {
+std::string Move::toString() const {
     std::string moveStr     = {
         (char)(normalMove.startPos / 8 + 'a'), (char)(normalMove.startPos % 8 + '1'),
         (char)(normalMove.endPos   / 8 + 'a'), (char)(normalMove.endPos   % 8 + '1')
@@ -72,4 +72,8 @@ std::string Move::toString() {
     }
 
     return moveStr;
+}
+
+bool Move::operator==(const Move& other) const {
+
 }
