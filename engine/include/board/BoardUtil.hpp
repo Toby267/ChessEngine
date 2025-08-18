@@ -27,7 +27,7 @@ namespace PieceType {
     const int WHITE = 0;
     const int BLACK = 1;
 
-    const std::string pieceChars[] = {"o", "♟", "♙", "♞", "♘", "♝", "♗", "♜", "♖", "♛", "♕", "♚", "♔"};
+    const std::string pieceChars[] = {"-", "♟", "♙", "♞", "♘", "♝", "♗", "♜", "♖", "♛", "♕", "♚", "♔"};
     const std::string enumOrder = "PpNnBbRrQqKk";
 
     enum Enum {
