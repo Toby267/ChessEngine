@@ -38,7 +38,7 @@ public:
 
 private:
     //private methods
-    int negaMax(int depth, int alpha, int beta, pVariation* pline);
+    int negaMax(int depth, int alpha, int beta, pVariation& pline);
     void orderMoves(std::vector<Move>& moves);
     
     //helper methods

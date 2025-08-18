@@ -49,8 +49,8 @@ Move Bot::getBestMove() {
 
     for (int i = 1;; i++) {
         std::cout << "about to do negaMax(" << i << ')' << ", done negaMax(" << (i-1) << ')' << '\n';
-        pVariation pvLine; //TODO: move this to the heap, to avoid stack overflow
-        if (negaMax(i, -INT_MAX, INT_MAX, &pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
+        pVariation pvLine;
+        if (negaMax(i, -INT_MAX, INT_MAX, pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
         if (searchDeadlineReached)
             return principalVariation.moves[0];
@@ -63,24 +63,22 @@ Move Bot::getBestMove() {
 // * ---------------------------------------- [ PRIVATE METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
+int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     //timer for iterative deepening, checks at a certain frequency, and sets searchDeadlineReached to true once the deadline is reached
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta. could also return a heuristic for this move
 
-    pVariation childLine;
-    if (depth == 0) {
-        parentLine->moveCount = 0;
-        return Eval::pestoEval(board);
-    }
+    if (depth == 0) return Eval::pestoEval(board);
 
     std::vector<Move> moves = MoveGeneration::generateMoves(board);
     if (!moves.size()) return Eval::terminalNodeEval(board);
     orderMoves(moves);
 
+    pVariation childLine;
+
     for (Move move : moves) {
         board.makeMove(move);
 
-        int eval = -negaMax(depth-1, -beta, -alpha, &childLine);
+        int eval = -negaMax(depth-1, -beta, -alpha, childLine);
         
         board.unMakeMove(move);
 
@@ -90,13 +88,9 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
         if (eval > alpha) {
             alpha = eval;
 
-            std::cout << "enter" << '\n';
-            parentLine->moves[0] = move;
-            std::cout << "1" << '\n';
-            memcpy(parentLine->moves+1, childLine.moves, childLine.moveCount * sizeof(Move)); //seg fault
-            std::cout << "2" << '\n';
-            parentLine->moveCount = childLine.moveCount + 1;
-            std::cout << "exit" << '\n';
+            parentLine.moves[0] = move;
+            memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
+            parentLine.moveCount = childLine.moveCount + 1;
         }
     }
 
@@ -104,7 +98,6 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
 }
 
 void Bot::orderMoves(std::vector<Move>& moves) {
-    // std::cout << "enter" << '\n';
     for (Move& m : moves) {
         for (int i = 0; i < principalVariation.moveCount; i++) {
             if (m == principalVariation.moves[i]) {
@@ -117,7 +110,6 @@ void Bot::orderMoves(std::vector<Move>& moves) {
     std::sort(moves.begin(), moves.end(), [](const Move& a, const Move& b){
         return a.heuristic > b.heuristic;
     });
-    // std::cout << "exit" << '\n';
 }
 
 bool Bot::checkTimer() {
