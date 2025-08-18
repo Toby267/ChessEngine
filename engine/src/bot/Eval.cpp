@@ -9,7 +9,8 @@
 #define FLIP(sq) ((sq)^56)
 #define OTHER(side) ((side)^ 1)
 
-const int Eval::CHEKMATE_ABSOLUTE_SCORE = INT_MAX;
+//must be different to whatever you pass into negamax as alpha/beta
+const int Eval::CHEKMATE_ABSOLUTE_SCORE = INT_MAX/10;
 
 const static int PAWN = 0;
 const static int KING = 5;

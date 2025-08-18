@@ -67,25 +67,25 @@ struct Move {
     Move(MoveType flag, NormalMove move) :
         flag(flag),
         normalMove(move),
-        heuristic(move.killPieceType == PieceType::INVALID ? 0 : 3)
+        heuristic(move.killPieceType == PieceType::INVALID ? 1 : 4)
     {}
 
     Move(MoveType flag, PromotionMove move) :
         flag(flag),
         promotionMove(move),
-        heuristic(move.killPieceType == PieceType::INVALID ? 2 : 5)
+        heuristic(move.killPieceType == PieceType::INVALID ? 3 : 6)
     {}
 
     Move(MoveType flag, EnPassantMove move) :
         flag(flag),
         enPassantMove(move),
-        heuristic(4)
+        heuristic(5)
     {}
 
     Move(MoveType flag, CastleMove move) :
         flag(flag),
         castleMove(move),
-        heuristic(1)
+        heuristic(2)
     {}
 
     void print() const;
@@ -95,10 +95,10 @@ struct Move {
 };
 
 /*
-promotion capture       5
-en passant              4
-normal capture          3
-promotion non capture   2
-castle                  1
-normal non capture      0
+promotion capture       6
+en passant              5
+normal capture          4
+promotion non capture   3
+castle                  2
+normal non capture      1
 */

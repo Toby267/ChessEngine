@@ -100,8 +100,16 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
 }
 
 void Bot::orderMoves(std::vector<Move>& moves) {
-    //TODO: move ordering based on pv tree
-    std::sort(moves.begin(), moves.end(), [this](const Move& a, const Move& b){
+    for (Move& m : moves) {
+        for (int i = 0; i < principalVariation.moveCount; i++) {
+            if (m == principalVariation.moves[i]) {
+                m.heuristic *= 10;
+                break;
+            }
+        }
+    }
+
+    std::sort(moves.begin(), moves.end(), [](const Move& a, const Move& b){
         return a.heuristic > b.heuristic;
     });
 }

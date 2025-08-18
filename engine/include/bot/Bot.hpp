@@ -17,7 +17,7 @@ private:
     static bool isPestoInitialised;
 
     Board& board;
-    pVariation principalVariation;
+    pVariation principalVariation; //could this just be a vector?
 
     const std::chrono::milliseconds MAX_SEARCH_TIME_MS;
     const int SEARCH_TIMER_NODE_FREQUENCY;
