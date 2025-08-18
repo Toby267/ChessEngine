@@ -90,9 +90,13 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
         if (eval > alpha) {
             alpha = eval;
 
+            std::cout << "enter" << '\n';
             parentLine->moves[0] = move;
-            memcpy(parentLine->moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
+            std::cout << "1" << '\n';
+            memcpy(parentLine->moves+1, childLine.moves, childLine.moveCount * sizeof(Move)); //seg fault
+            std::cout << "2" << '\n';
             parentLine->moveCount = childLine.moveCount + 1;
+            std::cout << "exit" << '\n';
         }
     }
 
@@ -100,6 +104,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation* parentLine) {
 }
 
 void Bot::orderMoves(std::vector<Move>& moves) {
+    // std::cout << "enter" << '\n';
     for (Move& m : moves) {
         for (int i = 0; i < principalVariation.moveCount; i++) {
             if (m == principalVariation.moves[i]) {
@@ -112,6 +117,7 @@ void Bot::orderMoves(std::vector<Move>& moves) {
     std::sort(moves.begin(), moves.end(), [](const Move& a, const Move& b){
         return a.heuristic > b.heuristic;
     });
+    // std::cout << "exit" << '\n';
 }
 
 bool Bot::checkTimer() {
