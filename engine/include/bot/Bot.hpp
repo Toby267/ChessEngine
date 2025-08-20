@@ -15,6 +15,7 @@
 class Bot {
 private:
     static bool isPestoInitialised;
+    static bool isZobristInitialised;
 
     Board& board;
     pVariation principalVariation; //could this just be a vector?

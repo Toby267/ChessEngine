@@ -17,6 +17,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool Bot::isPestoInitialised = false;
+bool Bot::isZobristInitialised = false;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
@@ -26,6 +27,11 @@ Bot::Bot(Board& board) : board(board), MAX_SEARCH_TIME_MS(30000), SEARCH_TIMER_N
     if (!isPestoInitialised) {
         isPestoInitialised = true;
         Eval::initPestoTables();
+    }
+
+    if (!isZobristInitialised) {
+        isZobristInitialised = true;
+        Zobrist::initZobristValues();
     }
 }
 Bot::~Bot() {
