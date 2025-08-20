@@ -2,7 +2,7 @@
 
 #include "board/Board.hpp"
 #include "board/Move.hpp"
-#include "bot/PrincipalVariation.hpp"
+#include "bot/BotUtil.hpp"
 
 #include <chrono>
 

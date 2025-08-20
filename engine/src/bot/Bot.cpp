@@ -8,7 +8,7 @@
 
 #include "board/Board.hpp"
 #include "board/Move.hpp"
-#include "bot/PrincipalVariation.hpp"
+#include "bot/BotUtil.hpp"
 #include "moveGeneration/MoveGenerator.hpp"
 #include "bot/Eval.hpp"
 
@@ -51,7 +51,7 @@ Move Bot::getBestMove() {
         std::cout << "about to do negaMax(" << i << ')' << ", done negaMax(" << (i-1) << ')' << '\n';
         pVariation pvLine;
         if (negaMax(i, -INT_MAX, INT_MAX, pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
-            return pvLine.moves[0];
+            return pvLine.moves[0]; //TODO: can trust partial negaMax as transposition table used
         if (searchDeadlineReached)
             return principalVariation.moves[0];
 
@@ -66,7 +66,7 @@ Move Bot::getBestMove() {
 int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     //timer for iterative deepening, checks at a certain frequency, and sets searchDeadlineReached to true once the deadline is reached
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta. could also return a heuristic for this move
-
+                                                                                                        //TODO: return transposition table prediction
     if (depth == 0) return Eval::pestoEval(board);
 
     std::vector<Move> moves = MoveGeneration::generateMoves(board);
@@ -91,6 +91,8 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
             parentLine.moves[0] = move;
             memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
             parentLine.moveCount = childLine.moveCount + 1;
+
+            //TODO: add to transposition table
         }
     }
 
@@ -100,6 +102,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
 void Bot::orderMoves(std::vector<Move>& moves) {
     for (Move& m : moves) {
         for (int i = 0; i < principalVariation.moveCount; i++) {
+            //TODO: if in transposition table: m.heuristic = transposition table score
             if (m == principalVariation.moves[i]) {
                 m.heuristic *= 10;
                 break;
