@@ -5,7 +5,6 @@
 #include "bot/BotUtil.hpp"
 
 #include <chrono>
-#include <tuple>
 
 /**
  * Class representing the Bot and its relevent data/ references.
