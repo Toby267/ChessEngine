@@ -25,11 +25,14 @@ void Zobrist::initZobristValues() {
 }
 
 int generateKey(const Board& board) {
-    //side to move
+    
     uint64_t retval = 0;
     
     //castling rights
     //en passant rights
+
+    //side to move
+    if (!board.getWhiteTurn()) retval ^= zobristValues[769];
     
     //piece values
     const std::array<int, 64>& mailboxBoard = board.getMailboxBoard();
