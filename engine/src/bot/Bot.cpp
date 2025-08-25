@@ -98,6 +98,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     return alpha;
 }
 
+//credit due to the chess programming wiki for this function
 int Bot::quiescence(int alpha, int beta) {
     int staticEval = Eval::pestoEval(board);
 
