@@ -39,8 +39,10 @@ public:
 private:
     //private methods
     int negaMax(int depth, int alpha, int beta, pVariation& pline);
-    void orderMoves(std::vector<Move>& moves);
-    
+    int quiescence(int alpha, int beta);
+
     //helper methods
+    void orderMoves(std::vector<Move>& moves);
+    void orderMovesQuiescence(std::vector<Move>& moves);
     bool checkTimer();
 };

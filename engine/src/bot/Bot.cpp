@@ -64,10 +64,9 @@ Move Bot::getBestMove() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
-    //timer for iterative deepening, checks at a certain frequency, and sets searchDeadlineReached to true once the deadline is reached
-    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta. could also return a heuristic for this move
+    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
                                                                                                         //TODO: return transposition table prediction
-    if (depth == 0) return Eval::pestoEval(board);
+    if (depth == 0) return quiescence(alpha, beta);
 
     std::vector<Move> moves = MoveGeneration::generateMoves(board);
     if (!moves.size()) return Eval::terminalNodeEval(board);
@@ -99,6 +98,42 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     return alpha;
 }
 
+//credit due to the chess programming wiki for this function
+int Bot::quiescence(int alpha, int beta) {
+    int staticEval = Eval::pestoEval(board);
+
+    //stand pat
+    int bestValue = staticEval;
+    if (bestValue >= beta)
+        return bestValue;
+    if  (bestValue > alpha)
+        alpha = bestValue;
+
+    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    if (moves.size()) orderMovesQuiescence(moves);
+
+    for (Move move : moves) {
+        board.makeMove(move);
+
+        int eval = -quiescence(-beta, -alpha);
+
+        board.unMakeMove(move);
+
+        if (eval >= beta)
+            return eval;
+        if (eval > bestValue)
+            bestValue = eval;
+        if (eval > alpha)
+            alpha = eval;
+    }
+
+    return bestValue;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ----------------------------------------- [ HELPER METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Bot::orderMoves(std::vector<Move>& moves) {
     for (Move& m : moves) {
         for (int i = 0; i < principalVariation.moveCount; i++) {
@@ -109,6 +144,16 @@ void Bot::orderMoves(std::vector<Move>& moves) {
             }
         }
     }
+
+    std::sort(moves.begin(), moves.end(), [](const Move& a, const Move& b){
+        return a.heuristic > b.heuristic;
+    });
+}
+
+void Bot::orderMovesQuiescence(std::vector<Move>& moves) {
+    moves.erase(std::remove_if(moves.begin(), moves.end(), [](const Move& m) {
+        return m.heuristic <= 3;
+    }), moves.end());
 
     std::sort(moves.begin(), moves.end(), [](const Move& a, const Move& b){
         return a.heuristic > b.heuristic;
