@@ -8,7 +8,7 @@
 
 #include "board/Board.hpp"
 #include "board/Move.hpp"
-#include "bot/BotUtil.hpp"
+#include "bot/PrincipalVariation.hpp"
 #include "moveGeneration/MoveGenerator.hpp"
 #include "bot/Eval.hpp"
 
@@ -48,10 +48,9 @@ Move Bot::getBestMove() {
     searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
 
     for (int i = 1;; i++) {
-        std::cout << "about to do negaMax(" << i << ')' << ", done negaMax(" << (i-1) << ')' << '\n';
         pVariation pvLine;
         if (negaMax(i, -INT_MAX, INT_MAX, pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
-            return pvLine.moves[0]; //TODO: can trust partial negaMax as transposition table used
+            return pvLine.moves[0];
         if (searchDeadlineReached)
             return principalVariation.moves[0];
 
@@ -65,7 +64,7 @@ Move Bot::getBestMove() {
 
 int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
-                                                                                                        //TODO: return transposition table prediction
+    
     if (depth == 0) return quiescence(alpha, beta);
 
     std::vector<Move> moves = MoveGeneration::generateMoves(board);
@@ -90,8 +89,6 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
             parentLine.moves[0] = move;
             memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
             parentLine.moveCount = childLine.moveCount + 1;
-
-            //TODO: add to transposition table
         }
     }
 
@@ -102,7 +99,6 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
 int Bot::quiescence(int alpha, int beta) {
     int staticEval = Eval::pestoEval(board);
 
-    //stand pat
     int bestValue = staticEval;
     if (bestValue >= beta)
         return bestValue;
@@ -137,7 +133,6 @@ int Bot::quiescence(int alpha, int beta) {
 void Bot::orderMoves(std::vector<Move>& moves) {
     for (Move& m : moves) {
         for (int i = 0; i < principalVariation.moveCount; i++) {
-            //TODO: if in transposition table: m.heuristic = transposition table score
             if (m == principalVariation.moves[i]) {
                 m.heuristic *= 10;
                 break;
