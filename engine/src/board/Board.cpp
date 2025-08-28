@@ -300,6 +300,10 @@ std::string Board::toFen() {
         if (!castleData[i]) fen += rooks[i];
     if (rooks.find(fen.back()) == -1) fen += '-';
     
+    /*
+    BUG: it should only add this if the en passant piece can be captured by en passant
+         not just if it has just moved twice
+    */
     //add en passant data
     fen += ' ';
     for (int i = 0; i < enPassantData.size(); i++) {

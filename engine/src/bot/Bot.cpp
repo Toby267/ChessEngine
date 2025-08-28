@@ -2,6 +2,8 @@
 
 #include <climits>
 #include <cstring>
+#include <fstream>
+#include <iostream>
 #include <vector>
 #include <chrono>
 
@@ -21,7 +23,7 @@ bool Bot::isPestoInitialised = false;
 // * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Bot::Bot(Board& board) : board(board), MAX_SEARCH_TIME_MS(30000), SEARCH_TIMER_NODE_FREQUENCY(1024) {
+Bot::Bot(Board& board) : board(board), MAX_SEARCH_TIME_MS(10000), SEARCH_TIMER_NODE_FREQUENCY(1024) {
     if (!isPestoInitialised) {
         isPestoInitialised = true;
         Eval::initPestoTables();
@@ -42,6 +44,38 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove() {
+    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    std::vector<Move> bookMoves;
+
+    std::string books[] = { "ficsgamesdb_2023_titled_nomovetimes_104852.epd" };
+
+    std::string line;
+
+    for (const auto& move : moves) {
+        board.makeMove(move);
+        std::string fen = board.toFen();
+
+        for (std::string& bookStr : books) {
+            std::ifstream book(RESOURCES_PATH + bookStr);
+
+            if (!book.is_open()) continue;
+
+            while (getline(book, line)) {
+                if (fen == line.substr(0, fen.size())) {
+                    bookMoves.push_back(move);
+                }
+            }
+        }
+
+        board.unMakeMove(move);
+    }
+
+    if (!bookMoves.empty()) {
+        //choose and play a random book move
+    }
+
+    std::cout << "book moves found: " << bookMoves.size() << '\n';
+    
     nodesSearched = 0;
     searchDeadlineReached = false;
     searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
