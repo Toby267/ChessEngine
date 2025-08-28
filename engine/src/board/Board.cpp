@@ -295,9 +295,10 @@ std::string Board::toFen() {
 
     //add castle data
     fen += ' ';
-    char rooks[] = "KQkq";
+    std::string rooks = "KQkq";
     for (int i = 0; i < castleData.size(); i++)
         if (!castleData[i]) fen += rooks[i];
+    if (rooks.find(fen.back()) == -1) fen += '-';
     
     //add en passant data
     fen += ' ';
