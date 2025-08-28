@@ -53,6 +53,7 @@ public:
     void resetBoard();
 
     void parseFen(const std::string& FEN);
+    std::string toFen();
 
 private:
     //private methods

@@ -258,6 +258,62 @@ void Board::parseFen(const std::string& FEN) {
     }
 }
 
+std::string Board::toFen() {
+    std::string fen = "";
+    
+    int emptyCount = 0;
+    for (int row = 7; row >= 0; row--) {
+        for (int column = 0; column <= 7; column++) {
+            int i = 8*column + row;
+        
+            //handle empty square
+            if (mailBoxBoard[i] == PieceType::INVALID) {
+                emptyCount++;
+                continue;
+            }
+
+            //handle empty count
+            if (emptyCount) {
+                fen += std::to_string(emptyCount);
+                emptyCount = 0;
+            }
+
+            //handle normal piece
+            fen += PieceType::enumOrder[mailBoxBoard[i]];
+        }
+
+        //handle column row change
+        if (emptyCount)
+            fen += std::to_string(emptyCount);
+        emptyCount = 0;
+        fen += '/';
+    }
+
+    //add active colour data
+    fen.back() = ' ';
+    fen += whiteTurn ? 'w' : 'b';
+
+    //add castle data
+    fen += ' ';
+    char rooks[] = "KQkq";
+    for (int i = 0; i < castleData.size(); i++)
+        if (!castleData[i]) fen += rooks[i];
+    
+    //add en passant data
+    fen += ' ';
+    for (int i = 0; i < enPassantData.size(); i++) {
+        if (enPassantData[i]&1) {
+            fen += (i%8)+'a';
+            fen += i < 8 ? '3' : '6';
+        }
+    }
+
+    //remove white space
+    while (fen.back() == ' ') fen.pop_back();
+
+    return fen;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ---------------------------------------- [ PRIVATE METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
