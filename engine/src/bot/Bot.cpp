@@ -47,7 +47,7 @@ Move Bot::getBestMove() {
     std::vector<Move> moves = MoveGeneration::generateMoves(board);
     std::vector<Move> bookMoves;
 
-    std::string books[] = { "ficsgamesdb_2023_titled_nomovetimes_104852.epd" };
+    std::string books[] = { "ficsgamesdb_2013_chess2000_nomovetimes_104866.epd" };
 
     std::string line;
 
