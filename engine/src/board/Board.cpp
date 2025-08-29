@@ -7,6 +7,7 @@
 
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
+#include "moveGeneration/MoveGenerator.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
@@ -300,18 +301,25 @@ std::string Board::toFen() {
         if (!castleData[i]) fen += rooks[i];
     if (rooks.find(fen.back()) == -1) fen += '-';
     
-    /*
-    BUG: it should only add this if the en passant piece can be captured by en passant
-         not just if it has just moved twice
-    */
+    //add en passant data
+    // fen += ' ';
+    // for (int i = 0; i < enPassantData.size(); i++) {
+        // if (enPassantData[i]&1) {
+            // fen += (i%8)+'a';
+            // fen += i < 8 ? '3' : '6';
+        // }
+    // }
+
     //add en passant data
     fen += ' ';
-    for (int i = 0; i < enPassantData.size(); i++) {
-        if (enPassantData[i]&1) {
-            fen += (i%8)+'a';
-            fen += i < 8 ? '3' : '6';
+    for (const Move& m : MoveGeneration::generateMoves(*this)) {
+        if (m.flag == EN_PASSANT) {
+            fen += m.toString().substr(2, 2);
+            break;
         }
     }
+    if (fen.back() == ' ')
+        fen += '-';
 
     //remove white space
     while (fen.back() == ' ') fen.pop_back();

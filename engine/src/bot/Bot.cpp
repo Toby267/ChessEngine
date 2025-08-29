@@ -1,6 +1,8 @@
 #include "bot/Bot.hpp"
 
+#include <algorithm>
 #include <climits>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -44,37 +46,10 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove() {
-    std::vector<Move> moves = MoveGeneration::generateMoves(board);
-    std::vector<Move> bookMoves;
-
-    std::string books[] = { "ficsgamesdb_2013_chess2000_nomovetimes_104866.epd" };
-
-    std::string line;
-
-    for (const auto& move : moves) {
-        board.makeMove(move);
-        std::string fen = board.toFen();
-
-        for (std::string& bookStr : books) {
-            std::ifstream book(RESOURCES_PATH + bookStr);
-
-            if (!book.is_open()) continue;
-
-            while (getline(book, line)) {
-                if (fen == line.substr(0, fen.size())) {
-                    bookMoves.push_back(move);
-                }
-            }
-        }
-
-        board.unMakeMove(move);
-    }
-
-    if (!bookMoves.empty()) {
-        //choose and play a random book move
-    }
-
-    std::cout << "book moves found: " << bookMoves.size() << '\n';
+    //should only query this if in the early game
+    Move move;
+    if (queryOpeningBook("ficsgamesdb_2015_standard2000_nomovetimes_105398.epd", move))
+        return move;
     
     nodesSearched = 0;
     searchDeadlineReached = false;
@@ -157,6 +132,38 @@ int Bot::quiescence(int alpha, int beta) {
     }
 
     return bestValue;
+}
+
+bool Bot::queryOpeningBook(std::string bookName, Move& move) {
+    std::ifstream book(RESOURCES_PATH + bookName);
+    if (!book.is_open()) return false;
+    
+    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    std::vector<Move> bookMoves;
+
+    for (const auto& m : moves) {
+        board.makeMove(m);
+
+        std::string fen = board.toFen();
+        std::string line;
+
+        book.clear();
+        book.seekg(0);
+
+        while (getline(book, line))
+            if (fen == line.substr(0, fen.size()))
+                if (std::count(bookMoves.begin(), bookMoves.end(), m) == 0)
+                    bookMoves.push_back(m);
+
+        board.unMakeMove(m);
+    }
+
+    if (bookMoves.empty())
+        return false;
+
+    srand(time(0));
+    move = bookMoves[rand()%bookMoves.size()];
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

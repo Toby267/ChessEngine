@@ -40,6 +40,7 @@ private:
     //private methods
     int negaMax(int depth, int alpha, int beta, pVariation& pline);
     int quiescence(int alpha, int beta);
+    bool queryOpeningBook(std::string bookName, Move& move);
 
     //helper methods
     void orderMoves(std::vector<Move>& moves);
