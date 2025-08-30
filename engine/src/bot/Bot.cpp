@@ -46,9 +46,8 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove() {
-    //should only query this if in the early game
     Move move;
-    if (queryOpeningBook("ficsgamesdb_2015_standard2000_nomovetimes_105398.epd", move))
+    if (queryOpeningBook("opening_book_augmented_probabilities.epd", move))
         return move;
     
     nodesSearched = 0;
