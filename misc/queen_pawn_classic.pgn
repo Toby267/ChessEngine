@@ -1,0 +1,143 @@
+[Event "DSB-03.Kongress"]
+[Site "Nuremberg"]
+[Date "1883.??.??"]
+[Round "2"]
+[White "Von Bardeleben, Curt"]
+[Black "Winawer, Szymon"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D04"]
+
+
+1.d4 d5 2.Nf3 Nf6 3.e3  1/2-1/2
+
+[Event "Karlsbad"]
+[Site "Karlsbad"]
+[Date "1911.??.??"]
+[Round "?"]
+[White "Kostic, Boris"]
+[Black "Nimzowitsch, Aaron "]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D13"]
+
+1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.cxd5 cxd5 5.Nc3  1/2-1/2
+
+[Event "ARG-ch m"]
+[Site "Buenos Aires"]
+[Date "1935.??.??"]
+[Round "10"]
+[White "Grau, Roberto"]
+[Black "Piazzini, Luis Roberto"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D19"]
+
+1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bf5  1/2-1/2
+
+[Event "DSB-15.Kongress"]
+[Site "Nuremberg"]
+[Date "1906.??.??"]
+[Round "14"]
+[White "Tarrasch, Siegbert"]
+[Black "Janowsky, Dawid Markelowicz"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D27"]
+
+1.d4 d5 2.c4 dxc4 3.Nf3 Nf6 4.e3 e6 5.Bxc4 c5  1/2-1/2
+
+[Event "DSB-05.Kongress"]
+[Site "Frankfurt"]
+[Date "1887.??.??"]
+[Round "18"]
+[White "Blackburne, Joseph Henry"]
+[Black "Gunsberg, Isidor"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D31"]
+
+1.d4 d5 2.c4 e6 3.Nc3 c6 4.Nf3 dxc4  1/2-1/2
+
+[Event "Ostende"]
+[Site "Ostende"]
+[Date "1907.??.??"]
+[Round "1"]
+[White "Marshall, Frank James"]
+[Black "Chigorin, Mikhail"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D35"]
+
+1.d4 d5 2.c4 e6 3.Nc3 c6 4.cxd5 exd5  1/2-1/2
+
+[Event "USA-06.Congress"]
+[Site "New York"]
+[Date "1889.??.??"]
+[Round "25"]
+[White "Blackburne, Joseph Henry"]
+[Black "Burille, Constant Fedinand"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D37"]
+
+1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Nf3 Be7 5.Bf4  1/2-1/2
+
+[Event "USA-01.Congress"]
+[Site "New York"]
+[Date "1857.??.??"]
+[Round "2"]
+[White "Fiske, Daniel"]
+[Black "Marache, N."]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D40"]
+
+1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Nf3 c5 5.e3 Nc6  1/2-1/2
+
+[Event "Barcelona sim"]
+[Site "Barcelona"]
+[Date "1928.??.??"]
+[Round "?"]
+[White "Alekhine, Alexander"]
+[Black "Ribera Arnal, Angel"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D52"]
+
+1.d4 d5 2.c4 e6 3.Nf3 Nf6 4.Nc3 c6 5.Bg5  1/2-1/2
+
+[Event "New York"]
+[Site "New York"]
+[Date "1894.??.??"]
+[Round "9"]
+[White "Pillsbury, Harry Nelson"]
+[Black "Albin, Adolf"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D46"]
+
+1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Nf3 c6 5.e3  1/2-1/2
+
+[Event "Vienna"]
+[Site "Vienna"]
+[Date "1873.??.??"]
+[Round "1"]
+[White "Heral, Josef"]
+[Black "Paulsen, Louis"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D53"]
+
+1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Be7  1/2-1/2

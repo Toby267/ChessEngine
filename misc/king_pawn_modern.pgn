@@ -1,0 +1,298 @@
+[Event "Paris m2"]
+[Site "Paris"]
+[Date "1859.??.??"]
+[Round "3"]
+[White "De Riviere, Jules Arnous"]
+[Black "Journoud, Paul"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B01"]
+
+1.e4 d5 2.exd5 Qxd5 3.Nc3 Qa5  1/2-1/2
+
+[Event "Nuremberg"]
+[Site "Nuremberg"]
+[Date "1896.??.??"]
+[Round "?"]
+[White "Janowsky, Dawid Markelowicz"]
+[Black "Blackburne, Joseph Henry"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B01"]
+
+1.e4 d5 2.exd5 Nf6 3.d4  1/2-1/2
+
+[Event "Teplitz-Schoenau"]
+[Site "Teplitz-Schoenau"]
+[Date "1922.??.??"]
+[Round "5"]
+[White "Mieses, Jacques"]
+[Black "Kostic, Boris"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B02"]
+
+1.e4 Nf6 2.Nc3 d5  1/2-1/2
+
+[Event "Moscow"]
+[Site "Moscow"]
+[Date "1925.??.??"]
+[Round "?"]
+[White "Zubarev, Nikolay"]
+[Black "Gruenfeld, Ernst"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B01"]
+
+1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.c4 Nb6 5.exd6  1/2-1/2
+
+[Event "Bratislava"]
+[Site "Bratislava"]
+[Date "1957.??.??"]
+[Round "6"]
+[White "Fuchs, Reinhart"]
+[Black "Sandor, Bela"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B06"]
+
+1.e4 g6 2.d4 Bg7 3.Nc3 d6  1/2-1/2
+
+[Event "GER-ch"]
+[Site "Bad Oeynhausen"]
+[Date "1939.??.??"]
+[Round "13"]
+[White "Kohler, Anton"]
+[Black "Lokvenc, Josef"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B08"]
+
+1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Nf3  1/2-1/2
+
+[Event "Karlsbad"]
+[Site "Karlsbad"]
+[Date "1923.??.??"]
+[Round "?"]
+[White "Tarrasch, Siegbert"]
+[Black "Reti, Richard"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B10"]
+
+1.e4 c6 2.Nc3 d5 3.Nf3  1/2-1/2
+
+[Event "DSB-18.Kongress"]
+[Site "Breslau"]
+[Date "1912.??.??"]
+[Round "1"]
+[White "Mieses, Jacques"]
+[Black "Schlechter, Carl"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B13"]
+
+1.e4 c6 2.d4 d5 3.exd5 cxd5 4.c4  1/2-1/2
+
+[Event "London"]
+[Site "London"]
+[Date "1899.??.??"]
+[Round "19"]
+[White "Lasker, Emanuel"]
+[Black "Cohn, Wilhelm"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B18"]
+
+1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Bf5  1/2-1/2
+
+[Event "DSB-02.Kongress"]
+[Site "Berlin"]
+[Date "1881.??.??"]
+[Round "2"]
+[White "Paulsen, Louis"]
+[Black "Noa, Josef"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C02"]
+
+1.e4 e6 2.d4 d5 3.e5 c5 4.c3  1/2-1/2
+
+[Event "New York sim"]
+[Site "New York"]
+[Date "1896.??.??"]
+[Round "?"]
+[White "Steinitz, William"]
+[Black "Enschede, C."]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C05"]
+
+1.e4 e6 2.d4 d5 3.Nd2 Nf6  1/2-1/2
+
+[Event "London m2"]
+[Site "London"]
+[Date "1866.??.??"]
+[Round "5"]
+[White "Steinitz, William"]
+[Black "Bird, Henry Edward"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C10"]
+
+1.e4 e6 2.d4 d5 3.Nc3 dxe4 4.Nxe4  1/2-1/2
+
+[Event "Haag olm"]
+[Site "Haag"]
+[Date "1928.??.??"]
+[Round "?"]
+[White "Schonmann, W."]
+[Black "Nagy, Geza"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C17"]
+
+1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.e5 c5  1/2-1/2
+
+[Event "Vienna"]
+[Site "Vienna"]
+[Date "1898.??.??"]
+[Round "?"]
+[White "Janowsky, Dawid Markelowicz"]
+[Black "Maroczy, Geza"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C10"]
+
+1.e4 e6 2.d4 d5 3.Nc3 Nf6 4.Bg5 dxe4  1/2-1/2
+
+[Event "CZE-AUT"]
+[Site "Prague"]
+[Date "1949.??.??"]
+[Round "1"]
+[White "Lokvenc, Josef"]
+[Black "Kottnauer, Cenek"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B22"]
+
+1.e4 c5 2.d4 cxd4 3.c3  1/2-1/2
+
+[Event "Duras 60 mem "]
+[Site "Prague"]
+[Date "1942.??.??"]
+[Round "5"]
+[White "Alekhine, Alexander"]
+[Black "Foltys, Jan"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B22"]
+
+1.e4 c5 2.c3 Nf6  1/2-1/2
+
+[Event "DSB-02.Kongress"]
+[Site "Berlin"]
+[Date "1881.??.??"]
+[Round "17"]
+[White "Riemann, Fritz"]
+[Black "Paulsen, Louis"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B23"]
+
+1.e4 c5 2.Nc3 Nc6 3.g3  1/2-1/2
+
+[Event "Heidelberg"]
+[Site "Heidelberg"]
+[Date "1949.??.??"]
+[Round "8"]
+[White "O'Kelly de Galway, Alberic"]
+[Black "Kieninger, Georg"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B33"]
+
+1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 e5 6.Ndb5 d6  1/2-1/2
+
+[Event "DSB-03.Kongress"]
+[Site "Nuremberg"]
+[Date "1883.??.??"]
+[Round "4"]
+[White "Leffmann, Karl"]
+[Black "Von Bardeleben, Curt"]
+[Result "0-1"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B46"]
+
+1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 a6 5.Nc3  1/2-1/2
+
+[Event "London-B"]
+[Site "London"]
+[Date "1899.??.??"]
+[Round "?"]
+[White "Marco, Georg"]
+[Black "Mieses, Jacques"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B45"]
+
+1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 Nc6 5.Nc3  1/2-1/2
+
+[Event "Leningrad/Moscow"]
+[Site "Leningrad"]
+[Date "1939.??.??"]
+[Round "16"]
+[White "Smyslov, Vassily"]
+[Black "Rabinovich, Ilya Leontievich"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B77"]
+
+1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 6.Be3 Bg7 7.f3  1/2-1/2
+
+[Event "Moscow-ch"]
+[Site "Moscow"]
+[Date "1947.??.??"]
+[Round "?"]
+[White "Panov, Vasily N"]
+[Black "Aronin, Lev Solomonovich"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B66"]
+
+1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 Nc6 6.Bg5  1/2-1/2
+
+[Event "Venice"]
+[Site "Venice"]
+[Date "1949.??.??"]
+[Round "15"]
+[White "Gligoric, Svetozar"]
+[Black "Kottnauer, Cenek"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B80"]
+
+1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6 6.Bg5  1/2-1/2
