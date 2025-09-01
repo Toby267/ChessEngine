@@ -1,0 +1,181 @@
+[Event "London m"]
+[Site "London"]
+[Date "1849.??.??"]
+[Round "1"]
+[White "Loewe, Edward"]
+[Black "Kennedy, Hugh Alexander"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C01"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 1/2-1/2
+
+[Event "England cg"]
+[Site "England"]
+[Date "1875.??.??"]
+[Round "?"]
+[White "Blackburne/Zuckertort"]
+[Black "Potter/Steinitz"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C45"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 1/2-1/2
+
+[Event "London"]
+[Site "London"]
+[Date "1899.??.??"]
+[Round "19"]
+[White "Lasker, Emanuel"]
+[Black "Cohn, Wilhelm"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B18"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 1/2-1/2
+
+[Event "Haag olm"]
+[Site "Haag"]
+[Date "1928.??.??"]
+[Round "?"]
+[White "Schonmann, W."]
+[Black "Nagy, Geza"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C17"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 1/2-1/2
+
+[Event "Vienna"]
+[Site "Vienna"]
+[Date "1898.??.??"]
+[Round "?"]
+[White "Janowsky, Dawid Markelowicz"]
+[Black "Maroczy, Geza"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C10"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 dxe4 1/2-1/2
+
+[Event "DSB-05.Kongress"]
+[Site "Frankfurt"]
+[Date "1887.??.??"]
+[Round "18"]
+[White "Blackburne, Joseph Henry"]
+[Black "Gunsberg, Isidor"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D31"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c6 4. Nf3 dxc4 1/2-1/2
+
+[Event "Ostende"]
+[Site "Ostende"]
+[Date "1907.??.??"]
+[Round "1"]
+[White "Marshall, Frank James"]
+[Black "Chigorin, Mikhail"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D35"]
+
+1. d4 d5 2. c4 e6 3. Nc3 c6 4. cxd5 exd5 1/2-1/2
+
+[Event "Vienna"]
+[Site "Vienna"]
+[Date "1873.??.??"]
+[Round "1"]
+[White "Heral, Josef"]
+[Black "Paulsen, Louis"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "D53"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 1/2-1/2
+
+[Event "Vienna"]
+[Site "Vienna"]
+[Date "1898.??.??"]
+[Round "?"]
+[White "Burn, Amos"]
+[Black "Blackburne, Joseph Henry"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "A56"]
+
+1. d4 Nf6 2. c4 c5 3. d5 e5 4. Nc3 d6 1/2-1/2
+
+[Event "DSB-24.Kongress"]
+[Site "Breslau"]
+[Date "1925.??.??"]
+[Round "1"]
+[White "Gruenfeld, Ernst"]
+[Black "Nimzowitsch, Aaron "]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "A46"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Ba6 1/2-1/2
+
+[Event "Trebitsch mem11"]
+[Site "Vienna"]
+[Date "1927.04.03"]
+[Round "8"]
+[White "Hoenlinger, Baldur"]
+[Black "Lokvenc, Josef"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "E32"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 O-O 1/2-1/2
+
+[Event "Teplitz-Schoenau"]
+[Site "Teplitz-Schoenau"]
+[Date "1922.??.??"]
+[Round "5"]
+[White "Rubinstein, Akiba"]
+[Black "Gruenfeld, Ernst"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "E28"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. e3 O-O 1/2-1/2
+
+[Event "DSB-21.Kongress"]
+[Site "Hamburg"]
+[Date "1921.??.??"]
+[Round "7"]
+[White "John, Walter"]
+[Black "Zander, Otto"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "A36"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 1/2-1/2
+
+[Event "URS-ch04"]
+[Site "Leningrad"]
+[Date "1925.??.??"]
+[Round "17"]
+[White "Levenfish, Grigory"]
+[Black "Rabinovich, Abram"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "E62"]
+
+1. c4 Nf6 2. Nf3 g6 3. g3 Bg7 4. Bg2 O-O 1/2-1/2

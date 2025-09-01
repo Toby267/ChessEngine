@@ -1,0 +1,90 @@
+[Event "London m1"]
+[Site "London"]
+[Date "1841.??.??"]
+[Round "?"]
+[White "Staunton, Howard"]
+[Black "Cochrane, John Miles"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C50"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 1/2-1/2
+
+[Event "approx."]
+[Site "?"]
+[Date "1625.??.??"]
+[Round "?"]
+[White "Greco, Gioacchino"]
+[Black "Analysis\ Analyse"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C54"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 1/2-1/2
+
+[Event "Paris m2"]
+[Site "Paris"]
+[Date "1859.??.??"]
+[Round "3"]
+[White "De Riviere, Jules Arnous"]
+[Black "Journoud, Paul"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B01"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 1/2-1/2
+
+[Event "Bratislava"]
+[Site "Bratislava"]
+[Date "1957.??.??"]
+[Round "6"]
+[White "Fuchs, Reinhart"]
+[Black "Sandor, Bela"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "B06"]
+
+1. e4 g6 2. d4 Bg7 3. Nc3 d6 1/2-1/2
+
+[Event "New York sim"]
+[Site "New York"]
+[Date "1896.??.??"]
+[Round "?"]
+[White "Steinitz, William"]
+[Black "Enschede, C."]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "C05"]
+
+1. e4 e6 2. d4 d5 3. Nd2 Nf6 1/2-1/2
+
+[Event "Marianske Lazne zt"]
+[Site "Marianske Lazne"]
+[Date "1961.08.01"]
+[Round "5"]
+[White "Szabo, Laszlo"]
+[Black "Sliwa, Bogdan"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "A33"]
+
+1. c4 c5 2. Nc3 Nf6 3. Nf3 Nc6 1/2-1/2
+
+[Event "DSB-15.Kongress"]
+[Site "Nuremberg"]
+[Date "1906.??.??"]
+[Round "16"]
+[White "Swiderski, Rudolf"]
+[Black "Marshall, Frank James"]
+[Result "1/2-1/2"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "A28"]
+
+1. c4 e5 2. Nc3 Nf6 3. Nf3 Nc6 1/2-1/2

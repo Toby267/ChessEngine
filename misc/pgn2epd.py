@@ -18,7 +18,7 @@ def pgn_to_epd(bookname):
     with open(epdname, "w") as f:
         for epd in epds:
             f.write(epd + "\n")
-    print(f"Wrote the converted book to {epdname}.")
+    print(f"Wrote the converted book to {epdname}")
 
 
 if __name__ == "__main__":
@@ -26,4 +26,4 @@ if __name__ == "__main__":
         pgn_to_epd(sys.argv[1])
     else:
         print(f"Usage: python {sys.argv[0]} <book.pgn>")
-        print("\nConverts a .pgn into an .epd book, keeping the order intact.")
+        print("\nConverts a .pgn into an .epd book, keeping the order intact")

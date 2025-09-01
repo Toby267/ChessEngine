@@ -47,7 +47,9 @@ Bot::~Bot() {
  */
 Move Bot::getBestMove() {
     Move move;
-    if (queryOpeningBook("opening_book_augmented_probabilities.epd", move))
+    //TODO: split opening book into multiple each for a different opening length
+    //probe them in order from longest to shortest
+    if (queryOpeningBook("opening_book_full_augmented_probabilities.epd", move))
         return move;
     
     nodesSearched = 0;
