@@ -21,6 +21,12 @@
 
 bool Bot::isPestoInitialised = false;
 
+const std::string Bot::OPENING_BOOKS[] = {
+    "opening_book_21_moves.epd","opening_book_16_moves.epd", "opening_book_14_moves.epd", "opening_book_13_moves.epd", "opening_book_12_moves.epd", "opening_book_11_moves.epd",
+    "opening_book_10_moves.epd", "opening_book_9_moves.epd", "opening_book_8_moves.epd", "opening_book_7_moves.epd", "opening_book_6_moves.epd", "opening_book_5_moves.epd",
+    "opening_book_4_moves.epd", "opening_book_3_moves.epd"
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,11 +53,10 @@ Bot::~Bot() {
  */
 Move Bot::getBestMove() {
     Move move;
-    //TODO: split opening book into multiple each for a different opening length
-    //probe them in order from longest to shortest
-    if (queryOpeningBook("opening_book_full_augmented_probabilities.epd", move))
-        return move;
-    
+    for (const std::string book : OPENING_BOOKS)
+        if (queryOpeningBook(book, move))
+            return move;
+
     nodesSearched = 0;
     searchDeadlineReached = false;
     searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
