@@ -5,7 +5,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <future>
 #include <iostream>
+#include <queue>
+#include <thread>
 #include <vector>
 #include <chrono>
 
@@ -20,6 +23,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool Bot::isPestoInitialised = false;
+const int Bot::NUM_THREADS = std::thread::hardware_concurrency();
+std::counting_semaphore<> Bot::threadsAvailable(NUM_THREADS);
 
 const std::string Bot::OPENING_BOOKS[] = {
     "opening_book_21_moves.epd","opening_book_16_moves.epd", "opening_book_14_moves.epd", "opening_book_13_moves.epd", "opening_book_12_moves.epd", "opening_book_11_moves.epd",
@@ -52,6 +57,8 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove() {
+    std::cout << "threads: " << NUM_THREADS << '\n';
+    
     Move move;
     for (const std::string book : OPENING_BOOKS)
         if (queryOpeningBook(book, move))
@@ -87,7 +94,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
 
     pVariation childLine;
 
-    for (Move move : moves) {
+    for (const Move& move : moves) {
         board.makeMove(move);
 
         int eval = -negaMax(depth-1, -beta, -alpha, childLine);
@@ -109,6 +116,88 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     return alpha;
 }
 
+void Bot::negaMaxConcurrentPromoise(int depth, int alpha, int beta, pVariation& parentLine, Board* b, std::promise<int>) {}
+
+int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board* b) {
+    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
+    
+    if (depth == 0) return quiescence(alpha, beta);
+
+    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    if (!moves.size()) return Eval::terminalNodeEval(board);
+    orderMoves(moves);
+
+    pVariation childLine;
+
+    std::vector<std::future<int>> evals;
+    std::vector<int> intEvals;
+    std::vector<std::promise<int>> evalPromises;
+    std::vector<std::thread> threads;
+
+    /*
+    TODO:   don't know how to pass in the board to new threads, should it be a pointer? and reference? a normal variable?
+                                                                should it be heap allocated? stack allocated?
+            all other arguments are fine
+    
+    TODO:   how do i make and unmake moves for the new boards?
+    
+    TODO:   use std::async or std::promise to get the return value from the concurrent calls
+    */
+
+    for (int movesLeft = moves.size(); movesLeft > 0;) {
+        while (threadsAvailable.try_acquire()) {
+            //need to make and unmake the move
+
+            //method 1:
+            evals.push_back(std::async(std::launch::async, &Bot::negaMaxConcurrent, this, depth-1, -beta, -alpha, std::ref(childLine), b));
+            
+            //method 2:
+            evals.push_back(std::async(std::launch::async, [&, this]() {
+                int i = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b);
+                threadsAvailable.release();
+                return 1;
+            }));
+
+            //method 3:
+            threads.emplace_back([&, this]() {
+                intEvals.push_back(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+                threadsAvailable.release();
+            });
+
+            //method 4:
+            threads.emplace_back([&, this]() {
+                negaMaxConcurrentPromoise(depth-1, -beta, -alpha, childLine, b, std::move(evalPromises[moves.size()-movesLeft]));
+                threadsAvailable.release();
+            });
+
+            movesLeft--;
+        }
+        //need to make and unmake the move
+        intEvals.push_back(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+        movesLeft--; //what if a different thread completes first? then the order of evals won't match the order of moves...
+        
+        for (std::thread& t : threads) {
+            t.join();
+            threadsAvailable.release();//use this for method 1 (any method that doesn't have a lambda for this)
+        }
+    }
+
+    for (int i = 0; i < moves.size(); i++) {
+        if (intEvals[i] >= beta) {
+            return beta;
+        }
+        if (intEvals[i] > alpha) {
+            alpha = intEvals[i];
+
+            parentLine.moves[0] = moves[i];
+            memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
+            parentLine.moveCount = childLine.moveCount + 1;
+        }
+    }
+
+    return alpha;
+}
+
 //credit due to the chess programming wiki for this function
 int Bot::quiescence(int alpha, int beta) {
     int staticEval = Eval::pestoEval(board);
@@ -122,7 +211,7 @@ int Bot::quiescence(int alpha, int beta) {
     std::vector<Move> moves = MoveGeneration::generateMoves(board);
     if (moves.size()) orderMovesQuiescence(moves);
 
-    for (Move move : moves) {
+    for (const Move& move : moves) {
         board.makeMove(move);
 
         int eval = -quiescence(-beta, -alpha);

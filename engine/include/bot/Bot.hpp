@@ -5,6 +5,8 @@
 #include "bot/PrincipalVariation.hpp"
 
 #include <chrono>
+#include <future>
+#include <semaphore>
 
 /**
  * Class representing the Bot and its relevent data/ references.
@@ -16,6 +18,8 @@ class Bot {
 private:
     static bool isPestoInitialised;
     static const std::string OPENING_BOOKS[];
+    static const int NUM_THREADS;
+    static std::counting_semaphore<> threadsAvailable;
 
     Board& board;
     pVariation principalVariation; //could this just be a vector?
@@ -39,7 +43,9 @@ public:
 
 private:
     //private methods
-    int negaMax(int depth, int alpha, int beta, pVariation& pline);
+    int negaMax(int depth, int alpha, int beta, pVariation& parentLine);
+    void negaMaxConcurrentPromoise(int depth, int alpha, int beta, pVariation& parentLine, Board* b, std::promise<int>);
+    int negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board* b);
     int quiescence(int alpha, int beta);
     bool queryOpeningBook(std::string bookName, Move& move);
 
