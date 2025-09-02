@@ -5,7 +5,6 @@
 #include "bot/PrincipalVariation.hpp"
 
 #include <chrono>
-#include <future>
 #include <semaphore>
 
 /**

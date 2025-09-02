@@ -1,14 +1,11 @@
 #include "bot/Bot.hpp"
 
 #include <algorithm>
-#include <array>
 #include <climits>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <future>
 #include <iostream>
-#include <queue>
 #include <thread>
 #include <vector>
 #include <chrono>
@@ -140,6 +137,7 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
                 Board bb(b); //make a new board, and make the move, don't need to unmake it afterwards
                 bb.makeMove(moves[movesCompleted]);
                 evals[movesCompleted] = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb); //pass in a copy of the board
+                //Do I need a mutex here? or is it fine since I'm accessing different parts of the vector?
                 threadsAvailable.release(); //handle semaphore
             });
 
@@ -157,6 +155,12 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
         }
     }
 
+    /*
+    Should i move this logic within the lambda for each thread?
+    It'll definitely be more complex but will it be more efficient?
+    Maybe the overhead of mutexes and memcpy will be too much?
+    */
+    /* can just do evals.max() to find the maximum value then compare that to beta and alpha without looping through each one */
     //handle data returned from recursive calls
     for (int i = 0; i < moves.size(); i++) {
         if (evals[i] >= beta) {
