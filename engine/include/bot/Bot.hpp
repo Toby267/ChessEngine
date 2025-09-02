@@ -44,8 +44,7 @@ public:
 private:
     //private methods
     int negaMax(int depth, int alpha, int beta, pVariation& parentLine);
-    void negaMaxConcurrentPromoise(int depth, int alpha, int beta, pVariation& parentLine, Board* b, std::promise<int>);
-    int negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board* b);
+    int negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b);
     int quiescence(int alpha, int beta);
     bool queryOpeningBook(std::string bookName, Move& move);
 

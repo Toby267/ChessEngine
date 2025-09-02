@@ -1,6 +1,7 @@
 #include "bot/Bot.hpp"
 
 #include <algorithm>
+#include <array>
 #include <climits>
 #include <cstdlib>
 #include <cstring>
@@ -116,9 +117,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     return alpha;
 }
 
-void Bot::negaMaxConcurrentPromoise(int depth, int alpha, int beta, pVariation& parentLine, Board* b, std::promise<int>) {}
-
-int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board* b) {
+int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b) {
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
     
     if (depth == 0) return quiescence(alpha, beta);
@@ -129,65 +128,39 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
 
     pVariation childLine;
 
-    std::vector<std::future<int>> evals;
-    std::vector<int> intEvals;
-    std::vector<std::promise<int>> evalPromises;
     std::vector<std::thread> threads;
+    std::vector<int> evals;
+    evals.reserve(moves.size());
 
-    /*
-    TODO:   don't know how to pass in the board to new threads, should it be a pointer? and reference? a normal variable?
-                                                                should it be heap allocated? stack allocated?
-            all other arguments are fine
-    
-    TODO:   how do i make and unmake moves for the new boards?
-    
-    TODO:   use std::async or std::promise to get the return value from the concurrent calls
-    */
-
-    for (int movesLeft = moves.size(); movesLeft > 0;) {
+    for (int movesCompleted = 0; movesCompleted < moves.size();) {
         while (threadsAvailable.try_acquire()) {
-            //need to make and unmake the move
 
-            //method 1:
-            evals.push_back(std::async(std::launch::async, &Bot::negaMaxConcurrent, this, depth-1, -beta, -alpha, std::ref(childLine), b));
-            
-            //method 2:
-            evals.push_back(std::async(std::launch::async, [&, this]() {
-                int i = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b);
-                threadsAvailable.release();
-                return 1;
-            }));
-
-            //method 3:
             threads.emplace_back([&, this]() {
-                intEvals.push_back(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+                Board bb(b); //make a new board, and make the move
+                bb.makeMove(moves[movesCompleted]);
+                evals[movesCompleted] = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb); //pass in a copy of the board
                 threadsAvailable.release();
             });
 
-            //method 4:
-            threads.emplace_back([&, this]() {
-                negaMaxConcurrentPromoise(depth-1, -beta, -alpha, childLine, b, std::move(evalPromises[moves.size()-movesLeft]));
-                threadsAvailable.release();
-            });
-
-            movesLeft--;
+            movesCompleted++;
         }
-        //need to make and unmake the move
-        intEvals.push_back(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
-        movesLeft--; //what if a different thread completes first? then the order of evals won't match the order of moves...
+
+        b.makeMove(moves[movesCompleted]); //make
+        evals[movesCompleted] = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b); //pass in this board
+        b.unMakeMove(moves[movesCompleted]); //and unmake the move
+        movesCompleted++;
         
         for (std::thread& t : threads) {
             t.join();
-            threadsAvailable.release();//use this for method 1 (any method that doesn't have a lambda for this)
         }
     }
 
     for (int i = 0; i < moves.size(); i++) {
-        if (intEvals[i] >= beta) {
+        if (evals[i] >= beta) {
             return beta;
         }
-        if (intEvals[i] > alpha) {
-            alpha = intEvals[i];
+        if (evals[i] > alpha) {
+            alpha = evals[i];
 
             parentLine.moves[0] = moves[i];
             memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
