@@ -128,6 +128,7 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
 
     pVariation childLine;
 
+    //thread stuff
     std::vector<std::thread> threads;
     std::vector<int> evals;
     evals.reserve(moves.size());
@@ -136,10 +137,10 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
         while (threadsAvailable.try_acquire()) {
 
             threads.emplace_back([&, this]() {
-                Board bb(b); //make a new board, and make the move
+                Board bb(b); //make a new board, and make the move, don't need to unmake it afterwards
                 bb.makeMove(moves[movesCompleted]);
                 evals[movesCompleted] = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb); //pass in a copy of the board
-                threadsAvailable.release();
+                threadsAvailable.release(); //handle semaphore
             });
 
             movesCompleted++;
@@ -148,13 +149,15 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
         b.makeMove(moves[movesCompleted]); //make
         evals[movesCompleted] = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b); //pass in this board
         b.unMakeMove(moves[movesCompleted]); //and unmake the move
-        movesCompleted++;
+        movesCompleted++; //don't need a semaphore for this one as its the main thread doing work
         
+        //wait for every worker to finish
         for (std::thread& t : threads) {
             t.join();
         }
     }
 
+    //handle data returned from recursive calls
     for (int i = 0; i < moves.size(); i++) {
         if (evals[i] >= beta) {
             return beta;
