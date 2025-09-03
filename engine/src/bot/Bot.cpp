@@ -37,7 +37,7 @@ const std::string Bot::OPENING_BOOKS[] = {
 // * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Bot::Bot(Board& board) : board(board), MAX_SEARCH_TIME_MS(10000), SEARCH_TIMER_NODE_FREQUENCY(1024) {
+Bot::Bot(Board& board) : boardRef(board), MAX_SEARCH_TIME_MS(10000), SEARCH_TIMER_NODE_FREQUENCY(1024) {
     if (!isPestoInitialised) {
         isPestoInitialised = true;
         Eval::initPestoTables();
@@ -61,8 +61,9 @@ Move Bot::getBestMove() {
     std::cout << "threads: " << NUM_THREADS << '\n';
     
     pVariation pvLineeee;
-    negaMaxConcurrent(1, -INT_MAX, INT_MAX, pvLineeee, board);
-    std::cout << "pls fucking work\n";
+    negaMaxConcurrent(2, -INT_MAX, INT_MAX, pvLineeee, boardRef);
+    std::cout << "qpqpqpqpqpppqpqpqpqpqpqpqpqpqpqp\n";
+    // return move;
     return pvLineeee.moves[0];
 
     // Move move;
@@ -76,7 +77,7 @@ Move Bot::getBestMove() {
 
     for (int i = 1;; i++) {
         pVariation pvLine;
-        if (negaMaxConcurrent(i, -INT_MAX, INT_MAX, pvLine, board) == Eval::CHEKMATE_ABSOLUTE_SCORE)
+        if (negaMaxConcurrent(i, -INT_MAX, INT_MAX, pvLine, boardRef) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
         if (searchDeadlineReached)
             return principalVariation.moves[0];
@@ -94,18 +95,18 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     
     if (depth == 0) return quiescence(alpha, beta);
 
-    std::vector<Move> moves = MoveGeneration::generateMoves(board);
-    if (!moves.size()) return Eval::terminalNodeEval(board);
+    std::vector<Move> moves = MoveGeneration::generateMoves(boardRef);
+    if (!moves.size()) return Eval::terminalNodeEval(boardRef);
     orderMoves(moves);
 
     pVariation childLine;
 
     for (const Move& move : moves) {
-        board.makeMove(move);
+        boardRef.makeMove(move);
 
         int eval = -negaMax(depth-1, -beta, -alpha, childLine);
         
-        board.unMakeMove(move);
+        boardRef.unMakeMove(move);
 
         if (eval >= beta) {
             return beta;
@@ -125,11 +126,10 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
 int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board& b) {
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
 
-    if (depth == 0) return Eval::pestoEval(b);
-    // if (depth == 0) return quiescence(alpha, beta, b);
+    if (depth == 0) return quiescence(alpha, beta, b);
 
-    std::vector<Move> moves = MoveGeneration::generateMoves(board);
-    if (!moves.size()) return Eval::terminalNodeEval(board);
+    std::vector<Move> moves = MoveGeneration::generateMoves(b);
+    if (!moves.size()) return Eval::terminalNodeEval(b);
     orderMoves(moves);
 
     pVariation childLine;
@@ -137,11 +137,6 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     //thread stuff
     std::vector<std::thread> threads;
     std::vector<std::promise<int>> evals(moves.size());
-    std::vector<std::future<int>> evalsF(moves.size());
-
-    for (int i = 0; i < evals.size(); i++) {
-        evalsF[i] = evals[i].get_future();
-    }
 
     for (int movesCompleted = 0;;) {
         while (threadsAvailable.try_acquire()) {
@@ -150,13 +145,16 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
             movesCompleted++;
             if (index >= moves.size())
                 goto Threading_Complete;
-            std::cout << "index: " << index << '\n';
             mu.unlock();
+
             threads.emplace_back([&, this]() {
-                assert(index < moves.size());
                 Board bb(b);
                 bb.makeMove(moves[index]);
+                assert(index < moves.size());
+                std::cout << "oooooooooooooooooooooooooo\n";
                 evals[index].set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb));
+                std::cout << "ggggggggggggggggggggggggggg\n";
+                bb.unMakeMove(moves[index]);
                 threadsAvailable.release();
             });
         }
@@ -166,62 +164,56 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
         movesCompleted++;
         if (index >= moves.size())
             goto Threading_Complete;
-        std::cout << "index: " << index << '\n';
         mu.unlock();
 
-        assert(index < moves.size());
-        
         b.makeMove(moves[index]);
+        assert(index < moves.size());
+        std::cout << "oooooooooooooooooooooooooo\n";
         evals[index].set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+        std::cout << "ggggggggggggggggggggggggggg\n";
         b.unMakeMove(moves[index]);
     }
 
     Threading_Complete:
     mu.unlock();
     
-    std::cout << "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj\n";
-    //wait for every worker to finish
     for (std::thread& t : threads) {
         t.join();
     }
-    std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
 
-    /*
-    Should i move this logic within the lambda for each thread?
-    It'll definitely be more complex but will it be more efficient?
-    Maybe the overhead of mutexes and memcpy will be too much?
-    */
-    /* can just do evals.max() to find the maximum value then compare that to beta and alpha without looping through each one */
-    //handle data returned from recursive calls
-
-    int index, max = INT_MIN;
-    for (int i = 0; i < evalsF.size(); i++) {
-        int val = evalsF[i].get();
+    int index = 0, max = evals[0].get_future().get();
+    for (int i = 1; i < evals.size(); i++) {
+        int val = evals[i].get_future().get();
         if (val > max) {
             max = val;
             index = i;
         }
     }
 
-    std::cout << "llllllllllllllllllllllllllllllllllllllllllllllllllllllllllll\n";
+    std::cout << "fadsfasdfsdafsafdsafsdfsdafsdaf\n";
 
     if (max >= beta) {
+        std::cout << "qqqqqqqqqqqqqqqqqqqqqqqqq\n";
         return beta;
     }
     if (max > alpha) {
+        std::cout << "aaaaaaaaaaaaaaaaaaaaaaaa\n";
         alpha = max;
-
+        // move = moves[index];
+        // mu.lock();
         parentLine.moves[0] = moves[index];
         memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
         parentLine.moveCount = childLine.moveCount + 1;
+        // mu.unlock();
     }
 
+    std::cout << "zzzzzzzzzzzzzzzzzzzz\n";
     return alpha;
 }
 
 //credit due to the chess programming wiki for this function
 int Bot::quiescence(int alpha, int beta) {
-    int staticEval = Eval::pestoEval(board);
+    int staticEval = Eval::pestoEval(boardRef);
 
     int bestValue = staticEval;
     if (bestValue >= beta)
@@ -229,15 +221,15 @@ int Bot::quiescence(int alpha, int beta) {
     if  (bestValue > alpha)
         alpha = bestValue;
 
-    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    std::vector<Move> moves = MoveGeneration::generateMoves(boardRef);
     if (moves.size()) orderMovesQuiescence(moves);
 
     for (const Move& move : moves) {
-        board.makeMove(move);
+        boardRef.makeMove(move);
 
         int eval = -quiescence(-beta, -alpha);
 
-        board.unMakeMove(move);
+        boardRef.unMakeMove(move);
 
         if (eval >= beta)
             return eval;
@@ -284,13 +276,13 @@ bool Bot::queryOpeningBook(std::string bookName, Move& move) {
     std::ifstream book(RESOURCES_PATH + bookName);
     if (!book.is_open()) return false;
     
-    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    std::vector<Move> moves = MoveGeneration::generateMoves(boardRef);
     std::vector<Move> bookMoves;
 
     for (const auto& m : moves) {
-        board.makeMove(m);
+        boardRef.makeMove(m);
 
-        std::string fen = board.toFen();
+        std::string fen = boardRef.toFen();
         std::string line;
 
         book.clear();
@@ -301,7 +293,7 @@ bool Bot::queryOpeningBook(std::string bookName, Move& move) {
                 if (std::count(bookMoves.begin(), bookMoves.end(), m) == 0)
                     bookMoves.push_back(m);
 
-        board.unMakeMove(m);
+        boardRef.unMakeMove(m);
     }
 
     if (bookMoves.empty())

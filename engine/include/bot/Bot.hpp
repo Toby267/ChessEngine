@@ -21,8 +21,9 @@ private:
     static std::counting_semaphore<> threadsAvailable;
     std::mutex mu;
 
-    Board& board;
+    Board& boardRef;
     pVariation principalVariation; //could this just be a vector?
+    Move move;
 
     const std::chrono::milliseconds MAX_SEARCH_TIME_MS;
     const int SEARCH_TIMER_NODE_FREQUENCY;
