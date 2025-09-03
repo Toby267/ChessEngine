@@ -1,6 +1,7 @@
 #include "bot/Bot.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <climits>
 #include <cstdlib>
 #include <cstring>
@@ -23,7 +24,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool Bot::isPestoInitialised = false;
-const int Bot::NUM_THREADS = 5;//std::thread::hardware_concurrency();
+const int Bot::NUM_THREADS = 1;//std::thread::hardware_concurrency();
 std::counting_semaphore<> Bot::threadsAvailable(NUM_THREADS);
 
 const std::string Bot::OPENING_BOOKS[] = {
@@ -61,6 +62,7 @@ Move Bot::getBestMove() {
     
     pVariation pvLineeee;
     negaMaxConcurrent(1, -INT_MAX, INT_MAX, pvLineeee, board);
+    std::cout << "pls fucking work\n";
     return pvLineeee.moves[0];
 
     // Move move;
@@ -136,65 +138,53 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     std::vector<std::thread> threads;
     std::vector<std::promise<int>> evals(moves.size());
     std::vector<std::future<int>> evalsF(moves.size());
-    std::mutex mu;
 
-    for (int movesCompleted = 0; movesCompleted < moves.size();) {
+    for (int i = 0; i < evals.size(); i++) {
+        evalsF[i] = evals[i].get_future();
+    }
+
+    for (int movesCompleted = 0;;) {
         while (threadsAvailable.try_acquire()) {
+            mu.lock();
+            int index = movesCompleted;
+            movesCompleted++;
+            if (index >= moves.size())
+                goto Threading_Complete;
+            std::cout << "index: " << index << '\n';
+            mu.unlock();
             threads.emplace_back([&, this]() {
-                mu.lock();
-                int index = movesCompleted;
-                movesCompleted++;
-                
+                assert(index < moves.size());
                 Board bb(b);
                 bb.makeMove(moves[index]);
-
-                std::cout << "thread: " << std::this_thread::get_id() << ", is doing the " << index << "'th move" << '\n'; 
-                mu.unlock();
-
-                int hi = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb);
-
-                mu.lock();
-                std::cout << "thread: " << std::this_thread::get_id() << ", has done the " << index << "'th move" << '\n'; 
-                evals[index].set_value(hi);
-                std::cout << "thread: " << std::this_thread::get_id() << ", result: " << hi << '\n';
+                evals[index].set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb));
                 threadsAvailable.release();
-                mu.unlock();
             });
         }
-        
-        if (movesCompleted >= moves.size()) {
-            break;
-        }
+
         mu.lock();
-        int indexx = movesCompleted;
+        int index = movesCompleted;
         movesCompleted++;
+        if (index >= moves.size())
+            goto Threading_Complete;
+        std::cout << "index: " << index << '\n';
+        mu.unlock();
+
+        assert(index < moves.size());
         
-
-        b.makeMove(moves[indexx]);
-        std::cout << "thread: " << std::this_thread::get_id() << ", is doing the " << indexx << "'th move - main thread" << '\n'; 
-        mu.unlock();
-
-        int hi = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b);
-
-        mu.lock();
-        std::cout << "thread: " << std::this_thread::get_id() << ", has done the " << indexx << "'th move - main thread" << '\n'; 
-        evals[indexx].set_value(hi);
-        b.unMakeMove(moves[indexx]);
-        std::cout << "thread: " << std::this_thread::get_id() << ", result: " << hi << " - main thread" << '\n';
-        mu.unlock();
+        b.makeMove(moves[index]);
+        evals[index].set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+        b.unMakeMove(moves[index]);
     }
+
+    Threading_Complete:
+    mu.unlock();
     
-    std::cout << "heljjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjlo 16\n";
+    std::cout << "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj\n";
     //wait for every worker to finish
     for (std::thread& t : threads) {
         t.join();
     }
-    for (int i = 0; i < evals.size(); i++) {
-        evalsF[i] = evals[i].get_future();
-    }
-    std::cout << "hello 17\n";
-
-    std::cout << "hello world\n";
+    std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
 
     /*
     Should i move this logic within the lambda for each thread?
@@ -203,17 +193,27 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     */
     /* can just do evals.max() to find the maximum value then compare that to beta and alpha without looping through each one */
     //handle data returned from recursive calls
-    for (int i = 0; i < moves.size(); i++) {
-        if (evalsF[i].get() >= beta) {
-            return beta;
-        }
-        if (evalsF[i].get() > alpha) {
-            alpha = evalsF[i].get();
 
-            parentLine.moves[0] = moves[i];
-            memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
-            parentLine.moveCount = childLine.moveCount + 1;
+    int index, max = INT_MIN;
+    for (int i = 0; i < evalsF.size(); i++) {
+        int val = evalsF[i].get();
+        if (val > max) {
+            max = val;
+            index = i;
         }
+    }
+
+    std::cout << "llllllllllllllllllllllllllllllllllllllllllllllllllllllllllll\n";
+
+    if (max >= beta) {
+        return beta;
+    }
+    if (max > alpha) {
+        alpha = max;
+
+        parentLine.moves[0] = moves[index];
+        memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
+        parentLine.moveCount = childLine.moveCount + 1;
     }
 
     return alpha;
