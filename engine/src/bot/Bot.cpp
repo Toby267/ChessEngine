@@ -5,7 +5,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <future>
 #include <iostream>
+#include <mutex>
 #include <thread>
 #include <vector>
 #include <chrono>
@@ -21,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool Bot::isPestoInitialised = false;
-const int Bot::NUM_THREADS = std::thread::hardware_concurrency();
+const int Bot::NUM_THREADS = 5;//std::thread::hardware_concurrency();
 std::counting_semaphore<> Bot::threadsAvailable(NUM_THREADS);
 
 const std::string Bot::OPENING_BOOKS[] = {
@@ -57,10 +59,14 @@ Bot::~Bot() {
 Move Bot::getBestMove() {
     std::cout << "threads: " << NUM_THREADS << '\n';
     
-    Move move;
-    for (const std::string book : OPENING_BOOKS)
-        if (queryOpeningBook(book, move))
-            return move;
+    pVariation pvLineeee;
+    negaMaxConcurrent(1, -INT_MAX, INT_MAX, pvLineeee, board);
+    return pvLineeee.moves[0];
+
+    // Move move;
+    // for (const std::string book : OPENING_BOOKS)
+        // if (queryOpeningBook(book, move))
+            // return move;
 
     nodesSearched = 0;
     searchDeadlineReached = false;
@@ -68,7 +74,7 @@ Move Bot::getBestMove() {
 
     for (int i = 1;; i++) {
         pVariation pvLine;
-        if (negaMax(i, -INT_MAX, INT_MAX, pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
+        if (negaMaxConcurrent(i, -INT_MAX, INT_MAX, pvLine, board) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
         if (searchDeadlineReached)
             return principalVariation.moves[0];
@@ -114,10 +120,11 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     return alpha;
 }
 
-int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b) {
+int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board& b) {
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
-    
-    if (depth == 0) return quiescence(alpha, beta);
+
+    if (depth == 0) return Eval::pestoEval(b);
+    // if (depth == 0) return quiescence(alpha, beta, b);
 
     std::vector<Move> moves = MoveGeneration::generateMoves(board);
     if (!moves.size()) return Eval::terminalNodeEval(board);
@@ -127,33 +134,67 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
 
     //thread stuff
     std::vector<std::thread> threads;
-    std::vector<int> evals;
-    evals.reserve(moves.size());
+    std::vector<std::promise<int>> evals(moves.size());
+    std::vector<std::future<int>> evalsF(moves.size());
+    std::mutex mu;
 
     for (int movesCompleted = 0; movesCompleted < moves.size();) {
         while (threadsAvailable.try_acquire()) {
-
             threads.emplace_back([&, this]() {
-                Board bb(b); //make a new board, and make the move, don't need to unmake it afterwards
-                bb.makeMove(moves[movesCompleted]);
-                evals[movesCompleted] = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb); //pass in a copy of the board
-                //Do I need a mutex here? or is it fine since I'm accessing different parts of the vector?
-                threadsAvailable.release(); //handle semaphore
+                mu.lock();
+                int index = movesCompleted;
+                movesCompleted++;
+                
+                Board bb(b);
+                bb.makeMove(moves[index]);
+
+                std::cout << "thread: " << std::this_thread::get_id() << ", is doing the " << index << "'th move" << '\n'; 
+                mu.unlock();
+
+                int hi = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb);
+
+                mu.lock();
+                std::cout << "thread: " << std::this_thread::get_id() << ", has done the " << index << "'th move" << '\n'; 
+                evals[index].set_value(hi);
+                std::cout << "thread: " << std::this_thread::get_id() << ", result: " << hi << '\n';
+                threadsAvailable.release();
+                mu.unlock();
             });
-
-            movesCompleted++;
         }
-
-        b.makeMove(moves[movesCompleted]); //make
-        evals[movesCompleted] = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b); //pass in this board
-        b.unMakeMove(moves[movesCompleted]); //and unmake the move
-        movesCompleted++; //don't need a semaphore for this one as its the main thread doing work
         
-        //wait for every worker to finish
-        for (std::thread& t : threads) {
-            t.join();
+        if (movesCompleted >= moves.size()) {
+            break;
         }
+        mu.lock();
+        int indexx = movesCompleted;
+        movesCompleted++;
+        
+
+        b.makeMove(moves[indexx]);
+        std::cout << "thread: " << std::this_thread::get_id() << ", is doing the " << indexx << "'th move - main thread" << '\n'; 
+        mu.unlock();
+
+        int hi = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b);
+
+        mu.lock();
+        std::cout << "thread: " << std::this_thread::get_id() << ", has done the " << indexx << "'th move - main thread" << '\n'; 
+        evals[indexx].set_value(hi);
+        b.unMakeMove(moves[indexx]);
+        std::cout << "thread: " << std::this_thread::get_id() << ", result: " << hi << " - main thread" << '\n';
+        mu.unlock();
     }
+    
+    std::cout << "heljjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjlo 16\n";
+    //wait for every worker to finish
+    for (std::thread& t : threads) {
+        t.join();
+    }
+    for (int i = 0; i < evals.size(); i++) {
+        evalsF[i] = evals[i].get_future();
+    }
+    std::cout << "hello 17\n";
+
+    std::cout << "hello world\n";
 
     /*
     Should i move this logic within the lambda for each thread?
@@ -163,11 +204,11 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     /* can just do evals.max() to find the maximum value then compare that to beta and alpha without looping through each one */
     //handle data returned from recursive calls
     for (int i = 0; i < moves.size(); i++) {
-        if (evals[i] >= beta) {
+        if (evalsF[i].get() >= beta) {
             return beta;
         }
-        if (evals[i] > alpha) {
-            alpha = evals[i];
+        if (evalsF[i].get() > alpha) {
+            alpha = evalsF[i].get();
 
             parentLine.moves[0] = moves[i];
             memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
@@ -197,6 +238,36 @@ int Bot::quiescence(int alpha, int beta) {
         int eval = -quiescence(-beta, -alpha);
 
         board.unMakeMove(move);
+
+        if (eval >= beta)
+            return eval;
+        if (eval > bestValue)
+            bestValue = eval;
+        if (eval > alpha)
+            alpha = eval;
+    }
+
+    return bestValue;
+}
+
+int Bot::quiescence(int alpha, int beta, Board& b) {
+    int staticEval = Eval::pestoEval(b);
+
+    int bestValue = staticEval;
+    if (bestValue >= beta)
+        return bestValue;
+    if  (bestValue > alpha)
+        alpha = bestValue;
+
+    std::vector<Move> moves = MoveGeneration::generateMoves(b);
+    if (moves.size()) orderMovesQuiescence(moves);
+
+    for (const Move& move : moves) {
+        b.makeMove(move);
+
+        int eval = -quiescence(-beta, -alpha, b);
+
+        b.unMakeMove(move);
 
         if (eval >= beta)
             return eval;
