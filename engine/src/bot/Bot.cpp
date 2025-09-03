@@ -123,7 +123,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     return alpha;
 }
 
-int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board& b) {
+int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b) {
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
 
     if (depth == 0) return quiescence(alpha, beta, b);
@@ -166,12 +166,13 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
             goto Threading_Complete;
         mu.unlock();
 
-        b.makeMove(moves[index]);
+        Board bb(b);
+        bb.makeMove(moves[index]);
         assert(index < moves.size());
         std::cout << "oooooooooooooooooooooooooo\n";
-        evals[index].set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+        evals[index].set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb));
         std::cout << "ggggggggggggggggggggggggggg\n";
-        b.unMakeMove(moves[index]);
+        bb.unMakeMove(moves[index]);
     }
 
     Threading_Complete:
