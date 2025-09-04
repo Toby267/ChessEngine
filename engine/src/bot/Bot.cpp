@@ -8,6 +8,7 @@
 #include <fstream>
 #include <future>
 #include <iostream>
+#include <thread>
 #include <vector>
 #include <chrono>
 
@@ -22,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool Bot::isPestoInitialised = false;
-const int Bot::NUM_THREADS = 1;//std::thread::hardware_concurrency();
+const int Bot::NUM_THREADS = std::thread::hardware_concurrency();
 std::counting_semaphore<> Bot::threadsAvailable(NUM_THREADS);
 
 const std::string Bot::OPENING_BOOKS[] = {
@@ -55,12 +56,9 @@ Bot::~Bot() {
  * 
  * @return the best move
  */
-Move Bot::getBestMove() {
-    std::cout << "threads: " << NUM_THREADS << '\n';
-    
+Move Bot::getBestMove() {   
     pVariation pvLineeee;
-    negaMaxConcurrent(1, -INT_MAX, INT_MAX, pvLineeee, boardRef);
-    std::cout << "returned from negaMaxConcurrent\n";
+    negaMaxConcurrent(5, -INT_MAX, INT_MAX, pvLineeee, boardRef);
     return pvLineeee.moves[0];
 
     // Move move;
@@ -121,9 +119,17 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
 }
 
 int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b) {
-    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
+    // std::thread::id id = std::this_thread::get_id();
+    // std::ostringstream oss;
+    // oss << id;
+    // mu.lock();
+    // std::cout << "id: " << oss.str() << '\n';
+    // mu.unlock();
 
-    if (depth == 0) return quiescence(alpha, beta, b);
+    // if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
+
+    // if (depth == 0) return quiescence(alpha, beta, b);
+    if (depth == 0) return Eval::pestoEval(b);
 
     std::vector<Move> moves = MoveGeneration::generateMoves(b);
     if (!moves.size()) return Eval::terminalNodeEval(b);
@@ -131,38 +137,45 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
 
     pVariation childLine;
 
+    /*
+    TODO: check that multiple threads are actaully running at the same time
+    
+    TODO: make alpha-beta pruning actually work:
+            somehow integrate it into the for concurrency loop
+            if val >= beta, delete all recursive threads, release their respective semaphores and return beta
+            the rest of it can be after the concurrency loop
+
+    TODO: get quiescence working with it.
+
+    TODO: check that without iterative deepening it concures with non-concurrent negeMax
+
+    TODO: get iterateive deepening working with it.
+    */
+
     //thread stuff
     std::vector<std::future<int>> threads(moves.size());
 
-    for (int i = 0, max = moves.size();;) {
-        mu.lock();
-        if (i >= moves.size())
-            break;
-        mu.unlock();
-        
+    for (int i = 0, max = moves.size(); i < max;) {
         while (i < max && threadsAvailable.try_acquire()) {
+            int index = i++;
+            if (index >= max) break;
             Board bb(b);
-            bb.makeMove(moves[i]);
-            threads[i] = std::async(std::launch::async, [this, depth, alpha, beta, &childLine, bb](){
-                int eval = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb);
+            bb.makeMove(moves[index]);
+            threads[index] = std::async(std::launch::async, [this, depth, alpha, beta, &childLine, bb](){
+                int eval = -negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb);
                 threadsAvailable.release();
                 return eval;
             });
-            i++;
         }
 
-        mu.lock();
-        int index = i;
-        i++;
-        mu.unlock();
-
+        int index = i++;
+        if (index >= max) break;
         b.makeMove(moves[index]);
         std::promise<int> val;
         threads[index] = val.get_future();
-        val.set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+        val.set_value(-negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
         b.unMakeMove(moves[index]);
     }
-    mu.unlock();
 
     for (int i = 0; i < threads.size(); i++) {
         int val = threads[i].get();
