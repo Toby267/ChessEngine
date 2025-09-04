@@ -8,8 +8,6 @@
 #include <fstream>
 #include <future>
 #include <iostream>
-#include <mutex>
-#include <thread>
 #include <vector>
 #include <chrono>
 
@@ -61,9 +59,8 @@ Move Bot::getBestMove() {
     std::cout << "threads: " << NUM_THREADS << '\n';
     
     pVariation pvLineeee;
-    negaMaxConcurrent(2, -INT_MAX, INT_MAX, pvLineeee, boardRef);
-    std::cout << "qpqpqpqpqpppqpqpqpqpqpqpqpqpqpqp\n";
-    // return move;
+    negaMaxConcurrent(1, -INT_MAX, INT_MAX, pvLineeee, boardRef);
+    std::cout << "returned from negaMaxConcurrent\n";
     return pvLineeee.moves[0];
 
     // Move move;
@@ -135,80 +132,53 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     pVariation childLine;
 
     //thread stuff
-    std::vector<std::thread> threads;
-    std::vector<std::promise<int>> evals(moves.size());
+    std::vector<std::future<int>> threads(moves.size());
 
-    for (int movesCompleted = 0;;) {
-        while (threadsAvailable.try_acquire()) {
-            mu.lock();
-            int index = movesCompleted;
-            movesCompleted++;
-            if (index >= moves.size())
-                goto Threading_Complete;
-            mu.unlock();
-
-            threads.emplace_back([&, this]() {
-                Board bb(b);
-                bb.makeMove(moves[index]);
-                assert(index < moves.size());
-                std::cout << "oooooooooooooooooooooooooo\n";
-                evals[index].set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb));
-                std::cout << "ggggggggggggggggggggggggggg\n";
-                bb.unMakeMove(moves[index]);
+    for (int i = 0, max = moves.size();;) {
+        mu.lock();
+        if (i >= moves.size())
+            break;
+        mu.unlock();
+        
+        while (i < max && threadsAvailable.try_acquire()) {
+            Board bb(b);
+            bb.makeMove(moves[i]);
+            threads[i] = std::async(std::launch::async, [this, depth, alpha, beta, &childLine, bb](){
+                int eval = negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb);
                 threadsAvailable.release();
+                return eval;
             });
+            i++;
         }
 
         mu.lock();
-        int index = movesCompleted;
-        movesCompleted++;
-        if (index >= moves.size())
-            goto Threading_Complete;
+        int index = i;
+        i++;
         mu.unlock();
 
-        Board bb(b);
-        bb.makeMove(moves[index]);
-        assert(index < moves.size());
-        std::cout << "oooooooooooooooooooooooooo\n";
-        evals[index].set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb));
-        std::cout << "ggggggggggggggggggggggggggg\n";
-        bb.unMakeMove(moves[index]);
+        b.makeMove(moves[index]);
+        std::promise<int> val;
+        threads[index] = val.get_future();
+        val.set_value(negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+        b.unMakeMove(moves[index]);
     }
-
-    Threading_Complete:
     mu.unlock();
-    
-    for (std::thread& t : threads) {
-        t.join();
-    }
 
-    int index = 0, max = evals[0].get_future().get();
-    for (int i = 1; i < evals.size(); i++) {
-        int val = evals[i].get_future().get();
-        if (val > max) {
-            max = val;
-            index = i;
+    for (int i = 0; i < threads.size(); i++) {
+        int val = threads[i].get();
+
+        if (val >= beta) {
+            return beta;
+        }
+        if (val > alpha) {
+            alpha = val;
+            
+            parentLine.moves[0] = moves[i];
+            memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
+            parentLine.moveCount = childLine.moveCount + 1;
         }
     }
 
-    std::cout << "fadsfasdfsdafsafdsafsdfsdafsdaf\n";
-
-    if (max >= beta) {
-        std::cout << "qqqqqqqqqqqqqqqqqqqqqqqqq\n";
-        return beta;
-    }
-    if (max > alpha) {
-        std::cout << "aaaaaaaaaaaaaaaaaaaaaaaa\n";
-        alpha = max;
-        // move = moves[index];
-        // mu.lock();
-        parentLine.moves[0] = moves[index];
-        memcpy(parentLine.moves+1, childLine.moves, childLine.moveCount * sizeof(Move));
-        parentLine.moveCount = childLine.moveCount + 1;
-        // mu.unlock();
-    }
-
-    std::cout << "zzzzzzzzzzzzzzzzzzzz\n";
     return alpha;
 }
 
