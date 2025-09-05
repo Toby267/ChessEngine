@@ -8,6 +8,7 @@
 #include <fstream>
 #include <future>
 #include <iostream>
+#include <queue>
 #include <thread>
 #include <vector>
 #include <chrono>
@@ -58,7 +59,7 @@ Bot::~Bot() {
  */
 Move Bot::getBestMove() {   
     pVariation pvLineeee;
-    negaMaxConcurrent(5, -INT_MAX, INT_MAX, pvLineeee, boardRef);
+    negaMaxConcurrent(1, -INT_MAX, INT_MAX, pvLineeee, boardRef);
     return pvLineeee.moves[0];
 
     // Move move;
@@ -129,6 +130,22 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     // if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
 
     // if (depth == 0) return quiescence(alpha, beta, b);
+
+
+    mu.lock();
+    for (int rank = 7; rank >= 0; rank--) {
+        std::cout << rank+1 << " ";
+        for (int file = 0; file < 8; file++) {
+            PieceType::Enum type = b.getType((SquareIndex)(8*file+rank));
+    
+            std::cout << PieceType::pieceChars[(int)type+1] << ' ';
+        }
+        std::cout << '\n';
+    }
+    std::cout << "  A B C D E F G H" << "\n\n";
+    mu.unlock();
+
+
     if (depth == 0) return Eval::pestoEval(b);
 
     std::vector<Move> moves = MoveGeneration::generateMoves(b);
@@ -138,6 +155,8 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     pVariation childLine;
 
     /*
+    //have checked that each move is being considered with certainty
+
     TODO: check that multiple threads are actaully running at the same time
     
     TODO: make alpha-beta pruning actually work:
@@ -155,8 +174,8 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     //thread stuff
     std::vector<std::future<int>> threads(moves.size());
 
-    for (int i = 0, max = moves.size(); i < max;) {
-        while (i < max && threadsAvailable.try_acquire()) {
+    for (int i = 0, max = moves.size();;) {
+        while (threadsAvailable.try_acquire()) {
             int index = i++;
             if (index >= max) break;
             Board bb(b);
