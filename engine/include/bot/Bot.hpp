@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <semaphore>
+#include <shared_mutex>
 
 /**
  * Class representing the Bot and its relevent data/ references.
@@ -19,7 +20,8 @@ private:
     static const std::string OPENING_BOOKS[];
     static const int NUM_THREADS;
     static std::counting_semaphore<> threadsAvailable;
-    std::mutex mu;
+    std::shared_mutex mu;
+    concurrencyTreeNode tree{false};
 
     Board& boardRef;
     pVariation principalVariation; //could this just be a vector?
@@ -45,7 +47,7 @@ public:
 private:
     //private methods
     int negaMax(int depth, int alpha, int beta, pVariation& parentLine);
-    int negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b);
+    int negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b, concurrencyTreeNode* parentTerminate);
     int quiescence(int alpha, int beta);
     int quiescence(int alpha, int beta, Board& b);
     bool queryOpeningBook(std::string bookName, Move& move);

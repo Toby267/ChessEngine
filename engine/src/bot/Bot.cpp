@@ -57,9 +57,10 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove() {   
-    // pVariation pvLineeee;
-    // negaMaxConcurrent(5, -INT_MAX, INT_MAX, pvLineeee, boardRef);
-    // return pvLineeee.moves[0];
+    tree.reset(false);
+    pVariation pvLineeee;
+    negaMaxConcurrent(5, -INT_MAX, INT_MAX, pvLineeee, boardRef, &tree);
+    return pvLineeee.moves[0];
 
     // Move move;
     // for (const std::string book : OPENING_BOOKS)
@@ -72,7 +73,7 @@ Move Bot::getBestMove() {
 
     for (int i = 1;; i++) {
         pVariation pvLine;
-        if (negaMaxConcurrent(i, -INT_MAX, INT_MAX, pvLine, boardRef) == Eval::CHEKMATE_ABSOLUTE_SCORE)
+        if (negaMaxConcurrent(i, -INT_MAX, INT_MAX, pvLine, boardRef, &tree) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
         if (searchDeadlineReached)
             return principalVariation.moves[0];
@@ -118,7 +119,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     return alpha;
 }
 
-int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b) {
+int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b, concurrencyTreeNode* parentTerminate) {
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
     
     if (depth == 0) return quiescence(alpha, beta, b);
@@ -128,6 +129,7 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     orderMoves(moves);
 
     pVariation childLine;
+    concurrencyTreeNode childTerminate(parentTerminate, false);
 
     /*
     TODO:
@@ -156,19 +158,39 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
             if (index >= max) break;
             Board bb(b);
             bb.makeMove(moves[index]);
-            threads[index] = std::async(std::launch::async, [this, depth, alpha, beta, &childLine, bb](){
-                int eval = -negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb);
+            mu.lock_shared();
+            threads[index] = std::async(std::launch::async, [this, depth, alpha, beta, &childLine, bb, &childTerminate](){
+                int eval = -negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb, &childTerminate);
+                
+                if (eval >= beta) {
+                    //snip
+                    mu.lock();
+                    childTerminate.setTrue();
+                    mu.unlock();
+                    eval = beta;
+                }
+                
                 threadsAvailable.release();
                 return eval;
             });
+            mu.unlock_shared();
         }
 
         int index = i++;
         if (index >= max) break;
         b.makeMove(moves[index]);
         std::promise<int> val;
+        mu.lock_shared();
         threads[index] = val.get_future();
-        val.set_value(-negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b));
+        int eval = -negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b, &childTerminate);
+        if (eval >= beta) {
+            mu.lock();
+            childTerminate.setTrue();
+            mu.unlock();
+            eval = beta;
+        }
+        val.set_value(eval);
+        mu.unlock_shared();
         b.unMakeMove(moves[index]);
     }
 
