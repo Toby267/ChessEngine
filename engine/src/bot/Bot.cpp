@@ -8,7 +8,6 @@
 #include <fstream>
 #include <future>
 #include <iostream>
-#include <queue>
 #include <thread>
 #include <vector>
 #include <chrono>
@@ -58,9 +57,9 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove() {   
-    pVariation pvLineeee;
-    negaMaxConcurrent(1, -INT_MAX, INT_MAX, pvLineeee, boardRef);
-    return pvLineeee.moves[0];
+    // pVariation pvLineeee;
+    // negaMaxConcurrent(5, -INT_MAX, INT_MAX, pvLineeee, boardRef);
+    // return pvLineeee.moves[0];
 
     // Move move;
     // for (const std::string book : OPENING_BOOKS)
@@ -120,33 +119,9 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
 }
 
 int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b) {
-    // std::thread::id id = std::this_thread::get_id();
-    // std::ostringstream oss;
-    // oss << id;
-    // mu.lock();
-    // std::cout << "id: " << oss.str() << '\n';
-    // mu.unlock();
-
-    // if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
-
-    // if (depth == 0) return quiescence(alpha, beta, b);
-
-
-    mu.lock();
-    for (int rank = 7; rank >= 0; rank--) {
-        std::cout << rank+1 << " ";
-        for (int file = 0; file < 8; file++) {
-            PieceType::Enum type = b.getType((SquareIndex)(8*file+rank));
+    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
     
-            std::cout << PieceType::pieceChars[(int)type+1] << ' ';
-        }
-        std::cout << '\n';
-    }
-    std::cout << "  A B C D E F G H" << "\n\n";
-    mu.unlock();
-
-
-    if (depth == 0) return Eval::pestoEval(b);
+    if (depth == 0) return quiescence(alpha, beta, b);
 
     std::vector<Move> moves = MoveGeneration::generateMoves(b);
     if (!moves.size()) return Eval::terminalNodeEval(b);
@@ -155,20 +130,21 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     pVariation childLine;
 
     /*
-    //have checked that each move is being considered with certainty
-
-    TODO: check that multiple threads are actaully running at the same time
-    
-    TODO: make alpha-beta pruning actually work:
+    TODO:
+        make alpha-beta pruning actually work:
             somehow integrate it into the for concurrency loop
             if val >= beta, delete all recursive threads, release their respective semaphores and return beta
             the rest of it can be after the concurrency loop
 
-    TODO: get quiescence working with it.
-
-    TODO: check that without iterative deepening it concures with non-concurrent negeMax
-
-    TODO: get iterateive deepening working with it.
+        to do this i need to:
+            store a tree like data strucutre (as an attribute of this class) that stores references to the std::atomic<bool>& 's that you will pass through the recursion
+            once one needs to change, call a function that will put an exclusive lock on a global std::shared_mutex, (stopping all threads from creating a new thread as they will need to put a 
+            shared lock on it before creating new threads (they will also be checking its respective std::atomic<bool> here)), set the right bool to false, and propogate this through the tree
+            setting all to false that need to be false.
+        
+            one thing that might make this more efficient (or less efficient, but probably more) is to have a separate std::shared_mutex for each node, and when a new thread is to be created, the
+            thread doing the creation will need to acquire a shared lock for its parents mutex, its parents parents mutex, and so on. this will mean that only threads that need to be locked will be locked,
+            and none other. although the overhead of multile mutexes might be greater than the overhead of stopping all threads with one shared mutex and quickly propogating.  
     */
 
     //thread stuff
