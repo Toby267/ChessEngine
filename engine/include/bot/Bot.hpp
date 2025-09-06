@@ -23,7 +23,6 @@ private:
 
     Board& board;
     pVariation principalVariation; //could this just be a vector?
-    Move move;
 
     const std::chrono::milliseconds MAX_SEARCH_TIME_MS;
     const int SEARCH_TIMER_NODE_FREQUENCY;
