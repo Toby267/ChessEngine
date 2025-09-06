@@ -36,7 +36,7 @@ const std::string Bot::OPENING_BOOKS[] = {
 // * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Bot::Bot(Board& board) : boardRef(board), MAX_SEARCH_TIME_MS(10000), SEARCH_TIMER_NODE_FREQUENCY(1024) {
+Bot::Bot(Board& board) : board(board), MAX_SEARCH_TIME_MS(10000), SEARCH_TIMER_NODE_FREQUENCY(1024) {
     if (!isPestoInitialised) {
         isPestoInitialised = true;
         Eval::initPestoTables();
@@ -86,18 +86,18 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     
     if (depth == 0) return quiescence(alpha, beta);
 
-    std::vector<Move> moves = MoveGeneration::generateMoves(boardRef);
-    if (!moves.size()) return Eval::terminalNodeEval(boardRef);
+    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    if (!moves.size()) return Eval::terminalNodeEval(board);
     orderMoves(moves);
 
     pVariation childLine;
 
     for (const Move& move : moves) {
-        boardRef.makeMove(move);
+        board.makeMove(move);
 
         int eval = -negaMax(depth-1, -beta, -alpha, childLine);
         
-        boardRef.unMakeMove(move);
+        board.unMakeMove(move);
 
         if (eval >= beta) {
             return beta;
@@ -113,6 +113,73 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
 
     return alpha;
 }
+
+//credit due to the chess programming wiki for this function
+int Bot::quiescence(int alpha, int beta) {
+    int staticEval = Eval::pestoEval(board);
+
+    int bestValue = staticEval;
+    if (bestValue >= beta)
+        return bestValue;
+    if  (bestValue > alpha)
+        alpha = bestValue;
+
+    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    if (moves.size()) orderMovesQuiescence(moves);
+
+    for (const Move& move : moves) {
+        board.makeMove(move);
+
+        int eval = -quiescence(-beta, -alpha);
+
+        board.unMakeMove(move);
+
+        if (eval >= beta)
+            return eval;
+        if (eval > bestValue)
+            bestValue = eval;
+        if (eval > alpha)
+            alpha = eval;
+    }
+
+    return bestValue;
+}
+
+bool Bot::queryOpeningBook(std::string bookName, Move& move) {
+    std::ifstream book(RESOURCES_PATH + bookName);
+    if (!book.is_open()) return false;
+    
+    std::vector<Move> moves = MoveGeneration::generateMoves(board);
+    std::vector<Move> bookMoves;
+
+    for (const auto& m : moves) {
+        board.makeMove(m);
+
+        std::string fen = board.toFen();
+        std::string line;
+
+        book.clear();
+        book.seekg(0);
+
+        while (getline(book, line))
+            if (fen == line.substr(0, fen.size()))
+                if (std::count(bookMoves.begin(), bookMoves.end(), m) == 0)
+                    bookMoves.push_back(m);
+
+        board.unMakeMove(m);
+    }
+
+    if (bookMoves.empty())
+        return false;
+
+    srand(time(0));
+    move = bookMoves[rand()%bookMoves.size()];
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * -------------------------------------- [ CONCURRENCY METHODS ] -------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b) {
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
@@ -169,37 +236,6 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     return alpha;
 }
 
-//credit due to the chess programming wiki for this function
-int Bot::quiescence(int alpha, int beta) {
-    int staticEval = Eval::pestoEval(boardRef);
-
-    int bestValue = staticEval;
-    if (bestValue >= beta)
-        return bestValue;
-    if  (bestValue > alpha)
-        alpha = bestValue;
-
-    std::vector<Move> moves = MoveGeneration::generateMoves(boardRef);
-    if (moves.size()) orderMovesQuiescence(moves);
-
-    for (const Move& move : moves) {
-        boardRef.makeMove(move);
-
-        int eval = -quiescence(-beta, -alpha);
-
-        boardRef.unMakeMove(move);
-
-        if (eval >= beta)
-            return eval;
-        if (eval > bestValue)
-            bestValue = eval;
-        if (eval > alpha)
-            alpha = eval;
-    }
-
-    return bestValue;
-}
-
 int Bot::quiescence(int alpha, int beta, Board& b) {
     int staticEval = Eval::pestoEval(b);
 
@@ -228,38 +264,6 @@ int Bot::quiescence(int alpha, int beta, Board& b) {
     }
 
     return bestValue;
-}
-
-bool Bot::queryOpeningBook(std::string bookName, Move& move) {
-    std::ifstream book(RESOURCES_PATH + bookName);
-    if (!book.is_open()) return false;
-    
-    std::vector<Move> moves = MoveGeneration::generateMoves(boardRef);
-    std::vector<Move> bookMoves;
-
-    for (const auto& m : moves) {
-        boardRef.makeMove(m);
-
-        std::string fen = boardRef.toFen();
-        std::string line;
-
-        book.clear();
-        book.seekg(0);
-
-        while (getline(book, line))
-            if (fen == line.substr(0, fen.size()))
-                if (std::count(bookMoves.begin(), bookMoves.end(), m) == 0)
-                    bookMoves.push_back(m);
-
-        boardRef.unMakeMove(m);
-    }
-
-    if (bookMoves.empty())
-        return false;
-
-    srand(time(0));
-    move = bookMoves[rand()%bookMoves.size()];
-    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

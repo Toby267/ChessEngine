@@ -21,7 +21,7 @@ private:
     static const int NUM_THREADS;
     static std::counting_semaphore<> threadsAvailable;
 
-    Board& boardRef;
+    Board& board;
     pVariation principalVariation; //could this just be a vector?
     Move move;
 
@@ -45,10 +45,12 @@ public:
 private:
     //private methods
     int negaMax(int depth, int alpha, int beta, pVariation& parentLine);
-    int negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b);
     int quiescence(int alpha, int beta);
-    int quiescence(int alpha, int beta, Board& b);
     bool queryOpeningBook(std::string bookName, Move& move);
+
+    //concurrency methods
+    int negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b);
+    int quiescence(int alpha, int beta, Board& b);
 
     //helper methods
     void orderMoves(std::vector<Move>& moves);
