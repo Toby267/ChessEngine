@@ -57,22 +57,18 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove() {   
-    // pVariation pvLineeee;
-    // negaMaxConcurrent(5, -INT_MAX, INT_MAX, pvLineeee, boardRef);
-    // return pvLineeee.moves[0];
-
-    // Move move;
-    // for (const std::string book : OPENING_BOOKS)
-        // if (queryOpeningBook(book, move))
-            // return move;
-
     nodesSearched = 0;
     searchDeadlineReached = false;
     searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
+    
+    Move move;
+    for (const std::string book : OPENING_BOOKS)
+        if (queryOpeningBook(book, move))
+            return move;
 
     for (int i = 1;; i++) {
         pVariation pvLine;
-        if (negaMaxConcurrent(i, -INT_MAX, INT_MAX, pvLine, boardRef) == Eval::CHEKMATE_ABSOLUTE_SCORE)
+        if (negaMax(i, -INT_MAX, INT_MAX, pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
         if (searchDeadlineReached)
             return principalVariation.moves[0];
@@ -129,24 +125,6 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
 
     pVariation childLine;
 
-    /*
-    TODO:
-        make alpha-beta pruning actually work:
-            somehow integrate it into the for concurrency loop
-            if val >= beta, delete all recursive threads, release their respective semaphores and return beta
-            the rest of it can be after the concurrency loop
-
-        to do this i need to:
-            store a tree like data strucutre (as an attribute of this class) that stores references to the std::atomic<bool>& 's that you will pass through the recursion
-            once one needs to change, call a function that will put an exclusive lock on a global std::shared_mutex, (stopping all threads from creating a new thread as they will need to put a 
-            shared lock on it before creating new threads (they will also be checking its respective std::atomic<bool> here)), set the right bool to false, and propogate this through the tree
-            setting all to false that need to be false.
-        
-            one thing that might make this more efficient (or less efficient, but probably more) is to have a separate std::shared_mutex for each node, and when a new thread is to be created, the
-            thread doing the creation will need to acquire a shared lock for its parents mutex, its parents parents mutex, and so on. this will mean that only threads that need to be locked will be locked,
-            and none other. although the overhead of multile mutexes might be greater than the overhead of stopping all threads with one shared mutex and quickly propogating.  
-    */
-
     //thread stuff
     std::vector<std::future<int>> threads(moves.size());
 
@@ -172,6 +150,7 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
         b.unMakeMove(moves[index]);
     }
 
+    //this is slower because it has to wait for all child threads to complete before alpha-beta pruning, i.e.: no pruning at all
     for (int i = 0; i < threads.size(); i++) {
         int val = threads[i].get();
 

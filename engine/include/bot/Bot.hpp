@@ -17,9 +17,9 @@ class Bot {
 private:
     static bool isPestoInitialised;
     static const std::string OPENING_BOOKS[];
+    
     static const int NUM_THREADS;
     static std::counting_semaphore<> threadsAvailable;
-    std::mutex mu;
 
     Board& boardRef;
     pVariation principalVariation; //could this just be a vector?
