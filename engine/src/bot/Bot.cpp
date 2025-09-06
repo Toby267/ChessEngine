@@ -57,9 +57,13 @@ Bot::~Bot() {
  * @return the best move
  */
 Move Bot::getBestMove() {   
-    tree.reset(false);
+    nodesSearched = 0;
+    searchDeadlineReached = false;
+    searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
+    
+    tree->reset(false);
     pVariation pvLineeee;
-    negaMaxConcurrent(5, -INT_MAX, INT_MAX, pvLineeee, boardRef, &tree);
+    negaMaxConcurrent(4, -INT_MAX, INT_MAX, pvLineeee, boardRef, tree);
     return pvLineeee.moves[0];
 
     // Move move;
@@ -67,13 +71,9 @@ Move Bot::getBestMove() {
         // if (queryOpeningBook(book, move))
             // return move;
 
-    nodesSearched = 0;
-    searchDeadlineReached = false;
-    searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
-
     for (int i = 1;; i++) {
         pVariation pvLine;
-        if (negaMaxConcurrent(i, -INT_MAX, INT_MAX, pvLine, boardRef, &tree) == Eval::CHEKMATE_ABSOLUTE_SCORE)
+        if (negaMaxConcurrent(i, -INT_MAX, INT_MAX, pvLine, boardRef, tree) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
         if (searchDeadlineReached)
             return principalVariation.moves[0];
@@ -120,7 +120,7 @@ int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
 }
 
 int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b, concurrencyTreeNode* parentTerminate) {
-    if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
+    // if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
     
     if (depth == 0) return quiescence(alpha, beta, b);
 
@@ -129,7 +129,7 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
     orderMoves(moves);
 
     pVariation childLine;
-    concurrencyTreeNode childTerminate(parentTerminate, false);
+    concurrencyTreeNode* childTerminate = parentTerminate->addChild(false);
 
     /*
     TODO:
@@ -160,12 +160,12 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
             bb.makeMove(moves[index]);
             mu.lock_shared();
             threads[index] = std::async(std::launch::async, [this, depth, alpha, beta, &childLine, bb, &childTerminate](){
-                int eval = -negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb, &childTerminate);
+                int eval = -negaMaxConcurrent(depth-1, -beta, -alpha, childLine, bb, childTerminate);
                 
                 if (eval >= beta) {
                     //snip
                     mu.lock();
-                    childTerminate.setTrue();
+                    childTerminate->setTrue();
                     mu.unlock();
                     eval = beta;
                 }
@@ -182,10 +182,10 @@ int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLin
         std::promise<int> val;
         mu.lock_shared();
         threads[index] = val.get_future();
-        int eval = -negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b, &childTerminate);
+        int eval = -negaMaxConcurrent(depth-1, -beta, -alpha, childLine, b, childTerminate);
         if (eval >= beta) {
             mu.lock();
-            childTerminate.setTrue();
+            childTerminate->setTrue();
             mu.unlock();
             eval = beta;
         }

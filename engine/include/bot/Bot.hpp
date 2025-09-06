@@ -21,7 +21,7 @@ private:
     static const int NUM_THREADS;
     static std::counting_semaphore<> threadsAvailable;
     std::shared_mutex mu;
-    concurrencyTreeNode tree{false};
+    concurrencyTreeNode* tree = new concurrencyTreeNode{false};
 
     Board& boardRef;
     pVariation principalVariation; //could this just be a vector?

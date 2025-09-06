@@ -21,21 +21,36 @@ typedef struct concurrencyTreeNode {
         firstKid = nullptr;
         nextSibling = nullptr;
     }
-    concurrencyTreeNode(concurrencyTreeNode* parent, bool value) {
-        val = value;
-        firstKid = nullptr;
-        nextSibling = nullptr;
+    // concurrencyTreeNode(concurrencyTreeNode* parent, bool value) {
+    //     val = value;
+    //     firstKid = nullptr;
+    //     nextSibling = nullptr;
 
-        concurrencyTreeNode* p = parent->firstKid;
+    //     concurrencyTreeNode* p = parent->firstKid;
+    //     if (p == nullptr) {
+    //         parent->firstKid = this;
+    //         return;
+    //     }
+
+    //     while (p->nextSibling != nullptr)
+    //         p = p->nextSibling;
+
+    //     p->nextSibling = this;
+    // }
+    concurrencyTreeNode* addChild(bool value) {
+        concurrencyTreeNode* child = new concurrencyTreeNode(value);
+
+        concurrencyTreeNode* p = firstKid;
         if (p == nullptr) {
-            parent->firstKid = this;
-            return;
+            firstKid = child;
+            return child;
         }
 
         while (p->nextSibling != nullptr)
             p = p->nextSibling;
 
-        p->nextSibling = this;
+        p->nextSibling = child;
+        return child;
     }
     void reset(bool value) {
         val = value;
