@@ -1,9 +1,11 @@
 #include "Engine.hpp"
 
+#include <array>
 #include <cassert>
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -18,12 +20,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Engine::Engine() {    
-    runPerftTests(2);
-}
-Engine::Engine(UserColour isBotWhite) : isBotWhite(isBotWhite){
-    boardPositionCounter[board->getBitBoardsAsBitset()]++;
     bot = new Bot(*board);
-    playMatch();
+
+    std::string input;
+    std::getline(std::cin, input);
+    
+    while (input != "quit") {
+        parseCommand(input);
+        std::getline(std::cin, input);
+    }
 }
 
 Engine::~Engine() {
@@ -32,7 +37,137 @@ Engine::~Engine() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
+// * ------------------------------------ [ UNIVERSAL CHESS INTERFACE ] ---------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//super jank uci parser
+void Engine::parseCommand(std::string command) {    
+    std::stringstream s(command);
+    std::string word;
+    s >> word;
+
+    if (word == "go") {
+        parseGoCommand(command);
+    }
+    else if (word == "position") {
+        parsePositionCommand(command);
+        printASCIIBoard();
+    }
+    else if (word == "uci") {
+        std::cout << "id name TobyBot 1.0" << "\n";
+        std::cout << "id name Toby Hothersall" << "\n";
+        std::cout << "uciok" << "\n";
+    }
+    else if (word == "ucinewgame") {
+        board->resetBoard();
+        bot->reset();
+
+        gameState = GameState::Live;
+
+        while (!previousMoves.empty())
+            previousMoves.pop();
+    }
+    else if (word == "isready") {
+        std::cout << "readyok" << "\n";
+    }
+    else if (word == "stop") {
+        bot->stop();
+    }
+    else if (word == "w") {
+        board->setDefaultBoard();
+        bot->reset();
+        isBotWhite = false;
+        playMatch();
+    }
+    else if (word == "b") {
+        board->setDefaultBoard();
+        isBotWhite = true;
+        playMatch();
+    }
+    else if (word == "perft") {
+        runPerftTests(2);
+    }
+    else {
+        perror("Received incorrect command");
+    }
+}
+
+void Engine::parseGoCommand(std::string command) {
+    std::vector<std::string> words;
+
+    std::stringstream s(command);
+    std::string word;
+    while (s >> word)
+        words.push_back(word);
+
+    int thinkTime = -1;
+
+    for (int i = 0; i < words.size(); i++) {
+        if (words[i] == "wtime") {
+            whiteTimeMs = std::stoi(words[i+1]);
+        }
+        else if (words[i] == "btime") {
+            blackTimeMs = std::stoi(words[i+1]);
+        }
+        else if (words[i] == "winc") {
+            whiteTimeMs += std::stoi(words[i+1]);
+        }
+        else if (words[i] == "binc") {
+            blackTimeMs += std::stoi(words[i+1]);
+        }
+        else if (words[i] == "movetime") {
+            thinkTime = std::stoi(words[i+1]);
+        }
+    }
+
+    //TODO: get this working in a different thread so the main thread can be watching for the stop or quit command
+    if (board->getWhiteTurn())
+        bot->setTimeLeftMs(whiteTimeMs);
+    else
+        bot->setTimeLeftMs(blackTimeMs);
+
+    if (thinkTime == -1)
+        bot->getBestMove();
+    else
+        bot->getBestMove(thinkTime);
+}
+
+void Engine::parsePositionCommand(std::string command) {
+    //parse the command
+    std::vector<std::string> words;
+
+    std::stringstream s(command);
+    std::string word;
+    while (s >> word)
+        words.push_back(word);
+
+    //parse the position
+    if (words[1] == "startpos") {
+        board->setDefaultBoard();
+    }
+    else if (words[1] == "fen") {
+        int startIndex = command.find("fen") + 4;
+        int endIndex = command.find("moves") - 2;
+        board->parseFen(command.substr(startIndex, endIndex));
+    }
+
+    //parse moves
+    int i = 0;
+    for (; words[i] != "moves"; i++)
+        if (i+1 >= words.size())
+            return;
+
+    i++;
+    for (Move m; i < words.size(); i++) {
+        validateMove(m, words[i]);
+        board->makeMove(m);
+        board->cleanup();
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * --------------------------------------- [ PLAY MATCH METHODS ] -------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -66,20 +201,6 @@ void Engine::playMatch() {
 }
 
 /**
- * Passes the fen to the board to parse
- * 
- * @param FEN the fen that is to be parsed
-*/
-void Engine::parseFen(const std::string& FEN) {
-    board->parseFen(FEN);
-    boardPositionCounter[board->getBitBoardsAsBitset()]++;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// * --------------------------------------- [ PLAY MATCH METHODS ] -------------------------------------- * //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
  * Prints out the board using unicode characters for the chess pieces
  */
 void Engine::printASCIIBoard() {    
@@ -105,10 +226,6 @@ GameState Engine::getCurrentGameState() {
 
     if (!moves.size())
         return MoveGeneration::isKingTargeted(*board) ? GameState::Checkmate : GameState::Stalemate;
-
-    //TODO: fix 3 move repetition
-    // if (++boardPositionCounter[board->getBitBoardsAsBitset()] == 3)
-        // return GameState::DrawByRepetition;
 
     return GameState::Live;
 }
@@ -228,7 +345,7 @@ void Engine::runPerftTests(int rigor) {
     auto start = std::chrono::high_resolution_clock::now();
     
     for (int i = 0; i < 7; i++) {
-        parseFen(fens[i]);
+        board->parseFen(fens[i]);
         std::cout << "fen: " << fens[i] << '\n';
 
         for (int j = 1; j <= depths[i]; j++) {

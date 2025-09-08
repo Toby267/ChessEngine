@@ -30,15 +30,6 @@ Board::~Board() {
 const std::array<uint64_t, 14>& Board::getBitBoards() const {
     return bitBoards;
 }
-const std::bitset<64*14> Board::getBitBoardsAsBitset() const {
-    std::bitset<64*14> set;
-
-    for (int i = 0; i < 14; i++)
-        for (int j = 0; j < 64; j++)
-            set[i*14 + j] = (bitBoards[i] >> j) & 1;
-
-    return set;
-}
 const std::array<int, 64>& Board::getMailboxBoard() const {
     return mailBoxBoard;
 }
@@ -161,6 +152,7 @@ void Board::setDefaultBoard() {
     enPassantData = {};
     castleData = {};
     drawMoveCounter = 0;
+    whiteTurn = true;
     
     bitBoards[PieceType::WHITE_PIECES]  = 0x0303030303030303ULL;
     bitBoards[PieceType::WHITE_KING]    = 0x0000000100000000ULL;
@@ -199,6 +191,7 @@ void Board::resetBoard() {
     bitBoards = {};
     for (int i = 0; i < 64; i++) mailBoxBoard[i] = PieceType::INVALID;
     drawMoveCounter = 0;
+    whiteTurn = true;
 }
 
 /**

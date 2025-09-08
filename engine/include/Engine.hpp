@@ -4,10 +4,9 @@
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
-#include <bitset>
+#include <chrono>
 #include <queue>
 #include <string>
-#include <unordered_map>
 
 typedef bool UserColour;
 
@@ -28,27 +27,27 @@ private:
     Board* board = new Board();
     Bot* bot;
 
-    const WhiteTurn isBotWhite = false;
+    WhiteTurn isBotWhite = false;
     GameState gameState = GameState::Live;
 
-    std::unordered_map<std::bitset<64*14>, int> boardPositionCounter;
+    int blackTimeMs = 0;
+    int whiteTimeMs = 0;
 
     std::queue<Move> previousMoves;
     
 public:
     //constructors/destructor
     Engine();
-    Engine(UserColour isBotWhite);
     ~Engine();
 
-    //getters/setters
-
-    //public methods
-    void playMatch();
-    void parseFen(const std::string& FEN);
-
 private:
+    //uci
+    void parseCommand(std::string command);
+    void parseGoCommand(std::string command);
+    void parsePositionCommand(std::string command);
+
     //play match methods
+    void playMatch();
     void printASCIIBoard();
     GameState getCurrentGameState();
     Move getUserMove();

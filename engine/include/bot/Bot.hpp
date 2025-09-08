@@ -24,12 +24,17 @@ private:
     Board& board;
     pVariation principalVariation; //could this just be a vector?
 
-    const std::chrono::milliseconds MAX_SEARCH_TIME_MS;
     const int SEARCH_TIMER_NODE_FREQUENCY;
+    std::chrono::milliseconds thinkTime;
 
     std::chrono::high_resolution_clock::time_point searchDeadline;
     int nodesSearched = 0;
     bool searchDeadlineReached = false;
+
+    int timeLeftMs = 600000;
+
+    int movesPlayed = 0;
+    int movesOutOfBook = 0;
 
 public:
     //constructors/destructor
@@ -37,12 +42,17 @@ public:
     ~Bot();
 
     //getters/setters
+    void setTimeLeftMs(int time);
 
     //public methods
     Move getBestMove();
+    Move getBestMove(int allocatedTime);
+    void reset();
+    void stop();
 
 private:
     //private methods
+    Move calcBestMove();
     int negaMax(int depth, int alpha, int beta, pVariation& parentLine);
     int quiescence(int alpha, int beta);
     bool queryOpeningBook(std::string bookName, Move& move);

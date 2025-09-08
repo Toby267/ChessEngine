@@ -36,18 +36,61 @@ const std::string Bot::OPENING_BOOKS[] = {
 // * ------------------------------------ [ CONSTRUCTORS/DESCTUCTOR ] ------------------------------------ * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Bot::Bot(Board& board) : board(board), MAX_SEARCH_TIME_MS(10000), SEARCH_TIMER_NODE_FREQUENCY(1024) {
+Bot::Bot(Board& board) : board(board), SEARCH_TIMER_NODE_FREQUENCY(1024) {
     if (!isPestoInitialised) {
         isPestoInitialised = true;
         Eval::initPestoTables();
     }
+
+    thinkTime = std::chrono::milliseconds(10000);
 }
 Bot::~Bot() {
 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ---------------------------------------- [ GETTERS/SETTERS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void Bot::setTimeLeftMs(int time) {
+    timeLeftMs = time;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Move Bot::getBestMove() {
+    int nMoves = std::min(movesOutOfBook, 10);
+    float factor = 2.0 - nMoves/10.0;
+    float target = timeLeftMs / std::min(60.0-movesPlayed, 5.0);
+    thinkTime = std::chrono::milliseconds(int(factor * target));
+
+    timeLeftMs -= thinkTime.count();
+    return calcBestMove();
+}
+
+Move Bot::getBestMove(int allocatedTime) {
+    thinkTime = std::chrono::milliseconds(allocatedTime);
+
+    timeLeftMs -= thinkTime.count();
+    return calcBestMove();
+}
+
+void Bot::reset() {
+    principalVariation.moveCount = 0;
+    movesOutOfBook = 0;
+    movesPlayed = 0;
+    timeLeftMs = 600000;
+}
+
+void Bot::stop() {
+    searchDeadlineReached = true;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// * ---------------------------------------- [ PRIVATE METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -56,15 +99,19 @@ Bot::~Bot() {
  * 
  * @return the best move
  */
-Move Bot::getBestMove() {   
+Move Bot::calcBestMove() {   
     nodesSearched = 0;
     searchDeadlineReached = false;
-    searchDeadline = MAX_SEARCH_TIME_MS + std::chrono::high_resolution_clock::now();
+    searchDeadline = thinkTime + std::chrono::high_resolution_clock::now();
+    
+    movesPlayed++;
     
     Move move;
     for (const std::string book : OPENING_BOOKS)
         if (queryOpeningBook(book, move))
             return move;
+
+    movesOutOfBook++;
 
     for (int i = 1;; i++) {
         pVariation pvLine;
@@ -76,10 +123,6 @@ Move Bot::getBestMove() {
         principalVariation = pvLine;
     }
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// * ---------------------------------------- [ PRIVATE METHODS ] ---------------------------------------- * //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
