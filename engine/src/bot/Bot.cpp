@@ -62,6 +62,8 @@ void Bot::setTimeLeftMs(int time) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Move Bot::getBestMove() {
+    forcedStop = false;
+    
     int nMoves = std::min(movesOutOfBook, 10);
     float factor = 2.0 - nMoves/10.0;
     float target = timeLeftMs / std::min(60.0-movesPlayed, 5.0);
@@ -72,6 +74,8 @@ Move Bot::getBestMove() {
 }
 
 Move Bot::getBestMove(int allocatedTime) {
+    forcedStop = false;
+
     thinkTime = std::chrono::milliseconds(allocatedTime);
 
     timeLeftMs -= thinkTime.count();
@@ -86,7 +90,7 @@ void Bot::reset() {
 }
 
 void Bot::stop() {
-    searchDeadlineReached = true;
+    forcedStop = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,10 +110,10 @@ Move Bot::calcBestMove() {
     
     movesPlayed++;
     
-    Move move;
-    for (const std::string book : OPENING_BOOKS)
-        if (queryOpeningBook(book, move))
-            return move;
+    // Move move;
+    // for (const std::string book : OPENING_BOOKS)
+        // if (queryOpeningBook(book, move))
+            // return move;
 
     movesOutOfBook++;
 
@@ -125,6 +129,7 @@ Move Bot::calcBestMove() {
 }
 
 int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
+    if (forcedStop) return beta;
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
     
     if (depth == 0) return quiescence(alpha, beta);

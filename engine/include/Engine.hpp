@@ -4,7 +4,7 @@
 #include "board/Board.hpp"
 #include "board/BoardUtil.hpp"
 #include "board/Move.hpp"
-#include <chrono>
+#include <future>
 #include <queue>
 #include <string>
 
@@ -34,6 +34,8 @@ private:
     int whiteTimeMs = 0;
 
     std::queue<Move> previousMoves;
+
+    std::future<Move> bestMove;
     
 public:
     //constructors/destructor

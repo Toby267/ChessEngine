@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <semaphore>
+#include <atomic>
 
 /**
  * Class representing the Bot and its relevent data/ references.
@@ -30,6 +31,8 @@ private:
     std::chrono::high_resolution_clock::time_point searchDeadline;
     int nodesSearched = 0;
     bool searchDeadlineReached = false;
+
+    std::atomic<bool> forcedStop = false;
 
     int timeLeftMs = 600000;
 

@@ -52,19 +52,19 @@ std::string Move::toString() const {
         switch (promotionMove.newPieceType) {
             case PieceType::WHITE_QUEEN:
             case PieceType::BLACK_QUEEN:
-                moveStr.append("queen");
+                moveStr.append("q");
                 break;
             case PieceType::WHITE_ROOK:
             case PieceType::BLACK_ROOK:
-                moveStr.append("rook");
+                moveStr.append("r");
                 break;
             case PieceType::WHITE_BISHOP:
             case PieceType::BLACK_BISHOP:
-                moveStr.append("bishop");
+                moveStr.append("b");
                 break;
             case PieceType::WHITE_KNIGHT:
             case PieceType::BLACK_KNIGHT:
-                moveStr.append("knight");
+                moveStr.append("n");
                 break;
             default:
                 break;

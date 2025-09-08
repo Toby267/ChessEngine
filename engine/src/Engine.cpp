@@ -4,7 +4,9 @@
 #include <cassert>
 #include <chrono>
 #include <cstdint>
+#include <future>
 #include <iostream>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -52,12 +54,11 @@ void Engine::parseCommand(std::string command) {
     }
     else if (word == "position") {
         parsePositionCommand(command);
-        printASCIIBoard();
     }
     else if (word == "uci") {
-        std::cout << "id name TobyBot 1.0" << "\n";
-        std::cout << "id name Toby Hothersall" << "\n";
-        std::cout << "uciok" << "\n";
+        std::cout << "id name TobyBot 1.0" << std::endl;
+        std::cout << "id name Toby Hothersall" << std::endl;
+        std::cout << "uciok" << std::endl;
     }
     else if (word == "ucinewgame") {
         board->resetBoard();
@@ -69,7 +70,7 @@ void Engine::parseCommand(std::string command) {
             previousMoves.pop();
     }
     else if (word == "isready") {
-        std::cout << "readyok" << "\n";
+        std::cout << "readyok" << std::endl;
     }
     else if (word == "stop") {
         bot->stop();
@@ -127,10 +128,20 @@ void Engine::parseGoCommand(std::string command) {
     else
         bot->setTimeLeftMs(blackTimeMs);
 
-    if (thinkTime == -1)
-        bot->getBestMove();
-    else
-        bot->getBestMove(thinkTime);
+    if (thinkTime == -1) {
+        bestMove = std::async(std::launch::async, [this](){
+            Move m = bot->getBestMove();
+            std::cout << m.toString() << std::endl;
+            return m;
+        });
+    }
+    else {
+        bestMove = std::async(std::launch::async, [this, thinkTime](){
+            Move m = bot->getBestMove(thinkTime);
+            std::cout << m.toString() << std::endl;
+            return m;
+        });
+    }
 }
 
 void Engine::parsePositionCommand(std::string command) {
