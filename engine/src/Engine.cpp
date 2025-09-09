@@ -131,14 +131,14 @@ void Engine::parseGoCommand(std::string command) {
     if (thinkTime == -1) {
         bestMove = std::async(std::launch::async, [this](){
             Move m = bot->getBestMove();
-            std::cout << m.toString() << std::endl;
+            std::cout << "bestmove " << m.toString() << std::endl;
             return m;
         });
     }
     else {
         bestMove = std::async(std::launch::async, [this, thinkTime](){
             Move m = bot->getBestMove(thinkTime);
-            std::cout << m.toString() << std::endl;
+            std::cout << "bestmove " << m.toString() << std::endl;
             return m;
         });
     }
