@@ -110,10 +110,10 @@ Move Bot::calcBestMove() {
     
     movesPlayed++;
     
-    // Move move;
-    // for (const std::string book : OPENING_BOOKS)
-        // if (queryOpeningBook(book, move))
-            // return move;
+    Move move;
+    for (const std::string book : OPENING_BOOKS)
+        if (queryOpeningBook(book, move))
+            return move;
 
     movesOutOfBook++;
 
