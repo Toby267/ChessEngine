@@ -62,7 +62,7 @@ void Bot::setTimeLeftMs(int time) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Move Bot::getBestMove() {
-    forcedStop = false;
+    forcedStop.store(false);
     
     int nMoves = std::min(movesOutOfBook, 10);
     float factor = 2.0 - nMoves/10.0;
@@ -74,7 +74,7 @@ Move Bot::getBestMove() {
 }
 
 Move Bot::getBestMove(int allocatedTime) {
-    forcedStop = false;
+    forcedStop.store(false);
 
     thinkTime = std::chrono::milliseconds(allocatedTime);
 
@@ -90,7 +90,7 @@ void Bot::reset() {
 }
 
 void Bot::stop() {
-    forcedStop = true;
+    forcedStop.store(true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ Move Bot::calcBestMove() {
         pVariation pvLine;
         if (negaMax(i, -INT_MAX, INT_MAX, pvLine) == Eval::CHEKMATE_ABSOLUTE_SCORE)
             return pvLine.moves[0];
-        if (searchDeadlineReached)
+        if (searchDeadlineReached || forcedStop.load())
             return principalVariation.moves[0];
 
         principalVariation = pvLine;
@@ -129,7 +129,7 @@ Move Bot::calcBestMove() {
 }
 
 int Bot::negaMax(int depth, int alpha, int beta, pVariation& parentLine) {
-    if (forcedStop) return beta;
+    if (forcedStop.load()) return beta;
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
     
     if (depth == 0) return quiescence(alpha, beta);
@@ -230,6 +230,7 @@ bool Bot::queryOpeningBook(std::string bookName, Move& move) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int Bot::negaMaxConcurrent(int depth, int alpha, int beta, pVariation& parentLine, Board b) {
+    if (forcedStop.load()) return beta;
     if (searchDeadlineReached || (++nodesSearched % SEARCH_TIMER_NODE_FREQUENCY == 0 && checkTimer())) return beta; //effectively snipping this branch like in alpha-beta
     
     if (depth == 0) return quiescence(alpha, beta, b);

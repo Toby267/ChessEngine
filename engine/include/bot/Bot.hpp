@@ -32,7 +32,7 @@ private:
     int nodesSearched = 0;
     bool searchDeadlineReached = false;
 
-    std::atomic<bool> forcedStop = false;
+    std::atomic<bool> forcedStop;
 
     int timeLeftMs = 600000;
 
