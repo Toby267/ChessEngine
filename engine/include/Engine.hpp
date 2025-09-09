@@ -30,9 +30,6 @@ private:
     WhiteTurn isBotWhite = false;
     GameState gameState = GameState::Live;
 
-    int blackTimeMs = 0;
-    int whiteTimeMs = 0;
-
     std::queue<Move> previousMoves;
 
     std::future<Move> bestMove;

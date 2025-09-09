@@ -57,6 +57,10 @@ void Bot::setTimeLeftMs(int time) {
     timeLeftMs = time;
 }
 
+void Bot::setTimeIncrementMs(int time) {
+    timeIncrement = time;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // * ----------------------------------------- [ PUBLIC METHODS ] ---------------------------------------- * //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,12 +68,16 @@ void Bot::setTimeLeftMs(int time) {
 Move Bot::getBestMove() {
     forcedStop.store(false);
     
-    int nMoves = std::min(movesOutOfBook, 10);
-    float factor = 2.0 - nMoves/10.0;
-    float target = timeLeftMs / std::min(60.0-movesPlayed, 5.0);
-    thinkTime = std::chrono::milliseconds(int(factor * target));
+    float factor = 0.01; //movesPlayed >= 40
+    if      (movesPlayed < 15) factor = 0.02;
+    else if (movesPlayed < 25) factor = 0.09;
+    else if (movesPlayed < 40) factor = 0.02;
+
+    thinkTime = std::chrono::milliseconds(int(factor * timeLeftMs));
 
     timeLeftMs -= thinkTime.count();
+    timeLeftMs += timeIncrement;
+
     return calcBestMove();
 }
 
@@ -79,6 +87,8 @@ Move Bot::getBestMove(int allocatedTime) {
     thinkTime = std::chrono::milliseconds(allocatedTime);
 
     timeLeftMs -= thinkTime.count();
+    timeLeftMs += timeIncrement;
+
     return calcBestMove();
 }
 

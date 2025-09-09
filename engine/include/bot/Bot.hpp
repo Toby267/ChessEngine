@@ -35,6 +35,7 @@ private:
     std::atomic<bool> forcedStop;
 
     int timeLeftMs = 600000;
+    int timeIncrement = 0;
 
     int movesPlayed = 0;
     int movesOutOfBook = 0;
@@ -46,6 +47,7 @@ public:
 
     //getters/setters
     void setTimeLeftMs(int time);
+    void setTimeIncrementMs(int time);
 
     //public methods
     Move getBestMove();

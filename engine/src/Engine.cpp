@@ -56,8 +56,8 @@ void Engine::parseCommand(std::string command) {
         parsePositionCommand(command);
     }
     else if (word == "uci") {
-        std::cout << "id name TobyBot 1.0" << std::endl;
-        std::cout << "id name Toby Hothersall" << std::endl;
+        // std::cout << "id name TobyBot 1.0" << std::endl;
+        // std::cout << "id name Toby Hothersall" << std::endl;
         std::cout << "uciok" << std::endl;
     }
     else if (word == "ucinewgame") {
@@ -105,17 +105,17 @@ void Engine::parseGoCommand(std::string command) {
     int thinkTime = -1;
 
     for (int i = 0; i < words.size(); i++) {
-        if (words[i] == "wtime") {
-            whiteTimeMs = std::stoi(words[i+1]);
+        if (words[i] == "wtime" && board->getWhiteTurn()) {
+            bot->setTimeLeftMs(std::stoi(words[i+1]));
         }
-        else if (words[i] == "btime") {
-            blackTimeMs = std::stoi(words[i+1]);
+        else if (words[i] == "btime" && !board->getWhiteTurn()) {
+            bot->setTimeLeftMs(std::stoi(words[i+1]));
         }
-        else if (words[i] == "winc") {
-            whiteTimeMs += std::stoi(words[i+1]);
+        else if (words[i] == "winc" && board->getWhiteTurn()) {
+            bot->setTimeIncrementMs(std::stoi(words[i+1]));
         }
-        else if (words[i] == "binc") {
-            blackTimeMs += std::stoi(words[i+1]);
+        else if (words[i] == "binc" && !board->getWhiteTurn()) {
+            bot->setTimeIncrementMs(std::stoi(words[i+1]));
         }
         else if (words[i] == "movetime") {
             thinkTime = std::stoi(words[i+1]);
@@ -123,11 +123,6 @@ void Engine::parseGoCommand(std::string command) {
     }
 
     //TODO: get this working in a different thread so the main thread can be watching for the stop or quit command
-    if (board->getWhiteTurn())
-        bot->setTimeLeftMs(whiteTimeMs);
-    else
-        bot->setTimeLeftMs(blackTimeMs);
-
     if (thinkTime == -1) {
         bestMove = std::async(std::launch::async, [this](){
             Move m = bot->getBestMove();
