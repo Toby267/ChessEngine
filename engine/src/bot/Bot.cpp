@@ -68,7 +68,12 @@ void Bot::setTimeIncrementMs(int time) {
 Move Bot::getBestMove() {
     forcedStop.store(false);
     
-    float factor = timeLeftMs <= 45000 ? 0.02 : 0.08;
+    float factor;
+    if      (movesPlayed < 15) factor = 0.02;
+    else if (movesPlayed < 25) factor = 0.08;
+    else if (movesPlayed < 40) factor = 0.06;
+    if      (timeLeftMs <= 45000) factor = 0.02;
+
     thinkTime = std::chrono::milliseconds(int(factor * timeLeftMs));
 
     timeLeftMs -= thinkTime.count();
