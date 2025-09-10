@@ -14,7 +14,7 @@ cd engine
 
 To use with https://github.com/lichess-bot-devs/lichess-bot:
 setup and build
-copy engine/src/ and engine/resources into lichess-bot/CurrentRelease/
+copy engine/bin and engine/resources into lichess-bot/CurrentRelease/
 copy misc/config.yml into lichess-bot/
 add your lichess.org api key to config.yml
 run the python script lichess-bot.py
