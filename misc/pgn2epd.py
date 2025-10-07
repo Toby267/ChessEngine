@@ -1,3 +1,4 @@
+#Modified from https://github.com/official-stockfish/books/
 import chess, chess.pgn, sys
 
 def pgn_to_epd(bookname):
